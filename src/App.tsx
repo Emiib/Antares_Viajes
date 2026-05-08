@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // ===== CONSTANTES =====
 const WHATSAPP = "5493446528749";
@@ -21,21 +21,6 @@ const heroSlides = [
     src: "https://videos.pexels.com/video-files/17487256/17487256-uhd_3840_2160_30fps.mp4",
     poster: "https://images.pexels.com/videos/17487256/beach-drone-gili-holiday-17487256.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1080&w=1920",
     label: "Bali"
-  },
-  {
-    src: "https://videos.pexels.com/video-files/32504481/13860591_3840_2160_30fps.mp4",
-    poster: "https://images.pexels.com/videos/32504481/4k-aerial-4k-aerial-footage-4k-drone-4k-drone-footage-32504481.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1080&w=1920",
-    label: "Sri Lanka"
-  },
-  {
-    src: "https://videos.pexels.com/video-files/36584879/15510650_3840_2160_60fps.mp4",
-    poster: "https://images.pexels.com/videos/36584879/ancient-roman-architecture-central-italy-historic-rome-italian-architecture-36584879.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1080&w=1920",
-    label: "Italia"
-  },
-  {
-    src: "https://videos.pexels.com/video-files/20312200/20312200-uhd_3840_2160_30fps.mp4",
-    poster: "https://images.pexels.com/videos/20312200/hat-yai-thailand-samila-beach-samila-beach-hat-yai-samila-beach-songkhla-20312200.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1080&w=1920",
-    label: "Asia"
   }
 ];
 
@@ -47,6 +32,10 @@ const heroSlides = [
 // Blanco: #FFFFFF
 
 const wa = (text?: string) => `https://api.whatsapp.com/send?phone=${WHATSAPP}${text ? `&text=${encodeURIComponent(text)}` : ''}`;
+const minDepartureMonth = (() => {
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  return currentMonth < "2026-01" ? "2026-01" : currentMonth;
+})();
 
 // ===== DATOS =====
 
@@ -155,14 +144,26 @@ export default function App() {
   const [showTripForm, setShowTripForm] = useState(false);
   const [tripForm, setTripForm] = useState({ name: "", phone: "", destination: "", date: "", details: "" });
   const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
+  const heroVideoRef = useRef<HTMLVideoElement | null>(null);
+  const activeHeroSlide = heroSlides[currentHeroSlide];
 
   useEffect(() => {
     const timer = window.setInterval(() => {
       setCurrentHeroSlide((current) => (current + 1) % heroSlides.length);
-    }, 7000);
+    }, 10000);
 
     return () => window.clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+
+    video.load();
+    video.play().catch(() => {
+      // Some mobile browsers pause autoplay in low-power/data-saver mode; poster remains visible.
+    });
+  }, [currentHeroSlide]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -447,27 +448,26 @@ export default function App() {
       {/* ===== HERO ===== */}
       <section className="relative min-h-[80vh] md:min-h-[85vh] flex items-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          {heroSlides.map((slide, index) => (
-            <div
-              key={slide.src}
-              className={`absolute inset-0 transition-all duration-[2000ms] ease-in-out ${
-                currentHeroSlide === index ? "scale-100 opacity-100" : "scale-105 opacity-0"
-              }`}
-            >
-              <video
-                className="h-full w-full object-cover"
-                src={slide.src}
-                poster={slide.poster}
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="auto"
-              />
-            </div>
-          ))}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/10 to-transparent"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+          <img
+            src={activeHeroSlide.poster}
+            alt={activeHeroSlide.label}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <video
+            key={activeHeroSlide.src}
+            ref={heroVideoRef}
+            className="h-full w-full object-cover animate-hero-video"
+            src={activeHeroSlide.src}
+            poster={activeHeroSlide.poster}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            onCanPlay={(event) => event.currentTarget.play().catch(() => {})}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/38 via-black/12 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/18 via-transparent to-transparent"></div>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full">
@@ -497,6 +497,7 @@ export default function App() {
                   <label className="block text-[10px] font-semibold text-stone-500 mb-1.5 uppercase tracking-wider">Fecha</label>
                   <input
                     type="month"
+                    min={minDepartureMonth}
                     value={searchData.departure}
                     onChange={(e) => setSearchData({...searchData, departure: e.target.value})}
                     className="w-full px-3 py-2.5 border border-stone-200 rounded-xl focus:ring-2 focus:ring-red-400 focus:border-transparent outline-none text-sm bg-stone-50"
@@ -542,32 +543,29 @@ export default function App() {
         </div>
       </section>
 
-      {/* ===== ARGENTINA ===== */}
-      <section id="argentina" className={`py-14 md:py-20 transition-colors ${darkMode ? "bg-stone-950" : "bg-gradient-to-b from-red-50/50 to-white"}`}>
+      {/* ===== PAQUETES RECOMENDADOS ===== */}
+      <section id="paquetes" className="py-14 md:py-20 bg-stone-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-10">
             <div>
-              <div className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold mb-3">
-                Destino Argentina
-              </div>
-              <h2 className="text-3xl md:text-5xl font-black text-stone-900 leading-tight">
-                Descubrí <span className="text-red-600">Argentina</span>
+              <h2 className="text-3xl md:text-5xl font-black text-stone-900 mb-2 leading-tight">
+                Paquetes <span className="text-red-600">Recomendados</span>
               </h2>
-              <p className="text-stone-600 mt-2 text-base md:text-lg">Los mejores destinos del país, al mejor precio</p>
+              <p className="text-stone-600 text-base md:text-lg">Las ofertas más populares del momento</p>
             </div>
             <a
-              href={wa("Hola! Quiero ver más opciones de viajes por Argentina")}
+              href={wa("Hola! Quiero ver todos los paquetes disponibles")}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-4 md:mt-0 text-red-600 font-semibold hover:text-red-700 flex items-center gap-1 transition-colors"
             >
-              Ver todo →
+              Ver todos →
             </a>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-            {argentinaPackages.map((pkg) => (
-              <PackageCard key={pkg.id} pkg={pkg} accent="amber" />
+            {featuredPackages.map((pkg) => (
+              <PackageCard key={pkg.id} pkg={pkg} accent="red" />
             ))}
           </div>
         </div>
@@ -598,29 +596,32 @@ export default function App() {
         </div>
       </section>
 
-      {/* ===== PAQUETES RECOMENDADOS ===== */}
-      <section id="paquetes" className="py-14 md:py-20 bg-stone-50">
+      {/* ===== ARGENTINA ===== */}
+      <section id="argentina" className={`py-14 md:py-20 transition-colors ${darkMode ? "bg-stone-950" : "bg-gradient-to-b from-red-50/50 to-white"}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-10">
             <div>
-              <h2 className="text-3xl md:text-5xl font-black text-stone-900 mb-2 leading-tight">
-                Paquetes <span className="text-red-600">Recomendados</span>
+              <div className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold mb-3">
+                Destino Argentina
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black text-stone-900 leading-tight">
+                Descubrí <span className="text-red-600">Argentina</span>
               </h2>
-              <p className="text-stone-600 text-base md:text-lg">Las ofertas más populares del momento</p>
+              <p className="text-stone-600 mt-2 text-base md:text-lg">Los mejores destinos del país, al mejor precio</p>
             </div>
             <a
-              href={wa("Hola! Quiero ver todos los paquetes disponibles")}
+              href={wa("Hola! Quiero ver más opciones de viajes por Argentina")}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-4 md:mt-0 text-red-600 font-semibold hover:text-red-700 flex items-center gap-1 transition-colors"
             >
-              Ver todos →
+              Ver todo →
             </a>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-            {featuredPackages.map((pkg) => (
-              <PackageCard key={pkg.id} pkg={pkg} accent="red" />
+            {argentinaPackages.map((pkg) => (
+              <PackageCard key={pkg.id} pkg={pkg} accent="amber" />
             ))}
           </div>
         </div>
@@ -742,7 +743,7 @@ export default function App() {
               { icon: "💰", title: "Mejores Precios", desc: "Las tarifas más competitivas del mercado" },
               { icon: "🔒", title: "Pago Seguro", desc: "Mercado Pago, PayPal, cuotas y más" },
               { icon: "🎯", title: "Atención Personal", desc: "Asesores expertos a tu disposición" },
-              { icon: "💬", title: "Respuesta Rápida", desc: "Te respondemos al instante por WhatsApp" }
+              { icon: "⚡", title: "Respuesta Rápida", desc: "Te respondemos al instante por WhatsApp" }
             ].map((item, idx) => (
               <div key={idx} className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20 hover:bg-white/20 transition-all">
                 <div className="text-3xl md:text-4xl mb-3">{item.icon}</div>
