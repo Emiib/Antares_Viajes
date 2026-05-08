@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+.antares-dark .bg-white,
+.antares-dark .bg-stone-50,
+.antares-dark .bg-red-50\/50,
+.antares-dark .from-red-50\/50 {
+  background-color: #0c0a09 !important;
+}
+
+.antares-dark .bg-stone-50,
+.antares-dark .bg-red-50,
+.antares-dark .bg-rose-50,
+.antares-dark .bg-amber-50,
+.antares-dark .bg-red-100 {
+  background-color: #1c1917 !important;
+}
+
+.antares-dark .text-stone-900,
+.antares-dark .text-stone-800,
+.antares-dark .text-stone-700,
+.antares-dark .text-stone-600 {
+  color: #f5f5f4 !important;
+}
+
+.antares-dark .text-stone-500,
+.antares-dark .text-stone-400 {
+  color: #a8a29e !important;
+}
+
+.antares-dark .border-stone-100,
+.antares-dark .border-red-100,
+.antares-dark .border-rose-100 {
+  border-color: #292524 !important;
+}
+
+.antares-dark input,
+.antares-dark select,
+.antares-dark textarea {
+  background-color: #1c1917 !important;
+  color: #f5f5f4 !important;
+  border-color: #44403c !important;
+}
+
+.antares-dark input::placeholder,
+.antares-dark textarea::placeholder {
+  color: #78716c !important;
+}
+
+.antares-dark .logo-safe.bg-white {
+  background-color: #ffffff !important;
+}
