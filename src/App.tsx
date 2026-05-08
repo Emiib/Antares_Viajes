@@ -8,19 +8,40 @@ const SALES_EMAIL = "ventas@antaresviajes.com.ar";
 
 const heroSlides = [
   {
-    src: "https://videos.pexels.com/video-files/33022213/14072538_3840_2160_30fps.mp4",
-    poster: "https://images.pexels.com/videos/33022213/2025-travel-4k-aerial-footage-4k-beach-4k-drone-33022213.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1080&w=1920",
-    label: "Tailandia"
+    label: "Tailandia",
+    poster: "/videos/hero/tailandia-poster.jpg",
+    fallbackPoster: "https://images.pexels.com/videos/33022213/2025-travel-4k-aerial-footage-4k-beach-4k-drone-33022213.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1080&w=1920",
+    sources: {
+      mobileWebm: "/videos/hero/tailandia-mobile.webm",
+      mobileMp4: "/videos/hero/tailandia-mobile.mp4",
+      desktopWebm: "/videos/hero/tailandia-desktop.webm",
+      desktopMp4: "/videos/hero/tailandia-desktop.mp4",
+      remoteFallback: "https://videos.pexels.com/video-files/33022213/14072538_3840_2160_30fps.mp4"
+    }
   },
   {
-    src: "https://videos.pexels.com/video-files/29947197/12852218_3840_2160_30fps.mp4",
-    poster: "https://images.pexels.com/videos/29947197/central-rome-citta-del-vaticano-classic-italy-daybreak-29947197.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1080&w=1920",
-    label: "Roma"
+    label: "Roma",
+    poster: "/videos/hero/roma-poster.jpg",
+    fallbackPoster: "https://images.pexels.com/videos/29947197/central-rome-citta-del-vaticano-classic-italy-daybreak-29947197.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1080&w=1920",
+    sources: {
+      mobileWebm: "/videos/hero/roma-mobile.webm",
+      mobileMp4: "/videos/hero/roma-mobile.mp4",
+      desktopWebm: "/videos/hero/roma-desktop.webm",
+      desktopMp4: "/videos/hero/roma-desktop.mp4",
+      remoteFallback: "https://videos.pexels.com/video-files/29947197/12852218_3840_2160_30fps.mp4"
+    }
   },
   {
-    src: "https://videos.pexels.com/video-files/17487256/17487256-uhd_3840_2160_30fps.mp4",
-    poster: "https://images.pexels.com/videos/17487256/beach-drone-gili-holiday-17487256.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1080&w=1920",
-    label: "Bali"
+    label: "Bali",
+    poster: "/videos/hero/bali-poster.jpg",
+    fallbackPoster: "https://images.pexels.com/videos/17487256/beach-drone-gili-holiday-17487256.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1080&w=1920",
+    sources: {
+      mobileWebm: "/videos/hero/bali-mobile.webm",
+      mobileMp4: "/videos/hero/bali-mobile.mp4",
+      desktopWebm: "/videos/hero/bali-desktop.webm",
+      desktopMp4: "/videos/hero/bali-desktop.mp4",
+      remoteFallback: "https://videos.pexels.com/video-files/17487256/17487256-uhd_3840_2160_30fps.mp4"
+    }
   }
 ];
 
@@ -35,6 +56,42 @@ const wa = (text?: string) => `https://api.whatsapp.com/send?phone=${WHATSAPP}${
 const minDepartureMonth = (() => {
   const currentMonth = new Date().toISOString().slice(0, 7);
   return currentMonth < "2026-01" ? "2026-01" : currentMonth;
+})();
+const maxDepartureMonth = "2027-12";
+const monthNames = [
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre"
+];
+
+const departureMonthOptions = (() => {
+  const start = minDepartureMonth > maxDepartureMonth ? maxDepartureMonth : minDepartureMonth;
+  const [startYear, startMonth] = start.split("-").map(Number);
+  const [endYear, endMonth] = maxDepartureMonth.split("-").map(Number);
+  const options: Array<{ value: string; label: string }> = [];
+  let year = startYear;
+  let month = startMonth;
+
+  while (year < endYear || (year === endYear && month <= endMonth)) {
+    const value = `${year}-${String(month).padStart(2, "0")}`;
+    options.push({ value, label: `${monthNames[month - 1]} ${year}` });
+    month += 1;
+    if (month > 12) {
+      month = 1;
+      year += 1;
+    }
+  }
+
+  return options;
 })();
 
 // ===== DATOS =====
@@ -449,15 +506,14 @@ export default function App() {
       <section className="relative min-h-[80vh] md:min-h-[85vh] flex items-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src={activeHeroSlide.poster}
+            src={activeHeroSlide.fallbackPoster}
             alt={activeHeroSlide.label}
             className="absolute inset-0 h-full w-full object-cover"
           />
           <video
-            key={activeHeroSlide.src}
+            key={activeHeroSlide.label}
             ref={heroVideoRef}
             className="h-full w-full object-cover animate-hero-video"
-            src={activeHeroSlide.src}
             poster={activeHeroSlide.poster}
             autoPlay
             muted
@@ -465,7 +521,13 @@ export default function App() {
             playsInline
             preload="metadata"
             onCanPlay={(event) => event.currentTarget.play().catch(() => {})}
-          />
+          >
+            <source src={activeHeroSlide.sources.mobileWebm} type="video/webm" media="(max-width: 767px)" />
+            <source src={activeHeroSlide.sources.mobileMp4} type="video/mp4" media="(max-width: 767px)" />
+            <source src={activeHeroSlide.sources.desktopWebm} type="video/webm" />
+            <source src={activeHeroSlide.sources.desktopMp4} type="video/mp4" />
+            <source src={activeHeroSlide.sources.remoteFallback} type="video/mp4" />
+          </video>
           <div className="absolute inset-0 bg-gradient-to-r from-black/38 via-black/12 to-transparent"></div>
           <div className="absolute inset-0 bg-gradient-to-t from-black/18 via-transparent to-transparent"></div>
         </div>
@@ -495,13 +557,16 @@ export default function App() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-semibold text-stone-500 mb-1.5 uppercase tracking-wider">Fecha</label>
-                  <input
-                    type="month"
-                    min={minDepartureMonth}
+                  <select
                     value={searchData.departure}
                     onChange={(e) => setSearchData({...searchData, departure: e.target.value})}
                     className="w-full px-3 py-2.5 border border-stone-200 rounded-xl focus:ring-2 focus:ring-red-400 focus:border-transparent outline-none text-sm bg-stone-50"
-                  />
+                  >
+                    <option value="">Fecha flexible</option>
+                    {departureMonthOptions.map((option) => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-[10px] font-semibold text-stone-500 mb-1.5 uppercase tracking-wider">Pasajeros</label>
@@ -673,7 +738,7 @@ export default function App() {
             ))}
           </div>
 
-          <div className="mt-10 bg-gradient-to-r from-red-50 to-amber-50 rounded-2xl p-6 md:p-8 border border-red-100">
+          <div className={`mt-10 rounded-2xl p-6 md:p-8 border transition-colors ${darkMode ? "bg-stone-900 border-stone-700" : "bg-gradient-to-r from-red-50 to-amber-50 border-red-100"}`}>
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               <div>
                 <h3 className="text-xl md:text-2xl font-bold text-stone-900 mb-1">¿Necesitás una cotización personalizada?</h3>
@@ -710,7 +775,7 @@ export default function App() {
             ))}
           </div>
 
-          <div className="mt-10 bg-gradient-to-r from-rose-50 to-pink-50 rounded-2xl p-6 md:p-8 border border-rose-100">
+          <div className={`mt-10 rounded-2xl p-6 md:p-8 border transition-colors ${darkMode ? "bg-stone-900 border-stone-700" : "bg-gradient-to-r from-rose-50 to-pink-50 border-rose-100"}`}>
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               <div>
                 <h3 className="text-xl md:text-2xl font-bold text-stone-900 mb-1">¡Hacé de tu quince un viaje soñado!</h3>
