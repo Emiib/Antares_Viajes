@@ -8,9 +8,9 @@ const SALES_EMAIL = "ventas@antaresviajes.com.ar";
 
 const heroSlides = [
   {
-    label: "Paris",
+    label: "Paris", //Torre eiffel
     poster: "/videos/hero/paris-poster.jpg",
-    fallbackPoster: "https://images.pexels.com/videos/33022213/2025-travel-4k-aerial-footage-4k-beach-4k-drone-33022213.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1080&w=1920",
+    fallbackPoster: "https://images.pexels.com/photos/12350741/pexels-photo-12350741.jpeg?_gl=1*1arndkb*_ga*OTMyNDcxMTE3LjE3Nzg0MzYxMDE.*_ga_8JE65Q40S6*czE3Nzg0MzYxMDEkbzEkZzEkdDE3Nzg0MzYyODAkajM0JGwwJGgw",
     sources: {
       mobileWebm: "/videos/hero/paris-mobile.webm",
       mobileMp4: "/videos/hero/paris-mobile.mp4",
@@ -45,12 +45,13 @@ const heroSlides = [
   }
 ];
 
-// Paleta de marca Antares
+// Paleta de marca Antares viajes y turismo
 // Rojo principal: #D94E3F
 // Rojo oscuro: #B91C1C
 // Dorado/Beige: #C4A882
 // Marrón texto: #6B4E31
 // Blanco: #FFFFFF
+
 
 const wa = (text?: string) => `https://api.whatsapp.com/send?phone=${WHATSAPP}${text ? `&text=${encodeURIComponent(text)}` : ''}`;
 const minDepartureMonth = (() => {
@@ -380,7 +381,7 @@ export default function App() {
       <div className="relative h-52 overflow-hidden">
         <img src={quince.image} alt={quince.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         <div className="absolute top-3 left-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
-          ✨ QUINCEAÑERA
+          ✨ QUINCEAÑERAS
         </div>
       </div>
       <div className="p-4">
@@ -395,7 +396,7 @@ export default function App() {
           ))}
         </ul>
         <a
-          href={wa(`Hola! Me interesa el viaje de quinceañera: ${quince.title}`)}
+          href={wa(`Hola Antares! Me interesa los viajes de quinceañeras: ${quince.title}`)}
           target="_blank"
           rel="noopener noreferrer"
           className="w-full bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold py-2.5 rounded-xl hover:shadow-lg transition-all flex items-center justify-center text-sm"
