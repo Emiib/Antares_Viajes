@@ -8,38 +8,38 @@ const SALES_EMAIL = "ventas@antaresviajes.com.ar";
 
 const heroSlides = [
   {
-    label: "Tailandia",
-    poster: "/videos/hero/tailandia-poster.jpg",
+    label: "Paris",
+    poster: "/videos/hero/paris-poster.jpg",
     fallbackPoster: "https://images.pexels.com/videos/33022213/2025-travel-4k-aerial-footage-4k-beach-4k-drone-33022213.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1080&w=1920",
     sources: {
-      mobileWebm: "/videos/hero/tailandia-mobile.webm",
-      mobileMp4: "/videos/hero/tailandia-mobile.mp4",
-      desktopWebm: "/videos/hero/tailandia-desktop.webm",
-      desktopMp4: "/videos/hero/tailandia-desktop.mp4",
+      mobileWebm: "/videos/hero/paris-mobile.webm",
+      mobileMp4: "/videos/hero/paris-mobile.mp4",
+      desktopWebm: "/videos/hero/paris-desktop.webm",
+      desktopMp4: "/videos/hero/paris-desktop.mp4",
       remoteFallback: "https://videos.pexels.com/video-files/33022213/14072538_3840_2160_30fps.mp4"
     }
   },
   {
-    label: "Roma",
-    poster: "/videos/hero/roma-poster.jpg",
+    label: "pcarmen",
+    poster: "/videos/hero/pcarmen-poster.jpg",
     fallbackPoster: "https://images.pexels.com/videos/29947197/central-rome-citta-del-vaticano-classic-italy-daybreak-29947197.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1080&w=1920",
     sources: {
-      mobileWebm: "/videos/hero/roma-mobile.webm",
-      mobileMp4: "/videos/hero/roma-mobile.mp4",
-      desktopWebm: "/videos/hero/roma-desktop.webm",
-      desktopMp4: "/videos/hero/roma-desktop.mp4",
+      mobileWebm: "/videos/hero/pcarmen-mobile.webm",
+      mobileMp4: "/videos/hero/pcarmen-mobile.mp4",
+      desktopWebm: "/videos/hero/pcarmen-desktop.webm",
+      desktopMp4: "/videos/hero/pcarmen-desktop.mp4",
       remoteFallback: "https://videos.pexels.com/video-files/29947197/12852218_3840_2160_30fps.mp4"
     }
   },
   {
-    label: "Bali",
-    poster: "/videos/hero/bali-poster.jpg",
+    label: "Turquia",
+    poster: "/videos/hero/turquia-poster.jpg",
     fallbackPoster: "https://images.pexels.com/videos/17487256/beach-drone-gili-holiday-17487256.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1080&w=1920",
     sources: {
-      mobileWebm: "/videos/hero/bali-mobile.webm",
-      mobileMp4: "/videos/hero/bali-mobile.mp4",
-      desktopWebm: "/videos/hero/bali-desktop.webm",
-      desktopMp4: "/videos/hero/bali-desktop.mp4",
+      mobileWebm: "/videos/hero/turquia-mobile.webm",
+      mobileMp4: "/videos/hero/turquia-mobile.mp4",
+      desktopWebm: "/videos/hero/turquia-desktop.webm",
+      desktopMp4: "/videos/hero/turquia-desktop.mp4",
       remoteFallback: "https://videos.pexels.com/video-files/17487256/17487256-uhd_3840_2160_30fps.mp4"
     }
   }
