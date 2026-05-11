@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+:root {
+  --antares-red: #D94E3F;
+  --antares-red-dark: #B91C1C;
+  --antares-gold: #C4A882;
+  --antares-brown: #6B4E31;
+}
+
 .antares-dark .bg-white,
 .antares-dark .bg-stone-50,
 .antares-dark .bg-red-50\/50,
