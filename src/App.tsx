@@ -69,18 +69,7 @@ const heroSlides = [
   }
 ] as const;
 
-// Paleta de marca Antares viajes y turismo
-// Rojo principal: #D94E3F
-// Rojo oscuro: #B91C1C
-// Dorado/Beige: #C4A882
-// Marrón texto: #6B4E31
-// Blanco: #FFFFFF
-
-
-const wa = (text?: string) => `https://api.whatsapp.com/send?phone=${WHATSAPP}${text ? `&text=${encodeURIComponent(text)}` : ''}`;
-=======
 const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
->>>>>>> b09caad (Se corrigen errores y se le da mas visual al landing)
 const minDepartureMonth = (() => {
   const currentMonth = new Date().toISOString().slice(0, 7);
   return currentMonth < '2026-01' ? '2026-01' : currentMonth;
@@ -749,106 +738,6 @@ export default function App() {
     }
   };
 
-<<<<<<< HEAD
-  const CircuitCard = ({ circuit }: { circuit: typeof circuits[0] }) => (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 border border-stone-100 hover:ring-2 hover:ring-red-200 group">
-      <div className="relative h-52 overflow-hidden">
-        <img src={circuit.image} alt={circuit.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex items-end p-5">
-          <div>
-            <h3 className="text-xl font-bold text-white">{circuit.title}</h3>
-            <p className="text-white/70 text-sm">{circuit.destination}</p>
-          </div>
-        </div>
-      </div>
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-3">
-          <span className="text-stone-500 text-xs">🕐 {circuit.duration}</span>
-          <span className="text-2xl font-black text-red-600">{circuit.price}</span>
-        </div>
-        <div className="flex flex-wrap gap-1.5 mb-4">
-          {circuit.highlights.map((h, i) => (
-            <span key={i} className="bg-red-50 text-red-700 text-[10px] px-2 py-1 rounded-full font-medium">📍 {h}</span>
-          ))}
-        </div>
-        <a
-          href={wa(`Hola! Me interesa el circuito: ${circuit.title}`)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-bold py-2.5 rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
-        >
-          Más Información
-        </a>
-      </div>
-    </div>
-  );
-
-  const GroupCard = ({ group }: { group: typeof groupPackages[0] }) => (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 border border-stone-100 hover:ring-2 hover:ring-amber-200 group">
-      <div className="relative h-52 overflow-hidden">
-        <img src={group.image} alt={group.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-        <div className="absolute top-3 left-3 bg-red-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
-          👥 GRUPAL
-        </div>
-      </div>
-      <div className="p-4">
-        <h3 className="text-base font-bold text-stone-800 mb-1">{group.title}</h3>
-        <p className="text-xs text-stone-500 mb-2">{group.people}</p>
-        <p className="text-2xl font-black text-red-600 mb-3">{group.price}</p>
-        <ul className="space-y-1 mb-4">
-          {group.include.map((item, i) => (
-            <li key={i} className="text-xs text-stone-600 flex items-center gap-1.5">
-              <span className="text-red-500 text-[10px]">✔</span> {item}
-            </li>
-          ))}
-        </ul>
-        <a
-          href={wa(`Hola! Me interesa cotizar un viaje grupal: ${group.title}`)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-bold py-2.5 rounded-xl hover:shadow-lg transition-all flex items-center justify-center text-sm"
-        >
-          Cotizar Grupo
-        </a>
-      </div>
-    </div>
-  );
-
-  const QuinceCard = ({ quince }: { quince: typeof quincePackages[0] }) => (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 border border-stone-100 hover:ring-2 hover:ring-rose-200 group">
-      <div className="relative h-52 overflow-hidden">
-        <img src={quince.image} alt={quince.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-        <div className="absolute top-3 left-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
-          ✨ QUINCEAÑERAS
-        </div>
-      </div>
-      <div className="p-4">
-        <h3 className="text-base font-bold text-stone-800 mb-1">{quince.title}</h3>
-        <p className="text-xs text-stone-500 mb-2">📍 {quince.destination} · {quince.duration}</p>
-        <p className="text-2xl font-black text-rose-600 mb-3">{quince.price}</p>
-        <ul className="space-y-1 mb-4">
-          {quince.include.map((item, i) => (
-            <li key={i} className="text-xs text-stone-600 flex items-center gap-1.5">
-              <span className="text-rose-400 text-[10px]">✨</span> {item}
-            </li>
-          ))}
-        </ul>
-        <a
-          href={wa(`Hola Antares! Me interesa los viajes de quinceañeras: ${quince.title}`)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-full bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold py-2.5 rounded-xl hover:shadow-lg transition-all flex items-center justify-center text-sm"
-        >
-          Consultar
-        </a>
-      </div>
-    </div>
-  );
-
-  // ===== RENDER =====
-
-=======
->>>>>>> b09caad (Se corrigen errores y se le da mas visual al landing)
   return (
     <div className={`min-h-screen font-['Inter'] transition-colors duration-300 ${darkMode ? 'antares-dark bg-stone-950' : 'bg-white'}`}>
       <nav className={`sticky top-0 z-50 border-b backdrop-blur-md shadow-sm transition-colors ${darkMode ? 'border-stone-800 bg-stone-950/95' : 'border-stone-100 bg-white/98'}`}>
@@ -910,84 +799,7 @@ export default function App() {
 
       {route === 'home' && <FooterShowcase darkMode={darkMode} onOpenForm={() => setShowTripForm(true)} />}
 
-<<<<<<< HEAD
-            <p className="text-base md:text-lg text-white/90 mb-8 leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
-              Encontrá los mejores paquetes a los destinos que soñás. Atención personalizada y las mejores tarifas del mercado.
-            </p>
-
-            {/* Search Box */}
-            <form onSubmit={handleSearch} className="bg-white rounded-2xl p-4 md:p-5 shadow-2xl">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div className="col-span-2 md:col-span-1">
-                  <label className="block text-[10px] font-semibold text-stone-500 mb-1.5 uppercase tracking-wider">Destino</label>
-                  <input
-                    type="text"
-                    placeholder="¿A dónde?"
-                    value={searchData.destination}
-                    onChange={(e) => setSearchData({...searchData, destination: e.target.value})}
-                    className="w-full px-3 py-2.5 border border-stone-200 rounded-xl focus:ring-2 focus:ring-red-400 focus:border-transparent outline-none text-sm bg-stone-50"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-stone-500 mb-1.5 uppercase tracking-wider">Fecha</label>
-                  <select
-                    value={searchData.departure}
-                    onChange={(e) => setSearchData({...searchData, departure: e.target.value})}
-                    className={`w-full px-3 py-2.5 border border-stone-200 rounded-xl focus:ring-2 focus:ring-red-400 focus:border-transparent outline-none text-sm bg-stone-50 appearance-none ${!searchData.departure ? "text-stone-400" : "text-stone-900"}`}
-                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center', backgroundSize: '1rem' }}
-                  >
-                    <option value="" disabled hidden>¿Cuándo?</option>
-                    <option value="flexible">Fecha flexible</option>
-                    {departureMonthOptions.map((option) => (
-                      <option key={option.value} value={option.value}>{option.label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-stone-500 mb-1.5 uppercase tracking-wider">Pasajeros</label>
-                  <select
-                    value={searchData.passengers}
-                    onChange={(e) => setSearchData({...searchData, passengers: e.target.value})}
-                    className="w-full px-3 py-2.5 border border-stone-200 rounded-xl focus:ring-2 focus:ring-red-400 focus:border-transparent outline-none text-sm bg-stone-50"
-                  >
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5+">5+</option>
-                  </select>
-                </div>
-                <div className="col-span-2 md:col-span-1 flex items-end">
-                  <button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-bold py-2.5 px-5 rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
-                  >
-                    🔍 Buscar
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        <div className="absolute bottom-6 right-6 z-20 hidden items-center gap-2 md:flex">
-          {heroSlides.map((slide, index) => (
-            <button
-              key={slide.label}
-              type="button"
-              onClick={() => setCurrentHeroSlide(index)}
-              className={`h-1.5 rounded-full transition-all ${currentHeroSlide === index ? "w-9 bg-white" : "w-4 bg-white/45 hover:bg-white/70"}`}
-              aria-label={`Ver destino ${slide.label}`}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* ===== PAQUETES RECOMENDADOS ===== */}
-      <section id="paquetes" className="py-14 md:py-20 bg-stone-50">
-=======
       <footer className="bg-stone-900 py-12 text-white">
->>>>>>> b09caad (Se corrigen errores y se le da mas visual al landing)
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
             <div>
