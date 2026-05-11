@@ -38,41 +38,6 @@ const SITE_CONFIG = {
 
 const heroSlides = [
   {
-<<<<<<< HEAD
-    label: "Paris", //Torre eiffel
-    poster: "/videos/hero/paris-poster.jpg",
-    fallbackPoster: "https://images.pexels.com/photos/12350741/pexels-photo-12350741.jpeg?_gl=1*1arndkb*_ga*OTMyNDcxMTE3LjE3Nzg0MzYxMDE.*_ga_8JE65Q40S6*czE3Nzg0MzYxMDEkbzEkZzEkdDE3Nzg0MzYyODAkajM0JGwwJGgw",
-    sources: {
-      mobileWebm: "/videos/hero/paris-mobile.webm",
-      mobileMp4: "/videos/hero/paris-mobile.mp4",
-      desktopWebm: "/videos/hero/paris-desktop.webm",
-      desktopMp4: "/videos/hero/paris-desktop.mp4",
-      remoteFallback: "https://videos.pexels.com/video-files/33022213/14072538_3840_2160_30fps.mp4"
-    }
-  },
-  {
-    label: "pcarmen",
-    poster: "/videos/hero/pcarmen-poster.jpg",
-    fallbackPoster: "https://images.pexels.com/videos/29947197/central-rome-citta-del-vaticano-classic-italy-daybreak-29947197.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1080&w=1920",
-    sources: {
-      mobileWebm: "/videos/hero/pcarmen-mobile.webm",
-      mobileMp4: "/videos/hero/pcarmen-mobile.mp4",
-      desktopWebm: "/videos/hero/pcarmen-desktop.webm",
-      desktopMp4: "/videos/hero/pcarmen-desktop.mp4",
-      remoteFallback: "https://videos.pexels.com/video-files/29947197/12852218_3840_2160_30fps.mp4"
-    }
-  },
-  {
-    label: "Turquia",
-    poster: "/videos/hero/turquia-poster.jpg",
-    fallbackPoster: "https://images.pexels.com/videos/17487256/beach-drone-gili-holiday-17487256.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1080&w=1920",
-    sources: {
-      mobileWebm: "/videos/hero/turquia-mobile.webm",
-      mobileMp4: "/videos/hero/turquia-mobile.mp4",
-      desktopWebm: "/videos/hero/turquia-desktop.webm",
-      desktopMp4: "/videos/hero/turquia-desktop.mp4",
-      remoteFallback: "https://videos.pexels.com/video-files/17487256/17487256-uhd_3840_2160_30fps.mp4"
-=======
     label: 'París',
     poster: '/videos/hero/paris-poster.jpg',
     sources: {
@@ -84,12 +49,12 @@ const heroSlides = [
   },
   {
     label: 'Playa del Carmen',
-    poster: '/videos/hero/playadelcarmen-poster.jpg',
+    poster: '/videos/hero/pcarmen-poster.jpg',
     sources: {
-      mobileWebm: '/videos/hero/playadelcarmen-mobile.webm',
-      mobileMp4: '/videos/hero/playadelcarmen-mobile.mp4',
-      desktopWebm: '/videos/hero/playadelcarmen-desktop.webm',
-      desktopMp4: '/videos/hero/playadelcarmen-desktop.mp4'
+      mobileWebm: '/videos/hero/pcarmen-mobile.webm',
+      mobileMp4: '/videos/hero/pcarmen-mobile.mp4',
+      desktopWebm: '/videos/hero/pcarmen-desktop.webm',
+      desktopMp4: '/videos/hero/pcarmen-desktop.mp4'
     }
   },
   {
@@ -100,12 +65,10 @@ const heroSlides = [
       mobileMp4: '/videos/hero/turquia-mobile.mp4',
       desktopWebm: '/videos/hero/turquia-desktop.webm',
       desktopMp4: '/videos/hero/turquia-desktop.mp4'
->>>>>>> b09caad (Se corrigen errores y se le da mas visual al landing)
     }
   }
 ] as const;
 
-<<<<<<< HEAD
 // Paleta de marca Antares viajes y turismo
 // Rojo principal: #D94E3F
 // Rojo oscuro: #B91C1C
