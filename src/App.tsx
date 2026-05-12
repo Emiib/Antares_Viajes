@@ -343,154 +343,174 @@ function PopularDestinationsCarousel({
     };
   };
 
-  return (
-    <section className={`${darkMode ? 'bg-stone-950' : 'bg-stone-50'} py-16 md:py-24`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+// Asumo que estas variables y funciones están definidas en el scope del componente:
+// darkMode, popularDestinations, destinationImages, active, setActive,
+// getOffset, getStyle, total, whatsappLink
 
-        <div className="text-center mb-14">
-          <h2 className={`text-3xl md:text-5xl font-black mb-3 ${darkMode ? 'text-white' : 'text-stone-900'}`}>
-            Destinos <span style={{ color: 'var(--antares-red)' }}>Populares</span>
-          </h2>
-          <p className={`text-base md:text-lg ${darkMode ? 'text-stone-400' : 'text-stone-500'}`}>
-            Los más elegidos por nuestros viajeros
-          </p>
-        </div>
-
-        {/* Stage 3D */}
-        <div
-          style={{ perspective: '1300px', perspectiveOrigin: '50% 45%' }}
-          className="overflow-hidden"
-        >
-          <div
-            className="relative flex items-center justify-center mx-auto"
-            style={{
-              height: '460px',
-              maxWidth: '760px',
-              transformStyle: 'preserve-3d',
-            }}
-          >
-            {popularDestinations.map((dest, i) => {
-              const offset = getOffset(i);
-              if (Math.abs(offset) > 2) return null;
-
-              return (
-                <div
-                  key={dest.name}
-                  onClick={() => offset !== 0 && setActive(i)}
-                  className="absolute"
-                  style={{
-                    width: '320px',
-                    height: '420px',
-                    borderRadius: '20px',
-                    overflow: 'hidden',
-                    boxShadow: offset === 0
-                      ? '0 32px 80px rgba(0,0,0,0.40)'
-                      : '0 8px 24px rgba(0,0,0,0.18)',
-                    ...getStyle(offset),
-                  }}
-                >
-                  {/* Imagen local */}
-                  <img
-                    src={destinationImages[dest.name]}
-                    alt={dest.name}
-                    className="w-full h-full object-cover"
-                    draggable={false}
-                  />
-
-                  {/* Overlay degradado */}
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background: 'linear-gradient(to top, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.18) 55%, transparent 100%)',
-                    }}
-                  />
-
-                  {/* Contenido activo */}
-                  {offset === 0 && (
-                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <p
-                        className="text-[10px] font-bold uppercase tracking-[3px] mb-1.5"
-                        style={{ color: '#C4A882' }}
-                      >
-                        Antares Selection
-                      </p>
-                      <h3 className="text-3xl font-black text-white mb-1 leading-tight">
-                        {dest.name}
-                      </h3>
-                      <p className="text-white/55 text-xs mb-4 leading-snug">
-                        {dest.count} · {dest.subtitle}
-                      </p>
-                      <a
-                        href={whatsappLink(`Hola! Quiero ver paquetes para ${dest.name}`)}
-                        className="inline-flex items-center gap-2 text-sm font-bold text-white px-5 py-2.5 rounded-full transition-all hover:opacity-90 hover:shadow-lg"
-                        style={{
-                          background: 'linear-gradient(135deg, var(--antares-red), var(--antares-red-dark))',
-                        }}
-                        Ver paquetes
-                      </a>
-                    </div>
-                  )}
-
-                  {/* Label en laterales */}
-                  {offset !== 0 && (
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <p className="text-white font-bold text-sm drop-shadow">{dest.name}</p>
-                      <p className="text-white/50 text-xs">{dest.count}</p>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Navegación */}
-        <div className="flex flex-col items-center gap-5 mt-10">
-
-          {/* Dots */}
-          <div className="flex items-center gap-2">
-            {popularDestinations.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setActive(i)}
-                className="rounded-full transition-all duration-300"
-                style={{
-                  width: i === active ? '28px' : '7px',
-                  height: '7px',
-                  background: i === active
-                    ? 'var(--antares-red)'
-                    : darkMode ? '#44403c' : '#d6d3d1',
-                }}
-                aria-label={`Ir a ${popularDestinations[i].name}`}
-              />
-            ))}
-          </div>
-
-          {/* Flechas */}
-          <div className="flex gap-3">
-            <button
-              onClick={() => setActive(p => (p - 1 + total) % total)}
-              className={`w-11 h-11 rounded-full border text-lg font-bold transition-all hover:scale-110 flex items-center justify-center
-                ${darkMode
-                  ? 'border-stone-700 text-stone-300 hover:bg-stone-800'
-                  : 'border-stone-200 text-stone-600 hover:bg-white shadow-sm'
-                }`}
-            >‹</button>
-            <button
-              onClick={() => setActive(p => (p + 1) % total)}
-              className={`w-11 h-11 rounded-full border text-lg font-bold transition-all hover:scale-110 flex items-center justify-center
-                ${darkMode
-                  ? 'border-stone-700 text-stone-300 hover:bg-stone-800'
-                  : 'border-stone-200 text-stone-600 hover:bg-white shadow-sm'
-                }`}
-            >›</button>
-          </div>
-        </div>
-
+return (
+  <section className={`${darkMode ? 'bg-stone-950' : 'bg-stone-50'} py-16 md:py-24`}>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="text-center mb-14">
+        <h2 className={`text-3xl md:text-5xl font-black mb-3 ${darkMode ? 'text-white' : 'text-stone-900'}`}>
+          Destinos <span style={{ color: 'var(--antares-red)' }}>Populares</span>
+        </h2>
+        <p className={`text-base md:text-lg ${darkMode ? 'text-stone-400' : 'text-stone-500'}`}>
+          Los más elegidos por nuestros viajeros
+        </p>
       </div>
-    </section>
-  );
-}
+      
+      {/* Stage 3D */}
+      <div
+        style={{ perspective: '1300px', perspectiveOrigin: '50% 45%' }}
+        className="overflow-hidden"
+      >
+        <div
+          className="relative flex items-center justify-center mx-auto"
+          style={{
+            height: '460px',
+            maxWidth: '760px',
+            transformStyle: 'preserve-3d',
+          }}
+        >
+          {popularDestinations.map((dest, i) => {
+            const offset = getOffset(i);
+            if (Math.abs(offset) > 2) return null;
+
+            // FIX: El div principal ahora envuelve todo el contenido de la tarjeta.
+            // No se auto-cierra con "/>".
+            return (
+              <div
+                key={dest.name}
+                onClick={() => offset !== 0 && setActive(i)}
+                // SUGERENCIA (a11y): Añadido para mejorar accesibilidad en tarjetas clickables
+                role="button"
+                tabIndex={offset !== 0 ? 0 : -1}
+                aria-label={`Ver detalles de ${dest.name}`}
+                className="absolute cursor-pointer"
+                style={{
+                  width: '320px',
+                  height: '420px',
+                  borderRadius: '20px',
+                  overflow: 'hidden',
+                  boxShadow: offset === 0
+                    ? '0 32px 80px rgba(0,0,0,0.40)'
+                    : '0 8px 24px rgba(0,0,0,0.18)',
+                  ...getStyle(offset),
+                }}
+              >
+                {/* --- INICIO DEL CONTENIDO DE LA TARJETA --- */}
+
+                {/* Imagen local */}
+                <img
+                  src={destinationImages[dest.name]}
+                  alt={dest.name}
+                  // SUGERENCIA (Rendimiento): Carga diferida de imágenes
+                  loading="lazy"
+                  className="w-full h-full object-cover"
+                  draggable={false}
+                />
+
+                {/* Overlay degradado */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: 'linear-gradient(to top, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.18) 55%, transparent 100%)',
+                  }}
+                />
+
+                {/* Contenido activo (solo para la tarjeta del centro) */}
+                {offset === 0 && (
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <p
+                      className="text-[10px] font-bold uppercase tracking-[3px] mb-1.5"
+                      // SUGERENCIA: Usar variable CSS si este color se repite
+                      style={{ color: 'var(--antares-gold, #C4A882)' }}
+                    >
+                      Antares Selection
+                    </p>
+                    <h3 className="text-3xl font-black text-white mb-1 leading-tight">
+                      {dest.name}
+                    </h3>
+                    <p className="text-white/55 text-xs mb-4 leading-snug">
+                      {dest.count} · {dest.subtitle}
+                    </p>
+                    <a
+                      href={whatsappLink(`Hola! Quiero ver paquetes para ${dest.name}`)}
+                      target="_blank" // Es buena práctica abrir links externos en nueva pestaña
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-sm font-bold text-white px-5 py-2.5 rounded-full transition-all hover:opacity-90 hover:shadow-lg"
+                      style={{ background: 'linear-gradient(135deg, var(--antares-red), var(--antares-red-dark))' }}
+                    >
+                      Ver paquetes
+                    </a>
+                  </div>
+                )}
+
+                {/* Label en tarjetas laterales */}
+                {offset !== 0 && (
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white font-bold text-sm drop-shadow">{dest.name}</p>
+                    <p className="text-white/50 text-xs">{dest.count}</p>
+                  </div>
+                )}
+
+                {/* --- FIN DEL CONTENIDO DE LA TARJETA --- */}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Navegación */}
+      <div className="flex flex-col items-center gap-5 mt-10">
+
+        {/* Dots */}
+        <div className="flex items-center gap-2">
+          {popularDestinations.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setActive(i)}
+              className="rounded-full transition-all duration-300"
+              style={{
+                width: i === active ? '28px' : '7px',
+                height: '7px',
+                background: i === active
+                  ? 'var(--antares-red)'
+                  : darkMode ? '#44403c' : '#d6d3d1',
+              }}
+              aria-label={`Ir a ${popularDestinations[i].name}`}
+            />
+          ))}
+        </div>
+
+        {/* Flechas */}
+        <div className="flex gap-3">
+          <button
+            onClick={() => setActive(p => (p - 1 + total) % total)}
+            // SUGERENCIA (a11y): Añadir aria-label
+            aria-label="Destino anterior"
+            className={`w-11 h-11 rounded-full border text-lg font-bold transition-all hover:scale-110 flex items-center justify-center
+              ${darkMode
+                ? 'border-stone-700 text-stone-300 hover:bg-stone-800'
+                : 'border-stone-200 text-stone-600 hover:bg-white shadow-sm'
+              }`}
+          >‹</button>
+          <button
+            onClick={() => setActive(p => (p + 1) % total)}
+            // SUGERENCIA (a11y): Añadir aria-label
+            aria-label="Destino siguiente"
+            className={`w-11 h-11 rounded-full border text-lg font-bold transition-all hover:scale-110 flex items-center justify-center
+              ${darkMode
+                ? 'border-stone-700 text-stone-300 hover:bg-stone-800'
+                : 'border-stone-200 text-stone-600 hover:bg-white shadow-sm'
+              }`}
+          >›</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+);
 
 function ScrollPlane({ darkMode }: { darkMode: boolean }) {
   const pathRef = useRef<SVGPathElement>(null);
