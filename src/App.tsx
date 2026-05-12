@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { blogPosts, continents } from './data/blog';
 import { useInView } from './hooks/useInView';
 
@@ -159,6 +159,14 @@ const popularDestinations = [
   { name: 'Argentina', count: '150+ paquetes', icon: '🇦🇷', subtitle: 'Escapadas y viajes nacionales' },
   { name: 'Estados Unidos', count: '110+ paquetes', icon: '🗽', subtitle: 'Compras, parques y ciudades' }
 ] as const;
+const destinationImages: Record<string, string> = {
+  'Caribe':         '/videos/destinospop/caribe.jpg',
+  'Brasil':         '/videos/destinospop/brasil.jpg',
+  'Europa':         '/videos/destinospop/europa.jpg',
+  'México':         '/videos/destinospop/mexico.jpg',
+  'Argentina':      '/videos/destinospop/argentina.jpg',
+  'Estados Unidos': '/videos/destinospop/estados-unidos.jpg',
+};
 
 function getRouteFromHash(hash: string): RouteKey {
   const cleaned = hash.replace('#', '');
@@ -270,165 +278,384 @@ function AnimatedSection({ children, className = '', threshold = 0.15, ...props 
   );
 }
 
-function PopularDestinationsCarousel({ darkMode, whatsappLink }: { darkMode: boolean; whatsappLink: (msg: string) => string }) {
-  const [active, setActive] = useState(2);
-  const scrollRef = useRef<HTMLDivElement>(null);
+// ===== Pegá esto FUERA del App, junto a los otros datos =====
 
-  const scrollToCard = useCallback((index: number) => {
-    setActive(index);
-    const container = scrollRef.current;
-    if (!container) return;
-    const card = container.children[index] as HTMLElement;
-    if (!card) return;
-    const offset = card.offsetLeft - container.clientWidth / 2 + card.offsetWidth / 2;
-    container.scrollTo({ left: offset, behavior: 'smooth' });
-  }, []);
+const destinationImages: Record<string, string> = {
+  'Caribe':         '/videos/destinospop/caribe.jpg',
+  'Brasil':         '/videos/destinospop/brasil.jpg',
+  'Europa':         '/videos/destinospop/europa.jpg',
+  'México':         '/videos/destinospop/mexico.jpg',
+  'Argentina':      '/videos/destinospop/argentina.jpg',
+  'Estados Unidos': '/videos/destinospop/estados-unidos.jpg',
+};
 
+function PopularDestinationsCarousel({
+  darkMode,
+  whatsappLink,
+}: {
+  darkMode: boolean;
+  whatsappLink: (msg: string) => string;
+}) {
+  const [active, setActive] = useState(0);
+  const total = popularDestinations.length;
+
+  // Auto-avance sin dependencias que se recreen
   useEffect(() => {
-    const timer = setInterval(() => {
-      scrollToCard((active + 1) % popularDestinations.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [active, scrollToCard]);
+    const t = setInterval(() => setActive(p => (p + 1) % total), 5800);
+    return () => clearInterval(t);
+  }, [total]);
+
+  // Offset circular: -3 a +3
+  const getOffset = (i: number) => {
+    let off = i - active;
+    if (off > total / 2) off -= total;
+    if (off < -total / 2) off += total;
+    return off;
+  };
+
+  // Transforma cada card según su posición relativa al activo
+  const getStyle = (offset: number): React.CSSProperties => {
+    const abs = Math.abs(offset);
+    const sign = offset >= 0 ? 1 : -1;
+
+    const configs: Record<number, {
+      tx: number; ry: number; scale: number;
+      opacity: number; z: number; brightness: number;
+    }> = {
+      0: { tx: 0,   ry: 0,   scale: 1,    opacity: 1,    z: 20, brightness: 1 },
+      1: { tx: 48,  ry: -44, scale: 0.78, opacity: 0.72, z: 15, brightness: 0.62 },
+      2: { tx: 76,  ry: -56, scale: 0.60, opacity: 0.38, z: 10, brightness: 0.45 },
+    };
+
+    if (abs > 2) return { opacity: 0, pointerEvents: 'none', zIndex: 0 };
+
+    const c = configs[abs];
+    return {
+      transform: `translateX(${sign * c.tx}%) rotateY(${-sign * c.ry}deg) scale(${c.scale})`,
+      opacity: c.opacity,
+      zIndex: c.z,
+      filter: `brightness(${c.brightness})`,
+      cursor: abs > 0 ? 'pointer' : 'default',
+      // Origen de rotación: cards derechas rotan desde su borde izquierdo y viceversa
+      transformOrigin: offset > 0 ? 'left center' : offset < 0 ? 'right center' : 'center center',
+      transition: 'transform 0.65s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.65s ease, filter 0.65s ease',
+      willChange: 'transform',
+    };
+  };
 
   return (
-    <AnimatedSection className={`${darkMode ? 'bg-stone-950' : 'bg-white'} py-14 md:py-20`}>
+    <section className={`${darkMode ? 'bg-stone-950' : 'bg-stone-50'} py-16 md:py-24`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-12 text-center">
-          <h2 className={`text-3xl md:text-5xl font-black ${darkMode ? 'text-white' : 'text-stone-900'} mb-3`}>
-            Destinos <span className="text-red-600">Populares</span>
+
+        <div className="text-center mb-14">
+          <h2 className={`text-3xl md:text-5xl font-black mb-3 ${darkMode ? 'text-white' : 'text-stone-900'}`}>
+            Destinos <span style={{ color: 'var(--antares-red)' }}>Populares</span>
           </h2>
-          <p className={`${darkMode ? 'text-stone-400' : 'text-stone-600'} text-base md:text-lg`}>
-            Los destinos más solicitados por nuestros clientes
+          <p className={`text-base md:text-lg ${darkMode ? 'text-stone-400' : 'text-stone-500'}`}>
+            Los más elegidos por nuestros viajeros
           </p>
         </div>
 
-        <div className="relative">
-          <div className={`pointer-events-none absolute inset-y-0 left-0 w-24 z-10 hidden md:block ${darkMode ? 'bg-gradient-to-r from-stone-950 to-transparent' : 'bg-gradient-to-r from-white to-transparent'}`} />
-          <div className={`pointer-events-none absolute inset-y-0 right-0 w-24 z-10 hidden md:block ${darkMode ? 'bg-gradient-to-l from-stone-950 to-transparent' : 'bg-gradient-to-l from-white to-transparent'}`} />
-
-          <button onClick={() => scrollToCard(Math.max(0, active - 1))} className={`absolute left-0 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-all border ${darkMode ? 'bg-stone-800 border-stone-700 text-white' : 'bg-white border-stone-100 text-stone-600'}`}>
-            ‹
-          </button>
-          <button onClick={() => scrollToCard(Math.min(popularDestinations.length - 1, active + 1))} className={`absolute right-0 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-all border ${darkMode ? 'bg-stone-800 border-stone-700 text-white' : 'bg-white border-stone-100 text-stone-600'}`}>
-            ›
-          </button>
-
+        {/* Stage 3D */}
+        <div
+          style={{ perspective: '1300px', perspectiveOrigin: '50% 45%' }}
+          className="overflow-hidden"
+        >
           <div
-            ref={scrollRef}
-            className="flex gap-6 overflow-x-auto pb-8 pt-4 px-4 no-scrollbar scroll-smooth"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+            className="relative flex items-center justify-center mx-auto"
+            style={{
+              height: '460px',
+              maxWidth: '760px',
+              transformStyle: 'preserve-3d',
+            }}
           >
-            {popularDestinations.map((dest, idx) => {
-              const isActive = idx === active;
+            {popularDestinations.map((dest, i) => {
+              const offset = getOffset(i);
+              if (Math.abs(offset) > 2) return null;
+
               return (
-                <button
+                <div
                   key={dest.name}
-                  type="button"
-                  onClick={() => scrollToCard(idx)}
-                  className={`flex-none transition-all duration-500 rounded-3xl border text-center relative
-                    ${isActive
-                      ? `w-64 md:w-72 shadow-2xl scale-105 z-30 ${darkMode ? 'bg-stone-900 border-stone-700' : 'bg-white border-stone-200'}`
-                      : `w-48 md:w-56 opacity-50 scale-95 z-10 ${darkMode ? 'bg-stone-950 border-stone-800' : 'bg-stone-50 border-stone-100'}`
-                    }`}
+                  onClick={() => offset !== 0 && setActive(i)}
+                  className="absolute"
+                  style={{
+                    width: '320px',
+                    height: '420px',
+                    borderRadius: '20px',
+                    overflow: 'hidden',
+                    boxShadow: offset === 0
+                      ? '0 32px 80px rgba(0,0,0,0.40)'
+                      : '0 8px 24px rgba(0,0,0,0.18)',
+                    ...getStyle(offset),
+                  }}
                 >
-                  <div className={`p-6 md:p-8 flex flex-col items-center h-full ${isActive ? 'justify-between' : 'justify-center'}`}>
-                    <div className={`transition-all duration-500 ${isActive ? 'text-6xl mb-4' : 'text-4xl mb-2'}`}>
-                      {dest.icon}
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className={`font-black tracking-tight ${isActive ? 'text-xl md:text-2xl text-red-600' : 'text-sm text-stone-500'}`}>
+                  {/* Imagen local */}
+                  <img
+                    src={destinationImages[dest.name]}
+                    alt={dest.name}
+                    className="w-full h-full object-cover"
+                    draggable={false}
+                  />
+
+                  {/* Overlay degradado */}
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background: 'linear-gradient(to top, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.18) 55%, transparent 100%)',
+                    }}
+                  />
+
+                  {/* Contenido activo */}
+                  {offset === 0 && (
+                    <div className="absolute bottom-0 left-0 right-0 p-6">
+                      <p
+                        className="text-[10px] font-bold uppercase tracking-[3px] mb-1.5"
+                        style={{ color: '#C4A882' }}
+                      >
+                        Antares Selection
+                      </p>
+                      <h3 className="text-3xl font-black text-white mb-1 leading-tight">
                         {dest.name}
                       </h3>
-                      {isActive && <p className={`text-xs md:text-sm font-semibold ${darkMode ? 'text-stone-300' : 'text-stone-600'}`}>{dest.count}</p>}
+                      <p className="text-white/55 text-xs mb-4 leading-snug">
+                        {dest.count} · {dest.subtitle}
+                      </p>
+                      
+                        href={whatsappLink(`Hola! Quiero ver paquetes para ${dest.name}`)}
+                        className="inline-flex items-center gap-2 text-sm font-bold text-white px-5 py-2.5 rounded-full transition-all hover:opacity-90 hover:shadow-lg"
+                        style={{
+                          background: 'linear-gradient(135deg, var(--antares-red), var(--antares-red-dark))',
+                        }}
+                      >
+                        Ver paquetes →
+                      </a>
                     </div>
-                    {isActive && (
-                      <div className="mt-4 w-full animate-fade-in">
-                        <p className="text-stone-400 text-xs mb-4 leading-snug">{dest.subtitle}</p>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--antares-gold)] mb-3">Antares Selection</p>
-                        <a
-                          href={whatsappLink(`Hola! Quiero ver paquetes para ${dest.name}`)}
-                          onClick={e => e.stopPropagation()}
-                          className="w-full bg-gradient-to-r from-[#D94E3F] to-[#B91C1C] text-white text-xs font-bold py-2.5 px-4 rounded-xl hover:shadow-lg transition-all block"
-                        >
-                          Ver paquetes
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                </button>
+                  )}
+
+                  {/* Label en laterales */}
+                  {offset !== 0 && (
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <p className="text-white font-bold text-sm drop-shadow">{dest.name}</p>
+                      <p className="text-white/50 text-xs">{dest.count}</p>
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
         </div>
+
+        {/* Navegación */}
+        <div className="flex flex-col items-center gap-5 mt-10">
+
+          {/* Dots */}
+          <div className="flex items-center gap-2">
+            {popularDestinations.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActive(i)}
+                className="rounded-full transition-all duration-300"
+                style={{
+                  width: i === active ? '28px' : '7px',
+                  height: '7px',
+                  background: i === active
+                    ? 'var(--antares-red)'
+                    : darkMode ? '#44403c' : '#d6d3d1',
+                }}
+                aria-label={`Ir a ${popularDestinations[i].name}`}
+              />
+            ))}
+          </div>
+
+          {/* Flechas */}
+          <div className="flex gap-3">
+            <button
+              onClick={() => setActive(p => (p - 1 + total) % total)}
+              className={`w-11 h-11 rounded-full border text-lg font-bold transition-all hover:scale-110 flex items-center justify-center
+                ${darkMode
+                  ? 'border-stone-700 text-stone-300 hover:bg-stone-800'
+                  : 'border-stone-200 text-stone-600 hover:bg-white shadow-sm'
+                }`}
+            >‹</button>
+            <button
+              onClick={() => setActive(p => (p + 1) % total)}
+              className={`w-11 h-11 rounded-full border text-lg font-bold transition-all hover:scale-110 flex items-center justify-center
+                ${darkMode
+                  ? 'border-stone-700 text-stone-300 hover:bg-stone-800'
+                  : 'border-stone-200 text-stone-600 hover:bg-white shadow-sm'
+                }`}
+            >›</button>
+          </div>
+        </div>
+
       </div>
-    </AnimatedSection>
+    </section>
   );
 }
 
 function ScrollPlane({ darkMode }: { darkMode: boolean }) {
-  const [progress, setProgress] = useState(0);
+  const pathRef = useRef<SVGPathElement>(null);
+  const [planePos, setPlanePos] = useState({ x: 40, y: 2, rotate: 90 });
+  const [waypoints, setWaypoints] = useState<Array<{ x: number; y: number }>>([]);
   const [activeIdx, setActiveIdx] = useState(0);
   const [tooltipIdx, setTooltipIdx] = useState<number | null>(null);
+  const totalLenRef = useRef(0);
 
   const sections = [
     { id: 'hero', label: 'Inicio', icon: '🏠' },
     { id: 'paquetes', label: 'Paquetes', icon: '✈️' },
     { id: 'circuitos', label: 'Circuitos', icon: '🌍' },
     { id: 'grupales', label: 'Grupales', icon: '👥' },
-    { id: 'experiencias-home', label: 'Lujo', icon: '✨' },
+    { id: 'experiencias-home', label: 'Lujo', icon: '⭐' },
   ];
+
+  // Path sinusoidal — zigzag elegante
+  const pathD = "M 40 2 C 40 10, 72 18, 72 28 C 72 38, 8 46, 8 56 C 8 66, 72 74, 72 84 C 72 92, 40 96, 40 98";
+
+  // Inicializar al montar: calcular length total y posiciones de waypoints
+  useEffect(() => {
+    const path = pathRef.current;
+    if (!path) return;
+    const len = path.getTotalLength();
+    totalLenRef.current = len;
+    
+    const wps = sections.map((_, i) => {
+      const pt = path.getPointAtLength((i / (sections.length - 1)) * len);
+      return { x: pt.x, y: pt.y };
+    });
+    setWaypoints(wps);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => {
       const scrollTop = window.scrollY;
       const docH = document.documentElement.scrollHeight - window.innerHeight;
       const p = Math.min(Math.max(scrollTop / docH, 0), 1);
-      setProgress(p);
 
-      let current = 0;
+      const path = pathRef.current;
+      const len = totalLenRef.current;
+      if (path && len > 0) {
+        const currentLen = p * len;
+        const pt = path.getPointAtLength(currentLen);
+        const nextPt = path.getPointAtLength(Math.min(currentLen + 3, len));
+        const angle = Math.atan2(nextPt.y - pt.y, nextPt.x - pt.x) * (180 / Math.PI);
+        setPlanePos({ x: pt.x, y: pt.y, rotate: angle + 90 });
+      }
+
+      let cur = 0;
       sections.forEach((s, i) => {
         const el = document.getElementById(s.id);
-        if (!el) return;
-        if (el.getBoundingClientRect().top <= window.innerHeight * 0.55) current = i;
+        if (el && el.getBoundingClientRect().top <= window.innerHeight * 0.6) cur = i;
       });
-      setActiveIdx(current);
+      setActiveIdx(cur);
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener('scroll', onScroll);
-  }, [sections]);
-
-  const planeTop = progress * 100;
+  }, []);
 
   return (
-    <div className="fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-center select-none" style={{ height: '50vh' }}>
-      <svg className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 h-full w-2 overflow-visible" viewBox="0 0 4 100" preserveAspectRatio="none">
-        <line x1="2" y1="0" x2="2" y2="100" stroke={darkMode ? '#292524' : '#e2e2e2'} strokeWidth="2" strokeDasharray="4 4" />
-        <line x1="2" y1="0" x2="2" y2={planeTop} stroke="var(--antares-red)" strokeWidth="2.5" strokeLinecap="round" style={{ transition: 'y2 0.1s linear' }} />
+    <div
+      className="fixed right-5 top-1/2 -translate-y-1/2 z-40 hidden lg:block select-none"
+      style={{ height: '58vh', width: '90px' }}
+    >
+      <svg
+        className="w-full h-full overflow-visible"
+        viewBox="0 0 80 100"
+        preserveAspectRatio="none"
+      >
+        {/* Path base dashed */}
+        <path
+          ref={pathRef}
+          d={pathD}
+          fill="none"
+          stroke={darkMode ? '#3c3834' : '#e0ddd8'}
+          strokeWidth="1.5"
+          strokeDasharray="4 5"
+          strokeLinecap="round"
+        />
+
+        {/* Waypoint dots */}
+        {waypoints.map((pos, i) => {
+          const isVisited = i <= activeIdx;
+          const isCurrent = i === activeIdx;
+          return (
+            <g key={i} style={{ cursor: 'pointer' }} onClick={() => document.getElementById(sections[i].id)?.scrollIntoView({ behavior: 'smooth' })}>
+              {/* Hitbox invisible */}
+              <circle cx={pos.x} cy={pos.y} r="10" fill="transparent" />
+              
+              {/* Pulse ring en activo */}
+              {isCurrent && (
+                <circle cx={pos.x} cy={pos.y} r="7" fill="none" stroke="#D94E3F" strokeWidth="1" opacity="0.4">
+                  <animate attributeName="r" from="5" to="14" dur="1.8s" repeatCount="indefinite" />
+                  <animate attributeName="opacity" from="0.5" to="0" dur="1.8s" repeatCount="indefinite" />
+                </circle>
+              )}
+
+              {/* Dot */}
+              <circle
+                cx={pos.x} cy={pos.y}
+                r={isCurrent ? 5 : 3}
+                fill={isVisited ? '#D94E3F' : (darkMode ? '#44403c' : '#d6d3d1')}
+                style={{ transition: 'r 0.3s, fill 0.3s' }}
+              />
+            </g>
+          );
+        })}
+
+        {/* Avión SVG con rotación siguiendo el path */}
+        <g
+          transform={`translate(${planePos.x}, ${planePos.y}) rotate(${planePos.rotate})`}
+          style={{ transition: 'transform 0.1s linear' }}
+        >
+          {/* Sombra suave */}
+          <circle cx="0.5" cy="1" r="9" fill="rgba(0,0,0,0.2)" />
+          {/* Círculo fondo */}
+          <circle cx="0" cy="0" r="9" fill="#D94E3F" />
+          <circle cx="0" cy="0" r="9" fill="none" stroke="#B91C1C" strokeWidth="1.5" />
+          {/* Avión - path SVG simplificado, apunta hacia arriba */}
+          <path d="M0,-5 L2.5,3 L0,1.5 L-2.5,3 Z" fill="white" />
+          <path d="M-5.5,1 L-1.5,0 L-1.5,2.5 Z" fill="white" opacity="0.85" />
+          <path d="M5.5,1 L1.5,0 L1.5,2.5 Z" fill="white" opacity="0.85" />
+          <path d="M-1.5,3.5 L0,3 L1.5,3.5 Z" fill="white" opacity="0.7" />
+        </g>
       </svg>
 
-      {sections.map((section, i) => {
-        const topPct = (i / (sections.length - 1)) * 100;
-        const isActive = i <= activeIdx;
-        const isCurrent = i === activeIdx;
-        return (
-          <button key={section.id} type="button" onClick={() => document.getElementById(section.id)?.scrollIntoView({ behavior: 'smooth' })} onMouseEnter={() => setTooltipIdx(i)} onMouseLeave={() => setTooltipIdx(null)} className="absolute flex items-center group" style={{ top: `${topPct}%`, transform: 'translateY(-50%)', left: '50%', marginLeft: '-6px' }}>
-            <div className={`w-3 h-3 rounded-full border-2 transition-all duration-300 ${isCurrent ? 'bg-[var(--antares-red)] border-[var(--antares-red)] scale-150 shadow-lg' : isActive ? 'bg-[var(--antares-red)] border-[var(--antares-red)]' : `${darkMode ? 'bg-stone-800 border-stone-600' : 'bg-white border-stone-300'}`}`} />
-            <div className={`absolute right-8 bg-white text-stone-900 rounded-xl shadow-xl px-3 py-2 border border-stone-100 transition-all duration-200 whitespace-nowrap pointer-events-none ${tooltipIdx === i ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2'}`}>
-              <span className="text-xs font-bold">{section.icon} {section.label}</span>
-              <div className="absolute right-[-5px] top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-white border-r border-t border-stone-100 rotate-45" />
-            </div>
-          </button>
-        );
-      })}
+      {/* Tooltips HTML (posicionados relativos al contenedor fixed) */}
+      {waypoints.map((pos, i) =>
+        tooltipIdx === i ? (
+          <div
+            key={i}
+            className="absolute pointer-events-none z-50 bg-white text-stone-900 rounded-xl shadow-xl px-3 py-2 border border-stone-100 whitespace-nowrap text-xs font-bold"
+            style={{
+              right: '100%',
+              top: `${(pos.y / 100) * 100}%`,
+              transform: 'translateY(-50%)',
+              marginRight: '10px',
+            }}
+          >
+            {sections[i].icon} {sections[i].label}
+            <div className="absolute right-[-5px] top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-white border-r border-t border-stone-100 rotate-45" />
+          </div>
+        ) : null
+      )}
 
-      <div className="absolute z-10 transition-all duration-100 ease-out" style={{ top: `${planeTop}%`, left: '50%', transform: 'translate(-50%, -50%)' }}>
-        <div className="w-10 h-10 rounded-full flex items-center justify-center shadow-lg bg-gradient-to-br from-[var(--antares-red)] to-[var(--antares-red-dark)]">
-          <svg viewBox="0 0 24 24" fill="white" className="w-5 h-5"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
-        </div>
-      </div>
+      {/* Overlay invisible para hover tooltips */}
+      {waypoints.map((pos, i) => (
+        <div
+          key={i}
+          className="absolute w-6 h-6 cursor-pointer rounded-full"
+          style={{
+            left: `${(pos.x / 80) * 100}%`,
+            top: `${(pos.y / 100) * 100}%`,
+            transform: 'translate(-50%, -50%)',
+          }}
+          onMouseEnter={() => setTooltipIdx(i)}
+          onMouseLeave={() => setTooltipIdx(null)}
+          onClick={() => document.getElementById(sections[i].id)?.scrollIntoView({ behavior: 'smooth' })}
+        />
+      ))}
     </div>
   );
 }
@@ -539,7 +766,6 @@ export default function App() {
   const [tripForm, setTripForm] = useState({ name: '', phone: '', destination: '', date: '', details: '' });
   const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
   const [activeCont, setActiveCont] = useState('América');
-  const heroVideoRef = useRef<HTMLVideoElement | null>(null);
   const activeHeroSlide = heroSlides[currentHeroSlide];
 
   useEffect(() => {
@@ -548,13 +774,6 @@ export default function App() {
     }, 10000);
     return () => window.clearInterval(timer);
   }, []);
-
-  useEffect(() => {
-    const video = heroVideoRef.current;
-    if (!video) return;
-    video.load();
-    video.play().catch(() => {});
-  }, [currentHeroSlide]);
 
   useEffect(() => {
     document.documentElement.classList.toggle('antares-dark', darkMode);
@@ -594,16 +813,27 @@ export default function App() {
           <main>
             <section id="hero" className="relative min-h-[80vh] overflow-hidden md:min-h-[85vh] flex items-center">
               <div className="absolute inset-0 z-0">
-                <img src={activeHeroSlide.poster} alt={activeHeroSlide.label} className="absolute inset-0 h-full w-full object-cover" />
-                <video key={activeHeroSlide.label} ref={heroVideoRef} className="h-full w-full object-cover animate-hero-video" poster={activeHeroSlide.poster} autoPlay muted loop playsInline preload="metadata" onCanPlay={(event) => event.currentTarget.play().catch(() => {})}>
-                  <source src={activeHeroSlide.sources.mobileWebm} type="video/webm" media="(max-width: 767px)" />
-                  <source src={activeHeroSlide.sources.mobileMp4} type="video/mp4" media="(max-width: 767px)" />
-                  <source src={activeHeroSlide.sources.desktopWebm} type="video/webm" />
-                  <source src={activeHeroSlide.sources.desktopMp4} type="video/mp4" />
-                </video>
-                <div className="absolute inset-0 bg-gradient-to-r from-black/38 via-black/12 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/18 via-transparent to-transparent" />
-              </div>
+              {/* Poster base siempre visible como fallback */}
+                <img src={heroSlides[0].poster} alt="Antares Viajes" className="absolute inset-0 h-full w-full object-cover"/>
+                {/* Los 3 videos montados simultáneamente — solo el activo es visible */}
+                {heroSlides.map((slide, i) => (<video key={slide.label} className="absolute inset-0 h-full w-full object-cover"
+                    style={{opacity: i === currentHeroSlide ? 1 : 0, transition: 'opacity 1.4s ease-in-out', zIndex: i === currentHeroSlide ? 1 : 0,}}
+                    poster={slide.poster}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload={i === 0 ? 'auto' : 'none'}
+>
+                    <source src={slide.sources.mobileWebm} type="video/webm" media="(max-width: 767px)" />
+                    <source src={slide.sources.mobileMp4} type="video/mp4" media="(max-width: 767px)" />
+                    <source src={slide.sources.desktopWebm} type="video/webm" />
+                    <source src={slide.sources.desktopMp4} type="video/mp4" />
+                  </video>
+                ))}
+  <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/12 to-transparent" style={{ zIndex: 2 }} />
+  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" style={{ zIndex: 2 }} />
+</div>
 
               <div className="relative z-10 max-w-7xl mx-auto w-full px-4 py-16 sm:px-6 lg:px-8">
                 <div className="max-w-2xl">
@@ -746,7 +976,7 @@ export default function App() {
           <div className="flex h-16 items-center justify-between md:h-20">
             <a href="#" className="flex shrink-0 items-center gap-2 md:gap-3">
               <span className={darkMode ? 'logo-safe rounded-xl bg-white px-2 py-1 shadow-sm' : ''}>
-                <img src={SITE_CONFIG.branding.logo} alt={SITE_CONFIG.branding.logoAlt} className="h-10 w-auto md:h-14" />
+                <img src={SITE_CONFIG.branding.logo} alt={SITE_CONFIG.branding.logoAlt} className="h-14 w-auto md:h-20" />
               </span>
             </a>
 
@@ -805,7 +1035,7 @@ export default function App() {
             <div>
               <div className="mb-4 flex items-center gap-3">
                 <span className={darkMode ? 'logo-safe rounded-xl bg-white px-2 py-1 shadow-sm' : ''}>
-                  <img src={SITE_CONFIG.branding.logo} alt={SITE_CONFIG.branding.logoAlt} className="h-12 w-auto" />
+                  <img src={SITE_CONFIG.branding.logo} alt={SITE_CONFIG.branding.logoAlt} className="h-16 w-auto" />
                 </span>
               </div>
               <p className="mb-4 text-sm text-stone-500">Tu agencia de viajes de confianza. Los mejores destinos al mejor precio.</p>
