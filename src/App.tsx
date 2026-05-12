@@ -426,7 +426,6 @@ function PopularDestinationsCarousel({
                         style={{
                           background: 'linear-gradient(135deg, var(--antares-red), var(--antares-red-dark))',
                         }}
-                      >
                         Ver paquetes
                       </a>
                     </div>
