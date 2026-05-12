@@ -278,17 +278,6 @@ function AnimatedSection({ children, className = '', threshold = 0.15, ...props 
   );
 }
 
-// ===== Pegá esto FUERA del App, junto a los otros datos =====
-
-const destinationImages: Record<string, string> = {
-  'Caribe':         '/videos/destinospop/caribe.jpg',
-  'Brasil':         '/videos/destinospop/brasil.jpg',
-  'Europa':         '/videos/destinospop/europa.jpg',
-  'México':         '/videos/destinospop/mexico.jpg',
-  'Argentina':      '/videos/destinospop/argentina.jpg',
-  'Estados Unidos': '/videos/destinospop/estados-unidos.jpg',
-};
-
 function PopularDestinationsCarousel({
   darkMode,
   whatsappLink,
