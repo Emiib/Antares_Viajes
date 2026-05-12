@@ -420,7 +420,7 @@ function PopularDestinationsCarousel({
                       <p className="text-white/55 text-xs mb-4 leading-snug">
                         {dest.count} · {dest.subtitle}
                       </p>
-                      
+                      <a
                         href={whatsappLink(`Hola! Quiero ver paquetes para ${dest.name}`)}
                         className="inline-flex items-center gap-2 text-sm font-bold text-white px-5 py-2.5 rounded-full transition-all hover:opacity-90 hover:shadow-lg"
                         style={{
