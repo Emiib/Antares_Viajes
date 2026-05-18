@@ -1385,7 +1385,18 @@ export default function App() {
   });
   const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
   const [activeCont, setActiveCont] = useState("América");
-  //const activeHeroSlide = heroSlides[currentHeroSlide];
+  const [isMobileViewport, setIsMobileViewport] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(max-width: 767px)").matches
+      : false,
+  );
+
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 767px)");
+    const handler = (e: MediaQueryListEvent) => setIsMobileViewport(e.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, []);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -1482,38 +1493,32 @@ export default function App() {
               className="relative min-h-[80vh] overflow-hidden md:min-h-[85vh] flex items-center"
             >
               <div className="absolute inset-0 z-0">
-                {/* Un video por slide — solo el activo carga y reproduce */}
-                {heroSlides.map((slide, i) => (
-                <video
-                  key={slide.label}
-                    className="absolute inset-0 h-full w-full object-cover"
-                    style={{
-                    opacity: i === currentHeroSlide ? 1 : 0,
-                    transition: "opacity 1.2s ease-in-out",
-                    zIndex: i === currentHeroSlide ? 1 : 0,
-                    willChange: "opacity",
-                          }}
-                    poster={slide.poster}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload={i === currentHeroSlide ? "auto" : "none"}
-                >
-                    <source
-                      src={slide.sources.mobileWebm}
-                      type="video/webm"
-                      media="(max-width: 767px)"
-                    />
-                    <source
-                      src={slide.sources.mobileMp4}
-                      type="video/mp4"
-                      media="(max-width: 767px)"
-                    />
-                    <source src={slide.sources.desktopWebm} type="video/webm" />
-                    <source src={slide.sources.desktopMp4} type="video/mp4" />
-                  </video>
-                ))}
+                {/* Solo el slide activo se monta para evitar decodificar varios videos en paralelo */}
+                {(() => {
+                  const slide = heroSlides[currentHeroSlide];
+                  const webm = isMobileViewport
+                    ? slide.sources.mobileWebm
+                    : slide.sources.desktopWebm;
+                  const mp4 = isMobileViewport
+                    ? slide.sources.mobileMp4
+                    : slide.sources.desktopMp4;
+                  return (
+                    <video
+                      key={`${slide.label}-${isMobileViewport ? "m" : "d"}`}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      style={{ zIndex: 1 }}
+                      poster={slide.poster}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="auto"
+                    >
+                      <source src={webm} type="video/webm" />
+                      <source src={mp4} type="video/mp4" />
+                    </video>
+                  );
+                })()}
                 <div
                   className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/12 to-transparent"
                   style={{ zIndex: 2 }}
