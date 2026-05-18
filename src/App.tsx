@@ -532,14 +532,14 @@ const popularDestinations = [
   {
     name: "Argentina",
     count: "150+ paquetes",
-    icon: "🇦🇷",
-    subtitle: "Escapadas y viajes nacionales",
+    icon: "🧉",
+    subtitle: "Conoce nuestro país",
   },
   {
     name: "Estados Unidos",
     count: "110+ paquetes",
     icon: "🗽",
-    subtitle: "Compras, parques y ciudades",
+    subtitle: "Compras, parques y estados",
   },
 ] as const;
 const destinationImages: Record<string, string> = {
@@ -754,7 +754,7 @@ function PopularDestinationsCarousel(props: {
     const abs = Math.abs(offset);
     const sign = offset >= 0 ? 1 : -1;
 
-    const configs: Record<
+const configs: Record<
       number,
       {
         tx: number;
@@ -767,20 +767,20 @@ function PopularDestinationsCarousel(props: {
     > = {
       0: { tx: 0, ry: 0, scale: 1, opacity: 1, z: 20, brightness: 1 },
       1: {
-        tx: 48,
-        ry: -44,
-        scale: 0.78,
-        opacity: 0.72,
-        z: 15,
-        brightness: 0.62,
+        tx: 52,
+        ry: -46,
+        scale: 0.76,
+        opacity: 0.45,
+        z: 5,
+        brightness: 0.48,
       },
       2: {
-        tx: 76,
-        ry: -56,
-        scale: 0.6,
-        opacity: 0.38,
-        z: 10,
-        brightness: 0.45,
+        tx: 80,
+        ry: -58,
+        scale: 0.58,
+        opacity: 0.15,
+        z: 1,
+        brightness: 0.3,
       },
     };
 
@@ -833,7 +833,7 @@ function PopularDestinationsCarousel(props: {
             style={{
               height: "460px",
               maxWidth: "760px",
-              transformStyle: "preserve-3d",
+              //transformStyle: "preserve-3d",
             }}
           >
             {popularDestinations.map((dest, i) => {
@@ -971,14 +971,11 @@ function PopularDestinationsCarousel(props: {
   );
 }
 function ScrollPlane({ darkMode }: { darkMode: boolean }) {
-  const pathRef = useRef<SVGPathElement>(null);
-  const [planePos, setPlanePos] = useState({ x: 40, y: 2, rotate: 90 });
-  const [waypoints, setWaypoints] = useState<Array<{ x: number; y: number }>>(
-    [],
-  );
+  const [progress, setProgress] = useState(0);
+  const [scrollDir, setScrollDir] = useState<"up" | "down">("down");
   const [activeIdx, setActiveIdx] = useState(0);
   const [tooltipIdx, setTooltipIdx] = useState<number | null>(null);
-  const totalLenRef = useRef(0);
+  const prevY = useRef(0);
 
   const sections = [
     { id: "hero", label: "Inicio", icon: "🏠" },
@@ -988,45 +985,26 @@ function ScrollPlane({ darkMode }: { darkMode: boolean }) {
     { id: "experiencias-home", label: "Lujo", icon: "⭐" },
   ];
 
-  // Path sinusoidal — zigzag elegante
-  const pathD =
-    "M 40 2 C 40 10, 72 18, 72 28 C 72 38, 8 46, 8 56 C 8 66, 72 74, 72 84 C 72 92, 40 96, 40 98";
-
-  // Inicializar al montar: calcular length total y posiciones de waypoints
-  useEffect(() => {
-    const path = pathRef.current;
-    if (!path) return;
-    const len = path.getTotalLength();
-    totalLenRef.current = len;
-
-    const wps = sections.map((_, i) => {
-      const pt = path.getPointAtLength((i / (sections.length - 1)) * len);
-      return { x: pt.x, y: pt.y };
-    });
-    setWaypoints(wps);
-  }, []);
-
   useEffect(() => {
     const onScroll = () => {
       const scrollTop = window.scrollY;
-      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      const docH =
+        document.documentElement.scrollHeight - window.innerHeight;
       const p = Math.min(Math.max(scrollTop / docH, 0), 1);
 
-      const path = pathRef.current;
-      const len = totalLenRef.current;
-      if (path && len > 0) {
-        const currentLen = p * len;
-        const pt = path.getPointAtLength(currentLen);
-        const nextPt = path.getPointAtLength(Math.min(currentLen + 3, len));
-        const angle =
-          Math.atan2(nextPt.y - pt.y, nextPt.x - pt.x) * (180 / Math.PI);
-        setPlanePos({ x: pt.x, y: pt.y, rotate: angle + 90 });
+      if (Math.abs(scrollTop - prevY.current) > 2) {
+        setScrollDir(scrollTop > prevY.current ? "down" : "up");
+        prevY.current = scrollTop;
       }
+      setProgress(p);
 
       let cur = 0;
       sections.forEach((s, i) => {
         const el = document.getElementById(s.id);
-        if (el && el.getBoundingClientRect().top <= window.innerHeight * 0.6)
+        if (
+          el &&
+          el.getBoundingClientRect().top <= window.innerHeight * 0.6
+        )
           cur = i;
       });
       setActiveIdx(cur);
@@ -1037,147 +1015,140 @@ function ScrollPlane({ darkMode }: { darkMode: boolean }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const planeTop = progress * 100;
+  // 0° = apunta arriba (scroll hacia arriba)
+  // 180° = apunta abajo (scroll hacia abajo)
+  const planeRotate = scrollDir === "down" ? 180 : 0;
+
   return (
     <div
-      className="fixed right-5 top-1/2 -translate-y-1/2 z-40 hidden lg:block select-none"
-      style={{ height: "58vh", width: "90px" }}
+      className="fixed right-5 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-center select-none"
+      style={{ height: "58vh", width: "40px" }}
     >
-      <svg
-        className="w-full h-full overflow-visible"
-        viewBox="0 0 80 100"
-        preserveAspectRatio="none"
-      >
-        {/* Path base dashed */}
-        <path
-          ref={pathRef}
-          d={pathD}
-          fill="none"
-          stroke={darkMode ? "#3c3834" : "#e0ddd8"}
-          strokeWidth="1.5"
-          strokeDasharray="4 5"
-          strokeLinecap="round"
-        />
+      {/* Línea recta del track */}
+      <div
+        className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-px"
+        style={{ background: darkMode ? "#292524" : "#e2e2e2" }}
+      />
 
-        {/* Waypoint dots */}
-        {waypoints.map((pos, i) => {
-          const isVisited = i <= activeIdx;
-          const isCurrent = i === activeIdx;
-          return (
-            <g
-              key={i}
-              style={{ cursor: "pointer" }}
-              onClick={() =>
-                document
-                  .getElementById(sections[i].id)
-                  ?.scrollIntoView({ behavior: "smooth" })
-              }
-            >
-              {/* Hitbox invisible */}
-              <circle cx={pos.x} cy={pos.y} r="10" fill="transparent" />
+      {/* Progreso (línea roja) */}
+      <div
+        className="absolute left-1/2 -translate-x-1/2 top-0 w-0.5"
+        style={{
+          height: `${planeTop}%`,
+          background: "var(--antares-red)",
+          transition: "height 0.08s linear",
+        }}
+      />
 
-              {/* Pulse ring en activo */}
-              {isCurrent && (
-                <circle
-                  cx={pos.x}
-                  cy={pos.y}
-                  r="7"
-                  fill="none"
-                  stroke="#D94E3F"
-                  strokeWidth="1"
-                  opacity="0.4"
-                >
-                  <animate
-                    attributeName="r"
-                    from="5"
-                    to="14"
-                    dur="1.8s"
-                    repeatCount="indefinite"
-                  />
-                  <animate
-                    attributeName="opacity"
-                    from="0.5"
-                    to="0"
-                    dur="1.8s"
-                    repeatCount="indefinite"
-                  />
-                </circle>
-              )}
+      {/* Waypoints */}
+      {sections.map((section, i) => {
+        const topPct = (i / (sections.length - 1)) * 100;
+        const isVisited = i <= activeIdx;
+        const isCurrent = i === activeIdx;
 
-              {/* Dot */}
-              <circle
-                cx={pos.x}
-                cy={pos.y}
-                r={isCurrent ? 5 : 3}
-                fill={isVisited ? "#D94E3F" : darkMode ? "#44403c" : "#d6d3d1"}
-                style={{ transition: "r 0.3s, fill 0.3s" }}
-              />
-            </g>
-          );
-        })}
-
-        {/* Avión SVG con rotación siguiendo el path */}
-        <g
-          transform={`translate(${planePos.x}, ${planePos.y}) rotate(${planePos.rotate})`}
-          style={{ transition: "transform 0.1s linear" }}
-        >
-          {/* Sombra suave */}
-          <circle cx="0.5" cy="1" r="9" fill="rgba(0,0,0,0.2)" />
-          {/* Círculo fondo */}
-          <circle cx="0" cy="0" r="9" fill="#D94E3F" />
-          <circle
-            cx="0"
-            cy="0"
-            r="9"
-            fill="none"
-            stroke="#B91C1C"
-            strokeWidth="1.5"
-          />
-          {/* Avión - path SVG simplificado, apunta hacia arriba */}
-          <path d="M0,-5 L2.5,3 L0,1.5 L-2.5,3 Z" fill="white" />
-          <path d="M-5.5,1 L-1.5,0 L-1.5,2.5 Z" fill="white" opacity="0.85" />
-          <path d="M5.5,1 L1.5,0 L1.5,2.5 Z" fill="white" opacity="0.85" />
-          <path d="M-1.5,3.5 L0,3 L1.5,3.5 Z" fill="white" opacity="0.7" />
-        </g>
-      </svg>
-
-      {/* Tooltips HTML (posicionados relativos al contenedor fixed) */}
-      {waypoints.map((pos, i) =>
-        tooltipIdx === i ? (
+        return (
           <div
-            key={i}
-            className="absolute pointer-events-none z-50 bg-white text-stone-900 rounded-xl shadow-xl px-3 py-2 border border-stone-100 whitespace-nowrap text-xs font-bold"
+            key={section.id}
+            className="absolute"
             style={{
-              right: "100%",
-              top: `${(pos.y / 100) * 100}%`,
-              transform: "translateY(-50%)",
-              marginRight: "10px",
+              top: `${topPct}%`,
+              left: "50%",
+              transform: "translate(-50%, -50%)",
             }}
           >
-            {sections[i].icon} {sections[i].label}
+            {/* Anillo pulsante */}
+            {isCurrent && (
+              <div
+                className="absolute rounded-full animate-ping"
+                style={{
+                  width: "14px",
+                  height: "14px",
+                  marginLeft: "-1px",
+                  background: "var(--antares-red)",
+                  opacity: 0.3,
+                }}
+              />
+            )}
+
+            {/* Dot */}
+            <button
+              onClick={() =>
+                document
+                  .getElementById(section.id)
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
+              onMouseEnter={() => setTooltipIdx(i)}
+              onMouseLeave={() => setTooltipIdx(null)}
+              aria-label={`Ir a ${section.label}`}
+              className="relative z-10 rounded-full transition-all duration-300"
+              style={{
+                width: isCurrent ? "14px" : "10px",
+                height: isCurrent ? "14px" : "10px",
+                background: isVisited
+                  ? "var(--antares-red)"
+                  : darkMode
+                    ? "#44403c"
+                    : "#d6d3d1",
+                boxShadow: isCurrent
+                  ? "0 0 0 3px rgba(217,78,63,0.25)"
+                  : "none",
+              }}
+            />
+
+            {/* Tooltip */}
+            {tooltipIdx === i && (
+              <div
+                className="absolute pointer-events-none z-50 bg-white text-stone-900 rounded-xl shadow-xl px-3 py-2 border border-stone-100 whitespace-nowrap text-xs font-bold"
+                style={{ right: "22px", top: "50%", transform: "translateY(-50%)" }}
+              >
+                {section.icon} {section.label}
+                <div className="absolute right-[-5px] top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-white border-r border-t border-stone-100 rotate-45" />
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {/* Avión — click = volver al inicio */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        title="Volver al inicio"
+        className="absolute z-20 transition-all duration-100 hover:scale-110"
+        style={{
+          top: `${planeTop}%`,
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        }}
+      >
+        <div
+          className="w-10 h-10 rounded-full flex items-center justify-center shadow-lg"
+          style={{
+            background:
+              "linear-gradient(135deg, var(--antares-red), var(--antares-red-dark))",
+          }}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="white"
+            className="w-5 h-5"
+            style={{
+              transform: `rotate(${planeRotate}deg)`,
+              transition: "transform 0.4s ease",
+            }}
+          >
+            <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+          </svg>
+        </div>
+        {progress > 0.85 && (
+          <div
+            className="absolute right-12 top-1/2 -translate-y-1/2 bg-white text-stone-900 rounded-xl shadow-xl px-3 py-1.5 border border-stone-100 whitespace-nowrap text-xs font-bold pointer-events-none"
+          >
+            ↑ Volver arriba
             <div className="absolute right-[-5px] top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-white border-r border-t border-stone-100 rotate-45" />
           </div>
-        ) : null,
-      )}
-
-      {/* Overlay invisible para hover tooltips */}
-      {waypoints.map((pos, i) => (
-        <div
-          key={i}
-          className="absolute w-6 h-6 cursor-pointer rounded-full"
-          style={{
-            left: `${(pos.x / 80) * 100}%`,
-            top: `${(pos.y / 100) * 100}%`,
-            transform: "translate(-50%, -50%)",
-          }}
-          onMouseEnter={() => setTooltipIdx(i)}
-          onMouseLeave={() => setTooltipIdx(null)}
-          onClick={() =>
-            document
-              .getElementById(sections[i].id)
-              ?.scrollIntoView({ behavior: "smooth" })
-          }
-        />
-      ))}
+        )}
+      </button>
     </div>
   );
 }
@@ -1511,29 +1482,24 @@ export default function App() {
               className="relative min-h-[80vh] overflow-hidden md:min-h-[85vh] flex items-center"
             >
               <div className="absolute inset-0 z-0">
-                {/* Poster base siempre visible como fallback */}
-                <img
-                  src={heroSlides[0].poster}
-                  alt="Antares Viajes"
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-                {/* Los 3 videos montados simultáneamente — solo el activo es visible */}
+                {/* Un video por slide — solo el activo carga y reproduce */}
                 {heroSlides.map((slide, i) => (
-                  <video
-                    key={slide.label}
+                <video
+                  key={slide.label}
                     className="absolute inset-0 h-full w-full object-cover"
                     style={{
-                      opacity: i === currentHeroSlide ? 1 : 0,
-                      transition: "opacity 1.4s ease-in-out",
-                      zIndex: i === currentHeroSlide ? 1 : 0,
-                    }}
+                    opacity: i === currentHeroSlide ? 1 : 0,
+                    transition: "opacity 1.2s ease-in-out",
+                    zIndex: i === currentHeroSlide ? 1 : 0,
+                    willChange: "opacity",
+                          }}
                     poster={slide.poster}
                     autoPlay
                     muted
                     loop
                     playsInline
-                    preload={i === 0 ? "auto" : "none"}
-                  >
+                    preload={i === currentHeroSlide ? "auto" : "none"}
+                >
                     <source
                       src={slide.sources.mobileWebm}
                       type="video/webm"
@@ -1853,21 +1819,13 @@ export default function App() {
           }}
         />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between md:h-20">
+          <div className="flex h-20 items-center justify-between md:h-28">
             <a href="#" className="flex shrink-0 items-center gap-2 md:gap-3">
-              <span
-                className={
-                  darkMode
-                    ? "logo-safe rounded-xl bg-white px-2 py-1 shadow-sm"
-                    : ""
-                }
-              >
-                <img
-                  src={SITE_CONFIG.branding.logo}
-                  alt={SITE_CONFIG.branding.logoAlt}
-                  className="h-14 w-auto md:h-20"
-                />
-              </span>
+              <img
+                src={darkMode ? "/branding/logo-dark.png" : SITE_CONFIG.branding.logo}
+                alt={SITE_CONFIG.branding.logoAlt}
+                className="h-20 w-auto md:h-28"
+              />
             </a>
 
             <div className="hidden items-center gap-1 xl:flex">
@@ -1935,19 +1893,6 @@ export default function App() {
               >
                 {darkMode ? "☀️" : "🌙"}
               </button>
-              <a
-                href={wa()}
-                className="flex items-center gap-1.5 rounded-full bg-green-500 px-3 py-2 text-xs font-semibold text-white transition-all hover:bg-green-600 hover:shadow-lg md:px-5 md:text-sm"
-              >
-                <svg
-                  className="h-3.5 w-3.5 md:h-4 md:w-4"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2z" />
-                </svg>
-                <span className="hidden sm:inline">WhatsApp</span>
-              </a>
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="rounded-lg p-2 transition-colors hover:bg-stone-100 xl:hidden"
@@ -2012,117 +1957,81 @@ export default function App() {
           onOpenForm={() => setShowTripForm(true)}
         />
       )}
-
-      <footer className="bg-stone-900 py-12 text-white">
+    <footer className="bg-stone-900 py-12 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <div className="mb-4 flex items-center gap-3">
-                <span
-                  className={
-                    darkMode
-                      ? "logo-safe rounded-xl bg-white px-2 py-1 shadow-sm"
-                      : ""
-                  }
-                >
-                  <img
-                    src={SITE_CONFIG.branding.logo}
-                    alt={SITE_CONFIG.branding.logoAlt}
-                    className="h-16 w-auto"
-                  />
-                </span>
+          <div className="mb-8 grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-6">
+
+            {/* Columna 1: Logo + descripción + redes */}
+            <div className="col-span-2 md:col-span-1 lg:col-span-1">
+              <div className="mb-4">
+                <img
+                  src="/branding/Logo-footer.png"
+                  alt={SITE_CONFIG.branding.logoAlt}
+                  className="h-16 w-auto"
+                />
               </div>
-              <p className="mb-4 text-sm text-stone-500">
-                Tu agencia de viajes de confianza. Los mejores destinos al mejor
-                precio.
-              </p>
+              
+              <div className="flex gap-3">
+                
+                  <a href="https://www.instagram.com/antares_viajes/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-8 h-8 bg-stone-800 hover:bg-[#D94E3F] rounded-lg flex items-center justify-center transition-colors"
+                  aria-label="Instagram"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                  </svg>
+                </a>
+                
+                  <a href="https://www.facebook.com/antaresviajes"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-8 h-8 bg-stone-800 hover:bg-[#D94E3F] rounded-lg flex items-center justify-center transition-colors"
+                  aria-label="Facebook"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  </svg>
+                </a>
+              </div>
             </div>
+
+            {/* Columna 2: Navegación */}
             <div>
               <h4 className="mb-4 text-xs font-bold uppercase tracking-widest text-stone-500">
                 Navegación
               </h4>
               <ul className="space-y-2.5">
-                <li>
-                  <a
-                    href="#argentina"
-                    className="text-sm text-stone-500 transition-colors hover:text-white"
-                  >
-                    Argentina
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#grupales"
-                    className="text-sm text-stone-500 transition-colors hover:text-white"
-                  >
-                    Grupales
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#circuitos"
-                    className="text-sm text-stone-500 transition-colors hover:text-white"
-                  >
-                    Circuitos
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#quinceaneras"
-                    className="text-sm text-stone-500 transition-colors hover:text-white"
-                  >
-                    Quinceañeras
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#experiencias"
-                    className="text-sm text-stone-500 transition-colors hover:text-white"
-                  >
-                    Experiencias de Lujo
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#cruceros"
-                    className="text-sm text-stone-500 transition-colors hover:text-white"
-                  >
-                    Cruceros
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#blog"
-                    className="text-sm text-stone-500 transition-colors hover:text-white"
-                  >
-                    Blog de Viajes
-                  </a>
-                </li>
+                <li><a href="#argentina" className="text-sm text-stone-500 transition-colors hover:text-white">Argentina</a></li>
+                <li><a href="#grupales" className="text-sm text-stone-500 transition-colors hover:text-white">Grupales</a></li>
+                <li><a href="#circuitos" className="text-sm text-stone-500 transition-colors hover:text-white">Circuitos</a></li>
+                <li><a href="#quinceaneras" className="text-sm text-stone-500 transition-colors hover:text-white">Quinceañeras</a></li>
+                <li><a href="#experiencias" className="text-sm text-stone-500 transition-colors hover:text-white">Experiencias de Lujo</a></li>
+                <li><a href="#cruceros" className="text-sm text-stone-500 transition-colors hover:text-white">Cruceros</a></li>
               </ul>
             </div>
+
+            {/* Columna 3: Antares (antes "Contacto") */}
             <div>
               <h4 className="mb-4 text-xs font-bold uppercase tracking-widest text-stone-500">
-                Contacto
+                Antares
               </h4>
-              <ul className="space-y-3 text-sm">
-                <li className="flex items-center gap-2 text-stone-500">
-                  📞 +54 3446 429808
-                </li>
-                <li className="flex items-center gap-2 text-stone-500">
-                  <svg
-                    className="w-3.5 h-3.5 text-green-400"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2z" />
-                  </svg>
-                  +549 3446 528749
-                </li>
-                <li className="flex items-center gap-2 text-stone-500">
-                  ✉️ {SITE_CONFIG.salesEmail}
+              <ul className="space-y-2.5 mb-4">
+                <li>
+                  <a href="#quienes-somos" className="text-sm text-stone-500 transition-colors hover:text-white">
+                    Quiénes Somos
+                  </a>
                 </li>
               </ul>
+              <ul className="space-y-3 text-sm">
+                <li className="flex items-center gap-2 text-stone-500">+54 3446 429808</li>
+                <li className="flex items-center gap-2 text-stone-500">+549 3446 528749</li>
+                <li className="flex items-center gap-2 text-stone-500">{SITE_CONFIG.salesEmail}</li>
+              </ul>
             </div>
+
+            {/* Columna 4: Horarios + Domicilio */}
             <div>
               <h4 className="mb-4 text-xs font-bold uppercase tracking-widest text-stone-500">
                 Horarios
@@ -2130,9 +2039,61 @@ export default function App() {
               <ul className="space-y-2 text-sm text-stone-500">
                 <li>Lun a Vie: 9:00 - 13:00 y 15:00 - 19:00</li>
                 <li>Sábados: 9:00 - 13:00</li>
+                <li className="pt-2">
+                  
+                   <a href="https://maps.app.goo.gl/E8D3vAMZwhHRG8Rd7"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 group"
+                  >
+                    <span className="text-sm underline underline-offset-2 decoration-stone-700 group-hover:text-white group-hover:decoration-white transition-colors">
+                      Churruarín 248
+                    </span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Columna 5: Info Útil (NUEVA) */}
+            <div>
+              <h4 className="mb-4 text-xs font-bold uppercase tracking-widest text-stone-500">
+                Info Útil
+              </h4>
+              <ul className="space-y-2.5">
+                <li><a href="#blog" className="text-sm text-stone-500 transition-colors hover:text-white">Blog de Viajes</a></li>
+                <li><span className="text-sm text-stone-600">Visas</span></li>
+                <li><span className="text-sm text-stone-600">Web Check-in</span></li>
+              </ul>
+            </div>
+
+            {/* Columna 6: Legales (NUEVA) */}
+            <div>
+              <h4 className="mb-4 text-xs font-bold uppercase tracking-widest text-stone-500">
+                Legales
+              </h4>
+              <ul className="space-y-2.5">
+                <li>
+                  
+                   <a href="#condiciones"
+                    className="text-sm text-stone-500 transition-colors hover:text-white leading-snug"
+                  >
+                    Condiciones de Contratación
+                  </a>
+                </li>
+                <li>
+                  
+                   <a href="https://www.antaresviajes.tur.ar/texto/boton_de_arrepentimiento"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-stone-500 transition-colors hover:text-white leading-snug"
+                  >
+                    Botón de Arrepentimiento
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
+
           <div className="border-t border-stone-800 pt-6 text-center">
             <p className="text-sm text-stone-600">{SITE_CONFIG.slogan}</p>
             <p className="mt-2 text-xs text-stone-700">
