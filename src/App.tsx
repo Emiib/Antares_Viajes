@@ -9,7 +9,11 @@ type RouteKey =
   | "quinceaneras"
   | "experiencias"
   | "cruceros"
-  | "blog";
+  | "blog"
+  | "infoUtil"
+  | "legales"
+  | "grupales"
+  | "circuitos";
 type Accent = "red" | "amber" | "gold" | "rose";
 
 type TravelCard = {
@@ -559,6 +563,10 @@ function getRouteFromHash(hash: string): RouteKey {
   if (cleaned === "experiencias") return "experiencias";
   if (cleaned === "cruceros") return "cruceros";
   if (cleaned === "blog") return "blog";
+  if (cleaned === "infoUtil") return "infoUtil";
+  if (cleaned === "legales") return "legales";
+  if (cleaned === "grupales") return "grupales";
+  if (cleaned === "circuitos") return "circuitos";
   return "home";
 }
 
@@ -1211,6 +1219,414 @@ function FooterShowcase({
   );
 }
 
+function InfoUtilPage({ darkMode }: { darkMode: boolean }) {
+  const sections = [
+    {
+      id: "visas",
+      title: "Requisitos de Visas",
+      icon: "🛂",
+      content: [
+        {
+          country: "Schengen (Europa)",
+          info: "Los ciudadanos argentinos pueden viajar sin visa por 90 días. Requiere pasaporte vigente.",
+        },
+        {
+          country: "Estados Unidos",
+          info: "Requiere visa ESTA o visa de turista. Tramitar con anticipación en la embajada.",
+        },
+        {
+          country: "Brasil",
+          info: "Ciudadanos argentinos no requieren visa. Solo pasaporte vigente.",
+        },
+        {
+          country: "Caribe (RD, Turquía)",
+          info: "Generalmente sin visa. Verificar según nacionalidad y destino específico.",
+        },
+      ],
+    },
+    {
+      id: "check-in",
+      title: "Web Check-In",
+      icon: "✈️",
+      content: [
+        {
+          country: "Aeroméxico",
+          info: "Check-in online desde 24 horas antes del vuelo en aeromexico.com",
+        },
+        {
+          country: "LATAM",
+          info: "Web check-in disponible 24 horas antes. Acceso desde latam.com",
+        },
+        {
+          country: "Aerolíneas Argentinas",
+          info: "Check-in digital en aerolineas.com.ar desde 24 horas antes",
+        },
+        {
+          country: "Consejo General",
+          info: "Recomendamos hacer check-in online para ahorrar tiempo en aeropuerto",
+        },
+      ],
+    },
+  ];
+
+  return (
+    <main
+      className={`${darkMode ? "bg-stone-950" : "bg-white"} min-h-[calc(100vh-80px)]`}
+    >
+      <section
+        className={`py-12 md:py-16 ${darkMode ? "bg-stone-900" : "bg-stone-50"} border-b ${darkMode ? "border-stone-800" : "border-stone-100"}`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <a
+            href="#"
+            className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-red-600"
+          >
+            ← Volver al inicio
+          </a>
+          <h1
+            className={`text-3xl md:text-5xl font-black ${darkMode ? "text-white" : "text-stone-900"} mb-3`}
+          >
+            Información Útil
+          </h1>
+          <p
+            className={`${darkMode ? "text-stone-400" : "text-stone-600"} max-w-2xl text-base md:text-lg`}
+          >
+            Todo lo que necesitas saber antes de viajar: visas, trámites y recomendaciones.
+          </p>
+        </div>
+      </section>
+
+      <section className="py-10 md:py-14">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            {sections.map((section) => (
+              <div key={section.id}>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="text-4xl">{section.icon}</div>
+                  <h2
+                    className={`text-2xl font-bold ${darkMode ? "text-white" : "text-stone-900"}`}
+                  >
+                    {section.title}
+                  </h2>
+                </div>
+                <div className="space-y-4">
+                  {section.content.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className={`rounded-xl p-4 border ${darkMode ? "bg-stone-900 border-stone-800" : "bg-stone-50 border-stone-200"}`}
+                    >
+                      <h3
+                        className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}
+                      >
+                        {item.country}
+                      </h3>
+                      <p
+                        className={`text-sm ${darkMode ? "text-stone-400" : "text-stone-600"}`}
+                      >
+                        {item.info}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div
+            className={`rounded-2xl border p-6 md:p-8 ${darkMode ? "bg-stone-900 border-stone-800" : "bg-stone-50 border-stone-200"}`}
+          >
+            <h3
+              className={`text-lg font-bold mb-3 ${darkMode ? "text-white" : "text-stone-900"}`}
+            >
+              ¿Tenés dudas? Contactanos
+            </h3>
+            <p
+              className={`mb-4 ${darkMode ? "text-stone-400" : "text-stone-600"}`}
+            >
+              Nuestro equipo está disponible para asesorarte sobre cualquier
+              requisito específico de tu destino.
+            </p>
+            <a
+              href={`https://api.whatsapp.com/send?phone=5493446528749&text=${encodeURIComponent("Hola! Tengo dudas sobre requisitos de visa")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-green-600 to-green-500 px-6 py-3 text-sm font-bold text-white transition-all hover:shadow-lg"
+            >
+              📞 Consultar por WhatsApp
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function LegalesPage({ darkMode }: { darkMode: boolean }) {
+  const [showRepentanceForm, setShowRepentanceForm] = useState(false);
+  const [repentanceForm, setRepentanceForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    bookingRef: "",
+    reason: "",
+  });
+
+  const handleRepentanceSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const msg = `Solicitud de Botón de Arrepentimiento:\n\nNombre: ${repentanceForm.name}\nEmail: ${repentanceForm.email}\nTeléfono: ${repentanceForm.phone}\nReferencia de Reserva: ${repentanceForm.bookingRef}\nMotivo: ${repentanceForm.reason}`;
+    window.location.href = `https://api.whatsapp.com/send?phone=5493446528749&text=${encodeURIComponent(msg)}`;
+    setShowRepentanceForm(false);
+  };
+
+  return (
+    <main
+      className={`${darkMode ? "bg-stone-950" : "bg-white"} min-h-[calc(100vh-80px)]`}
+    >
+      <section
+        className={`py-12 md:py-16 ${darkMode ? "bg-stone-900" : "bg-stone-50"} border-b ${darkMode ? "border-stone-800" : "border-stone-100"}`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <a
+            href="#"
+            className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-red-600"
+          >
+            ← Volver al inicio
+          </a>
+          <h1
+            className={`text-3xl md:text-5xl font-black ${darkMode ? "text-white" : "text-stone-900"} mb-3`}
+          >
+            Legales & Protección
+          </h1>
+          <p
+            className={`${darkMode ? "text-stone-400" : "text-stone-600"} max-w-2xl text-base md:text-lg`}
+          >
+            Condiciones de contratación y derechos del consumidor.
+          </p>
+        </div>
+      </section>
+
+      <section className="py-10 md:py-14">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Condiciones de Contratación */}
+            <div
+              className={`rounded-2xl border p-6 lg:col-span-2 ${darkMode ? "bg-stone-900 border-stone-800" : "bg-stone-50 border-stone-200"}`}
+            >
+              <div className="flex items-start gap-3 mb-4">
+                <div className="text-3xl">📋</div>
+                <h2
+                  className={`text-2xl font-bold ${darkMode ? "text-white" : "text-stone-900"}`}
+                >
+                  Condiciones de Contratación
+                </h2>
+              </div>
+              <div
+                className={`text-sm leading-relaxed space-y-4 ${darkMode ? "text-stone-400" : "text-stone-600"}`}
+              >
+                <div>
+                  <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
+                    A) SOLICITUDES Y PAGOS
+                  </h3>
+                  <p>
+                    Los precios son orientativos y no revisten confirmación. Los depósitos iniciales funcionan como reserva, no confirmación. El pago total debe realizarse antes de la fecha establecida.
+                  </p>
+                </div>
+                <div>
+                  <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
+                    B) SERVICIOS INCLUIDOS
+                  </h3>
+                  <p>
+                    Transporte, alojamiento en categorías oficiales, comidas según se indique, excursiones, traslados aeroportuarios.
+                  </p>
+                </div>
+                <div>
+                  <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
+                    C) SERVICIOS NO INCLUIDOS
+                  </h3>
+                  <p>
+                    Bebidas, propinas, tasas de embarque, seguros, exceso de equipaje, gastos de visado, excursiones opcionales.
+                  </p>
+                </div>
+                <div>
+                  <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
+                    D) VIAJES EN GRUPO
+                  </h3>
+                  <p>
+                    Requieren mínimo 30 personas. Sin alcanzar ese número, pueden cancelar con 10 días de anticipación.
+                  </p>
+                </div>
+                <div>
+                  <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
+                    G) CANCELACIONES
+                  </h3>
+                  <p>
+                    Políticas específicas según servicios contratados. Para charter: se perderá la totalidad de lo abonado en transporte no regular.
+                  </p>
+                </div>
+                <div>
+                  <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
+                    J) RESPONSABILIDAD
+                  </h3>
+                  <p>
+                    La agencia actúa como intermediaria. Declina responsabilidad por deficiencias de terceros prestadores.
+                  </p>
+                </div>
+                <div>
+                  <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
+                    O) JURISDICCIÓN
+                  </h3>
+                  <p>
+                    Tribunales provinciales de Gualeguaychú, Entre Ríos.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Botón de Arrepentimiento */}
+            <div
+              className={`rounded-2xl border p-6 lg:col-span-2 ${darkMode ? "bg-stone-900 border-stone-800" : "bg-stone-50 border-stone-200"}`}
+            >
+              <div className="flex items-start gap-3 mb-4">
+                <div className="text-3xl">🔄</div>
+                <h2
+                  className={`text-2xl font-bold ${darkMode ? "text-white" : "text-stone-900"}`}
+                >
+                  Botón de Arrepentimiento
+                </h2>
+              </div>
+              <p
+                className={`text-sm leading-relaxed mb-6 ${darkMode ? "text-stone-400" : "text-stone-600"}`}
+              >
+                De conformidad con la legislación de protección al consumidor argentina, tienes derecho a arrepentirte de tu compra dentro de los 10 días hábiles posteriores a la confirmación del viaje, sin necesidad de justificación. El reembolso se procesará según la política de cancelación aplicable a tu reserva.
+              </p>
+              <button
+                onClick={() => setShowRepentanceForm(true)}
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 px-6 py-3 text-sm font-bold text-white transition-all hover:shadow-lg"
+              >
+                🔗 Ejercer derecho de arrepentimiento
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {showRepentanceForm && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+          onClick={() => setShowRepentanceForm(false)}
+        >
+          <div
+            className={`${darkMode ? "border-stone-700 bg-stone-900" : "border-stone-200 bg-white"} w-full max-w-md rounded-2xl border p-6 shadow-2xl md:p-8`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h3
+                className={`text-xl font-bold ${darkMode ? "text-white" : "text-stone-900"}`}
+              >
+                Solicitar Arrepentimiento
+              </h3>
+              <button
+                onClick={() => setShowRepentanceForm(false)}
+                className="text-stone-400 transition-colors hover:text-red-500"
+              >
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <p className="mb-5 text-sm text-stone-500">
+              Completa el formulario y te responderemos dentro de 48 horas.
+            </p>
+            <form onSubmit={handleRepentanceSubmit} className="space-y-4">
+              <input
+                required
+                type="text"
+                placeholder="Nombre completo"
+                value={repentanceForm.name}
+                onChange={(e) =>
+                  setRepentanceForm({
+                    ...repentanceForm,
+                    name: e.target.value,
+                  })
+                }
+                className={`w-full rounded-xl border px-3 py-2.5 text-sm outline-none ${darkMode ? "bg-stone-800 border-stone-700 text-white" : "bg-stone-50 border-stone-200 text-stone-900"}`}
+              />
+              <input
+                required
+                type="email"
+                placeholder="Email"
+                value={repentanceForm.email}
+                onChange={(e) =>
+                  setRepentanceForm({
+                    ...repentanceForm,
+                    email: e.target.value,
+                  })
+                }
+                className={`w-full rounded-xl border px-3 py-2.5 text-sm outline-none ${darkMode ? "bg-stone-800 border-stone-700 text-white" : "bg-stone-50 border-stone-200 text-stone-900"}`}
+              />
+              <input
+                required
+                type="tel"
+                placeholder="Teléfono"
+                value={repentanceForm.phone}
+                onChange={(e) =>
+                  setRepentanceForm({
+                    ...repentanceForm,
+                    phone: e.target.value,
+                  })
+                }
+                className={`w-full rounded-xl border px-3 py-2.5 text-sm outline-none ${darkMode ? "bg-stone-800 border-stone-700 text-white" : "bg-stone-50 border-stone-200 text-stone-900"}`}
+              />
+              <input
+                required
+                type="text"
+                placeholder="Referencia de reserva"
+                value={repentanceForm.bookingRef}
+                onChange={(e) =>
+                  setRepentanceForm({
+                    ...repentanceForm,
+                    bookingRef: e.target.value,
+                  })
+                }
+                className={`w-full rounded-xl border px-3 py-2.5 text-sm outline-none ${darkMode ? "bg-stone-800 border-stone-700 text-white" : "bg-stone-50 border-stone-200 text-stone-900"}`}
+              />
+              <textarea
+                required
+                rows={3}
+                placeholder="Motivo de arrepentimiento"
+                value={repentanceForm.reason}
+                onChange={(e) =>
+                  setRepentanceForm({
+                    ...repentanceForm,
+                    reason: e.target.value,
+                  })
+                }
+                className={`w-full rounded-xl border px-3 py-2.5 text-sm outline-none ${darkMode ? "bg-stone-800 border-stone-700 text-white" : "bg-stone-50 border-stone-200 text-stone-900"}`}
+              />
+              <button
+                type="submit"
+                className="w-full rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 py-3 text-sm font-bold text-white transition-all hover:shadow-lg"
+              >
+                Enviar por WhatsApp
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </main>
+  );
+}
+
 function PageLayout({
   title,
   subtitle,
@@ -1406,8 +1822,8 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    document.documentElement.classList.toggle("antares-dark", darkMode);
-  }, [darkMode]);
+    document.title = "Antares Viajes";
+  }, []);
 
   const wa = (text?: string) =>
     `https://api.whatsapp.com/send?phone=${SITE_CONFIG.whatsapp}${text ? `&text=${encodeURIComponent(text)}` : ""}`;
@@ -1485,6 +1901,30 @@ export default function App() {
             darkMode={darkMode}
           />
         );
+      case "grupales":
+        return (
+          <PageLayout
+            title="Viajes Grupales"
+            subtitle="Paquetes especiales para empresas, amigos y familias con tarifas pensadas para grupos."
+            cards={groupPackages}
+            accent="red"
+            darkMode={darkMode}
+          />
+        );
+      case "circuitos":
+        return (
+          <PageLayout
+            title="Circuitos Internacionales"
+            subtitle="Rutas completas para descubrir grandes destinos con itinerarios armados."
+            cards={circuitPackages}
+            accent="red"
+            darkMode={darkMode}
+          />
+        );
+      case "infoUtil":
+        return <InfoUtilPage darkMode={darkMode} />;
+      case "legales":
+        return <LegalesPage darkMode={darkMode} />;
       default:
         return (
           <main>
@@ -1626,7 +2066,7 @@ export default function App() {
                   <h2
                     className={`mb-2 text-3xl font-black leading-tight md:text-5xl ${darkMode ? "text-white" : "text-stone-900"}`}
                   >
-                    Paquetes <span className="text-red-600">Recomendados</span>
+                    Antares <span className="text-red-600">Favoritos</span>
                   </h2>
                   <p
                     className={`${darkMode ? "text-stone-400" : "text-stone-600"} text-base md:text-lg max-w-2xl`}
@@ -1635,7 +2075,7 @@ export default function App() {
                     familia o con amigos.
                   </p>
                 </div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-5">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-5 mb-8">
                   {featuredPackages.map((pkg, i) => (
                     <div
                       key={pkg.id}
@@ -1645,6 +2085,14 @@ export default function App() {
                       <PackageCard pkg={pkg} accent="red" darkMode={darkMode} />
                     </div>
                   ))}
+                </div>
+                <div className="flex justify-center">
+                  <a
+                    href="#ofertas"
+                    className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1"
+                  >
+                    Ver más paquetes →
+                  </a>
                 </div>
               </div>
             </AnimatedSection>
@@ -1668,7 +2116,7 @@ export default function App() {
                     itinerarios armados.
                   </p>
                 </div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-5">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-5 mb-8">
                   {circuitPackages.map((pkg, i) => (
                     <div
                       key={pkg.id}
@@ -1678,6 +2126,14 @@ export default function App() {
                       <PackageCard pkg={pkg} accent="red" darkMode={darkMode} />
                     </div>
                   ))}
+                </div>
+                <div className="flex justify-center">
+                  <a
+                    href="#circuitos"
+                    className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1"
+                  >
+                    Ver más circuitos →
+                  </a>
                 </div>
               </div>
             </AnimatedSection>
@@ -1700,7 +2156,7 @@ export default function App() {
                     tarifas pensadas para grupos.
                   </p>
                 </div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-5">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-5 mb-8">
                   {groupPackages.map((pkg, i) => (
                     <div
                       key={pkg.id}
@@ -1710,6 +2166,14 @@ export default function App() {
                       <PackageCard pkg={pkg} accent="red" darkMode={darkMode} />
                     </div>
                   ))}
+                </div>
+                <div className="flex justify-center">
+                  <a
+                    href="#grupales"
+                    className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1"
+                  >
+                    Ver más paquetes grupales →
+                  </a>
                 </div>
               </div>
             </AnimatedSection>
@@ -1733,7 +2197,7 @@ export default function App() {
                     primer nivel.
                   </p>
                 </div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-5">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-5 mb-8">
                   {luxuryExperiences.map((pkg, i) => (
                     <div
                       key={pkg.id}
@@ -1747,6 +2211,14 @@ export default function App() {
                       />
                     </div>
                   ))}
+                </div>
+                <div className="flex justify-center">
+                  <a
+                    href="#experiencias"
+                    className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#C4A882] to-[#b89060] px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1"
+                  >
+                    Ver más experiencias →
+                  </a>
                 </div>
               </div>
             </AnimatedSection>
@@ -1878,14 +2350,7 @@ export default function App() {
                 href="#experiencias"
                 className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--antares-gold)] transition-all hover:bg-amber-50/10"
               >
-                Experiencias
-              </a>
-              <a
-                href="#ofertas"
-                className="relative flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-bold text-amber-500 transition-all hover:bg-amber-50/10"
-              >
-                🔥 <span className="hidden xl:inline">Ofertas</span>
-                <span className="absolute -right-1 -top-1 h-2 w-2 animate-ping rounded-full bg-red-500" />
+                Lujo
               </a>
             </div>
 
@@ -1898,6 +2363,18 @@ export default function App() {
               >
                 {darkMode ? "☀️" : "🌙"}
               </button>
+              <a
+                href="#ofertas"
+                className="relative flex h-9 w-9 items-center justify-center rounded-full text-lg transition-all hover:scale-110 group"
+                aria-label="Ofertas"
+              >
+                🔥
+                <span className="absolute -right-1 -top-1 h-2 w-2 animate-ping rounded-full bg-red-500" />
+                <div className="absolute right-12 top-1/2 -translate-y-1/2 bg-stone-900 text-white rounded-lg px-3 py-1.5 text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  Ofertas
+                  <div className="absolute right-[-5px] top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-stone-900 rotate-45" />
+                </div>
+              </a>
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="rounded-lg p-2 transition-colors hover:bg-stone-100 xl:hidden"
@@ -1937,7 +2414,7 @@ export default function App() {
                 { label: "Grupales", href: "#grupales" },
                 { label: "Circuitos", href: "#circuitos" },
                 { label: "Quinceañeras", href: "#quinceaneras" },
-                { label: "Experiencias", href: "#experiencias" },
+                { label: "Lujo", href: "#experiencias" },
                 { label: "Ofertas", href: "#ofertas" },
               ].map((item) => (
                 <a
@@ -2066,8 +2543,8 @@ export default function App() {
               </h4>
               <ul className="space-y-2.5">
                 <li><a href="#blog" className="text-sm text-stone-500 transition-colors hover:text-white">Blog de Viajes</a></li>
-                <li><span className="text-sm text-stone-600">Visas</span></li>
-                <li><span className="text-sm text-stone-600">Web Check-in</span></li>
+                <li><a href="#infoUtil" className="text-sm text-stone-500 transition-colors hover:text-white">Visas</a></li>
+                <li><a href="#infoUtil" className="text-sm text-stone-500 transition-colors hover:text-white">Web Check-in</a></li>
               </ul>
             </div>
 
@@ -2078,18 +2555,14 @@ export default function App() {
               </h4>
               <ul className="space-y-2.5">
                 <li>
-                  
-                   <a href="#condiciones"
+                  <a href="#legales"
                     className="text-sm text-stone-500 transition-colors hover:text-white leading-snug"
                   >
                     Condiciones de Contratación
                   </a>
                 </li>
                 <li>
-                  
-                   <a href="https://www.antaresviajes.tur.ar/texto/boton_de_arrepentimiento"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <a href="#legales"
                     className="text-sm text-stone-500 transition-colors hover:text-white leading-snug"
                   >
                     Botón de Arrepentimiento
