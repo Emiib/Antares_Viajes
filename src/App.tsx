@@ -13,7 +13,8 @@ type RouteKey =
   | "infoUtil"
   | "legales"
   | "grupales"
-  | "circuitos";
+  | "circuitos"
+  | "package-detail";
 type Accent = "red" | "amber" | "gold" | "rose";
 
 type TravelCard = {
@@ -556,7 +557,7 @@ const destinationImages: Record<string, string> = {
 };
 
 function getRouteFromHash(hash: string): RouteKey {
-  const cleaned = hash.replace("#", "");
+  const cleaned = hash.replace("#", "").split("/")[0];
   if (cleaned === "ofertas") return "ofertas";
   if (cleaned === "argentina") return "argentina";
   if (cleaned === "quinceaneras") return "quinceaneras";
@@ -567,6 +568,7 @@ function getRouteFromHash(hash: string): RouteKey {
   if (cleaned === "legales") return "legales";
   if (cleaned === "grupales") return "grupales";
   if (cleaned === "circuitos") return "circuitos";
+  if (cleaned === "package-detail") return "package-detail";
   return "home";
 }
 
@@ -574,14 +576,24 @@ function useHashRoute() {
   const [route, setRoute] = useState<RouteKey>(() =>
     getRouteFromHash(window.location.hash),
   );
+  const [packageId, setPackageId] = useState<string | null>(() => {
+    const hash = window.location.hash.replace("#", "");
+    const parts = hash.split("/");
+    return parts[0] === "package-detail" ? parts[1] || null : null;
+  });
 
   useEffect(() => {
-    const handler = () => setRoute(getRouteFromHash(window.location.hash));
+    const handler = () => {
+      const hash = window.location.hash.replace("#", "");
+      setRoute(getRouteFromHash(window.location.hash));
+      const parts = hash.split("/");
+      setPackageId(parts[0] === "package-detail" ? parts[1] || null : null);
+    };
     window.addEventListener("hashchange", handler);
     return () => window.removeEventListener("hashchange", handler);
   }, []);
 
-  return route;
+  return { route, packageId };
 }
 
 function PackageCard({
@@ -631,7 +643,7 @@ function PackageCard({
 
   return (
     <div
-      className={`group flex h-full flex-col overflow-hidden rounded-2xl border transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:ring-2 ${darkMode ? "bg-stone-900 border-stone-800" : "bg-white border-stone-100"} ${ringClass}`}
+      className={`group flex h-full flex-col overflow-hidden rounded-2xl border transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:ring-2 ${darkMode ? "bg-stone-900 border-stone-800" : "bg-stone-50 border-stone-200"} ${ringClass}`}
     >
       <div className="relative h-48 overflow-hidden">
         <img
@@ -708,7 +720,7 @@ function PackageCard({
             </span>
           </div>
           <a
-            href={`https://api.whatsapp.com/send?phone=${SITE_CONFIG.whatsapp}&text=${encodeURIComponent(`Hola! Me interesa: ${pkg.title}`)}`}
+            href={`#package-detail/${pkg.id}`}
             className={`mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r py-2.5 text-sm font-bold text-white transition-all hover:shadow-lg ${buttonClass}`}
           >
             Consultar
@@ -839,8 +851,8 @@ const configs: Record<
           <div
             className="relative flex items-center justify-center mx-auto"
             style={{
-              height: "460px",
-              maxWidth: "760px",
+              height: "500px",
+              maxWidth: "1000px",
               //transformStyle: "preserve-3d",
             }}
           >
@@ -1271,7 +1283,7 @@ function InfoUtilPage({ darkMode }: { darkMode: boolean }) {
 
   return (
     <main
-      className={`${darkMode ? "bg-stone-950" : "bg-white"} min-h-[calc(100vh-80px)]`}
+      className={`${darkMode ? "bg-stone-950" : "bg-stone-50"} min-h-[calc(100vh-80px)]`}
     >
       <section
         className={`py-12 md:py-16 ${darkMode ? "bg-stone-900" : "bg-stone-50"} border-b ${darkMode ? "border-stone-800" : "border-stone-100"}`}
@@ -1380,7 +1392,7 @@ function LegalesPage({ darkMode }: { darkMode: boolean }) {
 
   return (
     <main
-      className={`${darkMode ? "bg-stone-950" : "bg-white"} min-h-[calc(100vh-80px)]`}
+      className={`${darkMode ? "bg-stone-950" : "bg-stone-50"} min-h-[calc(100vh-80px)]`}
     >
       <section
         className={`py-12 md:py-16 ${darkMode ? "bg-stone-900" : "bg-stone-50"} border-b ${darkMode ? "border-stone-800" : "border-stone-100"}`}
@@ -1642,7 +1654,7 @@ function PageLayout({
 }) {
   return (
     <main
-      className={`${darkMode ? "bg-stone-950" : "bg-white"} min-h-[calc(100vh-80px)]`}
+      className={`${darkMode ? "bg-stone-950" : "bg-stone-50"} min-h-[calc(100vh-80px)]`}
     >
       <section
         className={`py-12 md:py-16 ${darkMode ? "bg-stone-900" : "bg-stone-50"} border-b ${darkMode ? "border-stone-800" : "border-stone-100"}`}
@@ -1701,7 +1713,7 @@ function BlogPage({
 
   return (
     <main
-      className={`${darkMode ? "bg-stone-950" : "bg-white"} min-h-[calc(100vh-80px)]`}
+      className={`${darkMode ? "bg-stone-950" : "bg-stone-50"} min-h-[calc(100vh-80px)]`}
     >
       <section
         className={`py-12 md:py-16 ${darkMode ? "bg-stone-900" : "bg-stone-50"} border-b ${darkMode ? "border-stone-800" : "border-stone-100"}`}
@@ -1742,7 +1754,7 @@ function BlogPage({
             {filteredPosts.map((post) => (
               <article
                 key={post.id}
-                className={`${darkMode ? "bg-stone-900 border-stone-800" : "bg-white border-stone-100"} overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl`}
+                className={`${darkMode ? "bg-stone-900 border-stone-800" : "bg-stone-50 border-stone-200"} overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl`}
               >
                 <img
                   src={post.image}
@@ -1782,8 +1794,213 @@ function BlogPage({
     </main>
   );
 }
+
+function getAllPackages(): TravelCard[] {
+  return [
+    ...offersPackages,
+    ...featuredPackages,
+    ...argentinaPackages,
+    ...circuitPackages,
+    ...groupPackages,
+    ...quincePackages,
+    ...luxuryExperiences,
+    ...cruisePackages,
+  ];
+}
+
+function PackageDetailPage({
+  packageId,
+  darkMode,
+  whatsappLink,
+}: {
+  packageId: string | null;
+  darkMode: boolean;
+  whatsappLink: (msg: string) => string;
+}) {
+  const allPackages = getAllPackages();
+  const pkg = packageId ? allPackages.find((p) => p.id === packageId) : null;
+
+  if (!pkg) {
+    return (
+      <main
+        className={`${darkMode ? "bg-stone-950" : "bg-stone-50"} min-h-[calc(100vh-80px)]`}
+      >
+        <section
+          className={`py-12 md:py-16 ${darkMode ? "bg-stone-900" : "bg-stone-50"} border-b ${darkMode ? "border-stone-800" : "border-stone-100"}`}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <a
+              href="#"
+              className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-red-600"
+            >
+              ← Volver al inicio
+            </a>
+            <h1
+              className={`text-3xl md:text-5xl font-black ${darkMode ? "text-white" : "text-stone-900"} mb-3`}
+            >
+              Paquete no encontrado
+            </h1>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  return (
+    <main
+      className={`${darkMode ? "bg-stone-950" : "bg-stone-50"} min-h-[calc(100vh-80px)]`}
+    >
+      <section
+        className={`py-8 md:py-12 ${darkMode ? "bg-stone-900" : "bg-stone-50"}`}
+      >
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <a
+            href="#"
+            className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-red-600 hover:text-red-700"
+          >
+            ← Volver
+          </a>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Slider de imágenes */}
+            <div className="lg:col-span-2">
+              <div className="relative rounded-2xl overflow-hidden h-96 md:h-[500px] bg-stone-200">
+                <img
+                  src={pkg.image}
+                  alt={pkg.title}
+                  className="w-full h-full object-cover"
+                />
+                {pkg.badge && (
+                  <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                    {pkg.badge}
+                  </div>
+                )}
+              </div>
+
+              {/* Información del paquete */}
+              <div
+                className={`mt-8 rounded-2xl border p-6 md:p-8 ${darkMode ? "bg-stone-900 border-stone-800" : "bg-stone-50 border-stone-200"}`}
+              >
+                <h2
+                  className={`text-2xl md:text-3xl font-black mb-6 ${darkMode ? "text-white" : "text-stone-900"}`}
+                >
+                  {pkg.title}
+                </h2>
+
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">📍</span>
+                    <div>
+                      <p
+                        className={`text-xs font-semibold uppercase tracking-wide ${darkMode ? "text-stone-500" : "text-stone-500"}`}
+                      >
+                        Destino
+                      </p>
+                      <p
+                        className={`text-lg font-semibold ${darkMode ? "text-white" : "text-stone-900"}`}
+                      >
+                        {pkg.destination}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">🌙</span>
+                    <div>
+                      <p
+                        className={`text-xs font-semibold uppercase tracking-wide ${darkMode ? "text-stone-500" : "text-stone-500"}`}
+                      >
+                        Duración
+                      </p>
+                      <p
+                        className={`text-lg font-semibold ${darkMode ? "text-white" : "text-stone-900"}`}
+                      >
+                        {pkg.duration}
+                      </p>
+                    </div>
+                  </div>
+
+                  {pkg.departure && (
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">✈️</span>
+                      <div>
+                        <p
+                          className={`text-xs font-semibold uppercase tracking-wide ${darkMode ? "text-stone-500" : "text-stone-500"}`}
+                        >
+                          Salida
+                        </p>
+                        <p
+                          className={`text-lg font-semibold ${darkMode ? "text-white" : "text-stone-900"}`}
+                        >
+                          {pkg.departure}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div
+                  className={`border-t pt-6 ${darkMode ? "border-stone-800" : "border-stone-200"}`}
+                >
+                  <h3
+                    className={`font-semibold mb-4 ${darkMode ? "text-white" : "text-stone-900"}`}
+                  >
+                    Incluye:
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {pkg.includes?.map((inc, i) => (
+                      <span
+                        key={i}
+                        className="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-medium"
+                      >
+                        ✓ {inc}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Panel de precio y CTA */}
+            <div className="lg:col-span-1">
+              <div
+                className={`rounded-2xl border p-6 md:p-8 sticky top-32 ${darkMode ? "bg-stone-900 border-stone-800" : "bg-stone-50 border-stone-200"}`}
+              >
+                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-stone-500">
+                  Precio por persona
+                </div>
+                <div className="mb-8">
+                  <span className="text-4xl font-black text-red-600">
+                    {pkg.price}
+                  </span>
+                </div>
+
+                <button
+                  onClick={() => {
+                    const msg = `Hola! Me interesa saber más sobre el paquete "${pkg.title}". Quiero más detalles.`;
+                    window.location.href = whatsappLink(msg);
+                  }}
+                  className="w-full bg-gradient-to-r from-red-600 to-red-500 text-white font-bold py-3 rounded-xl transition-all hover:shadow-lg hover:-translate-y-1 mb-4"
+                >
+                  Consultar
+                </button>
+
+                <div
+                  className={`text-xs text-center ${darkMode ? "text-stone-400" : "text-stone-600"}`}
+                >
+                  Hablaremos directamente por WhatsApp sobre disponibilidad y detalles.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
 export default function App() {
-  const route = useHashRoute();
+  const { route, packageId } = useHashRoute();
   const [searchData, setSearchData] = useState({
     destination: "",
     departure: "",
@@ -1806,12 +2023,31 @@ export default function App() {
       ? window.matchMedia("(max-width: 767px)").matches
       : false,
   );
+  const [navbarVisible, setNavbarVisible] = useState(true);
+  const prevScrollY = useRef(0);
 
   useEffect(() => {
     const mql = window.matchMedia("(max-width: 767px)");
     const handler = (e: MediaQueryListEvent) => setIsMobileViewport(e.matches);
     mql.addEventListener("change", handler);
     return () => mql.removeEventListener("change", handler);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY < 100) {
+        setNavbarVisible(true);
+      } else if (currentScrollY > prevScrollY.current) {
+        setNavbarVisible(false);
+      } else {
+        setNavbarVisible(true);
+      }
+      prevScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
@@ -1925,12 +2161,14 @@ export default function App() {
         return <InfoUtilPage darkMode={darkMode} />;
       case "legales":
         return <LegalesPage darkMode={darkMode} />;
+      case "package-detail":
+        return <PackageDetailPage packageId={packageId} darkMode={darkMode} whatsappLink={wa} />;
       default:
         return (
           <main>
             <section
               id="hero"
-              className="relative min-h-[80vh] overflow-hidden md:min-h-[85vh] flex items-center"
+              className="relative min-h-screen overflow-hidden flex items-center md:min-h-[110vh]"
             >
               <div className="absolute inset-0 z-0">
                 {/* Solo el slide activo se monta para evitar decodificar varios videos en paralelo */}
@@ -2099,7 +2337,7 @@ export default function App() {
 
             <AnimatedSection
               id="circuitos"
-              className={`${darkMode ? "bg-stone-950" : "bg-white"} py-14 md:py-20`}
+              className={`${darkMode ? "bg-stone-950" : "bg-stone-50"} py-14 md:py-20`}
             >
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="mb-10 flex flex-col items-center justify-center gap-4 text-center">
@@ -2180,7 +2418,7 @@ export default function App() {
 
             <AnimatedSection
               id="experiencias-home"
-              className={`${darkMode ? "bg-stone-950" : "bg-white"} py-14 md:py-20`}
+              className={`${darkMode ? "bg-stone-950" : "bg-stone-50"} py-14 md:py-20`}
             >
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="mb-10 text-center">
@@ -2283,20 +2521,13 @@ export default function App() {
 
   return (
     <div
-      className={`min-h-screen font-['Inter'] transition-colors duration-300 ${darkMode ? "antares-dark bg-stone-950" : "bg-white"}`}
+      className={`min-h-screen font-['Inter'] transition-colors duration-300 ${darkMode ? "antares-dark bg-stone-950" : "bg-stone-100"}`}
     >
       <nav
-        className={`sticky top-0 z-50 border-b backdrop-blur-md shadow-sm transition-colors ${darkMode ? "border-stone-800 bg-stone-950/95" : "border-stone-100 bg-white/98"}`}
+        className={`fixed top-4 left-4 right-4 z-50 backdrop-blur-md shadow-md transition-all duration-300 ${navbarVisible ? "translate-y-0 opacity-100" : "-translate-y-24 opacity-0 pointer-events-none"} rounded-3xl ${darkMode ? "border border-stone-800 bg-stone-950/95" : "border border-stone-200 bg-white/98"}`}
       >
-        <div
-          className="h-0.5 w-full"
-          style={{
-            background:
-              "linear-gradient(90deg, var(--antares-red), var(--antares-gold), var(--antares-red))",
-          }}
-        />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-20 items-center justify-between md:h-28">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 md:py-3">
+          <div className="flex h-20 items-center justify-between md:h-24">
             <a href="#" className="flex shrink-0 items-center gap-2 md:gap-3">
               <img
                 src={darkMode ? "/branding/logo-dark.png" : SITE_CONFIG.branding.logo}
@@ -2586,13 +2817,14 @@ export default function App() {
       <a
         href={wa()}
         className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-green-500 shadow-2xl transition-all hover:scale-110 hover:bg-green-600"
+        aria-label="Contactar por WhatsApp"
       >
         <svg
           className="h-7 w-7 text-white"
           fill="currentColor"
           viewBox="0 0 24 24"
         >
-          <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2z" />
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a6.963 6.963 0 00-6.921 6.923c0 1.914.474 3.776 1.38 5.438L2.257 22l5.85-1.534c1.594.869 3.383 1.328 5.228 1.328 6.039 0 10.962-4.922 10.962-10.961 0-2.929-1.122-5.659-3.157-7.694-2.035-2.036-4.724-3.157-7.596-3.157" />
         </svg>
       </a>
 
