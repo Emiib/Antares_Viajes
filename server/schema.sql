@@ -1,0 +1,68 @@
+-- Admin Settings Table
+CREATE TABLE IF NOT EXISTS admin_settings (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  key TEXT UNIQUE NOT NULL,
+  value TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Site Configuration Table
+CREATE TABLE IF NOT EXISTS site_config (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  whatsapp TEXT,
+  sales_email TEXT,
+  slogan TEXT,
+  logo_header_path TEXT,
+  logo_dark_path TEXT,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Hero Slides Table
+CREATE TABLE IF NOT EXISTS hero_slides (
+  id TEXT PRIMARY KEY,
+  label TEXT NOT NULL,
+  poster_path TEXT,
+  desktop_webm TEXT,
+  desktop_mp4 TEXT,
+  mobile_webm TEXT,
+  mobile_mp4 TEXT,
+  display_order INTEGER DEFAULT 0,
+  active INTEGER DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Packages Table
+CREATE TABLE IF NOT EXISTS packages (
+  id TEXT PRIMARY KEY,
+  type TEXT,
+  title TEXT NOT NULL,
+  destination TEXT NOT NULL,
+  duration TEXT,
+  price TEXT NOT NULL,
+  image_url TEXT,
+  badge TEXT,
+  departure TEXT,
+  people TEXT,
+  active INTEGER DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Package Includes Table
+CREATE TABLE IF NOT EXISTS package_includes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  package_id TEXT NOT NULL,
+  include_text TEXT,
+  FOREIGN KEY (package_id) REFERENCES packages(id) ON DELETE CASCADE
+);
+
+-- Initialize admin settings with default password hash
+-- Password: 'admin123' (hashed with bcrypt)
+INSERT OR IGNORE INTO admin_settings (key, value) VALUES
+  ('admin_password_hash', '$2b$10$YourHashedPasswordHere'),
+  ('api_initialized', 'true');
+
+-- Initialize default site config
+INSERT OR IGNORE INTO site_config (whatsapp, sales_email, slogan, logo_header_path, logo_dark_path) VALUES
+  ('5493446528749', 'ventas@antaresviajes.com.ar', 'El mejor de los viajes es el próximo', '/branding/logo-header.png', '/branding/logo-dark.png');

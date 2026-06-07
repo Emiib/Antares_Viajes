@@ -1,560 +1,22 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { blogPosts, continents } from "./data/blog";
 import { useInView } from "./hooks/useInView";
-
-type RouteKey =
-  | "home"
-  | "ofertas"
-  | "argentina"
-  | "quinceaneras"
-  | "experiencias"
-  | "cruceros"
-  | "blog"
-  | "infoUtil"
-  | "legales"
-  | "grupales"
-  | "circuitos"
-  | "package-detail";
-type Accent = "red" | "amber" | "gold" | "rose";
-
-type TravelCard = {
-  id: string;
-  title: string;
-  destination: string;
-  duration: string;
-  price: string;
-  image: string;
-  badge?: string;
-  departure?: string;
-  people?: string;
-  includes?: string[];
-  highlights?: string[];
-};
-
-const SITE_CONFIG = {
-  whatsapp: "5493446528749",
-  salesEmail: "ventas@antaresviajes.com.ar",
-  slogan: "El mejor de los viajes es el próximo",
-  branding: {
-    logo: "/branding/logo-header.png",
-    logoAlt: "Antares Viajes",
-    footerShowcase: {
-      type: "gradient" as "gradient" | "image" | "video",
-      image: "/branding/footer-media.jpg",
-      videoWebm: "/branding/footer-media.webm",
-      videoMp4: "/branding/footer-media.mp4",
-      poster: "/branding/footer-media-poster.jpg",
-    },
-  },
-} as const;
-
-const heroSlides = [
-  {
-    label: "París",
-    poster: "/videos/hero/paris-poster.jpg",
-    sources: {
-      mobileWebm: "/videos/hero/paris-mobile.webm",
-      mobileMp4: "/videos/hero/paris-mobile.mp4",
-      desktopWebm: "/videos/hero/paris-desktop.webm",
-      desktopMp4: "/videos/hero/paris-desktop.mp4",
-    },
-  },
-  {
-    label: "Playa del Carmen",
-    poster: "/videos/hero/pcarmen-poster.jpg",
-    sources: {
-      mobileWebm: "/videos/hero/pcarmen-mobile.webm",
-      mobileMp4: "/videos/hero/pcarmen-mobile.mp4",
-      desktopWebm: "/videos/hero/pcarmen-desktop.webm",
-      desktopMp4: "/videos/hero/pcarmen-desktop.mp4",
-    },
-  },
-  {
-    label: "Turquía",
-    poster: "/videos/hero/turquia-poster.jpg",
-    sources: {
-      mobileWebm: "/videos/hero/turquia-mobile.webm",
-      mobileMp4: "/videos/hero/turquia-mobile.mp4",
-      desktopWebm: "/videos/hero/turquia-desktop.webm",
-      desktopMp4: "/videos/hero/turquia-desktop.mp4",
-    },
-  },
-] as const;
-
-const monthNames = [
-  "Enero",
-  "Febrero",
-  "Marzo",
-  "Abril",
-  "Mayo",
-  "Junio",
-  "Julio",
-  "Agosto",
-  "Septiembre",
-  "Octubre",
-  "Noviembre",
-  "Diciembre",
-];
-const minDepartureMonth = (() => {
-  const currentMonth = new Date().toISOString().slice(0, 7);
-  return currentMonth < "2026-01" ? "2026-01" : currentMonth;
-})();
-const maxDepartureMonth = "2027-12";
-const departureMonthOptions = (() => {
-  const start =
-    minDepartureMonth > maxDepartureMonth
-      ? maxDepartureMonth
-      : minDepartureMonth;
-  const [startYear, startMonth] = start.split("-").map(Number);
-  const [endYear, endMonth] = maxDepartureMonth.split("-").map(Number);
-  const options: Array<{ value: string; label: string }> = [];
-  let year = startYear;
-  let month = startMonth;
-
-  while (year < endYear || (year === endYear && month <= endMonth)) {
-    const value = `${year}-${String(month).padStart(2, "0")}`;
-    options.push({ value, label: `${monthNames[month - 1]} ${year}` });
-    month += 1;
-    if (month > 12) {
-      month = 1;
-      year += 1;
-    }
-  }
-
-  return options;
-})();
-
-const offersPackages: TravelCard[] = [
-  {
-    id: "o1",
-    title: "Caribe Flash",
-    destination: "Punta Cana",
-    duration: "7 Noches",
-    departure: "Solo esta semana",
-    price: "USD 1.790",
-    image:
-      "https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Flash",
-    includes: ["All Inclusive", "Aéreo", "Traslados"],
-  },
-  {
-    id: "o2",
-    title: "Europa Smart",
-    destination: "Madrid & París",
-    duration: "9 Noches",
-    departure: "Últimos lugares",
-    price: "USD 2.990",
-    image:
-      "https://images.pexels.com/photos/532826/pexels-photo-532826.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Promo",
-    includes: ["Hoteles", "Aéreos", "Desayunos"],
-  },
-  {
-    id: "o3",
-    title: "Brasil Express",
-    destination: "Río & Buzios",
-    duration: "6 Noches",
-    departure: "Tiempo limitado",
-    price: "USD 1.150",
-    image:
-      "https://images.pexels.com/photos/1619569/pexels-photo-1619569.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Oferta",
-    includes: ["Hotel", "Aéreo", "Asistencia"],
-  },
-  {
-    id: "o4",
-    title: "México directo",
-    destination: "Cancún",
-    duration: "5 Noches",
-    departure: "Cupos limitados",
-    price: "USD 1.980",
-    image:
-      "https://images.pexels.com/photos/60217/pexels-photo-60217.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Imperdible",
-    includes: ["Resort", "Aéreo", "Traslados"],
-  },
-];
-
-const featuredPackages: TravelCard[] = [
-  {
-    id: "f1",
-    title: "Porto Seguro - Brasil",
-    destination: "Brasil",
-    duration: "7 Noches",
-    departure: "22 FEB 2026",
-    price: "USD 1.240",
-    image:
-      "https://images.pexels.com/photos/3225531/pexels-photo-3225531.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Más Vendido",
-    includes: ["All Inclusive", "Aéreo", "Traslados"],
-  },
-  {
-    id: "f2",
-    title: "Punta Cana - Caribe",
-    destination: "República Dominicana",
-    duration: "8 Noches",
-    departure: "27 FEB 2026",
-    price: "USD 2.355",
-    image:
-      "https://images.pexels.com/photos/3155666/pexels-photo-3155666.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Popular",
-    includes: ["Resort 5★", "Aéreo", "Traslados"],
-  },
-  {
-    id: "f3",
-    title: "Buzios & Arraial Do Cabo",
-    destination: "Brasil",
-    duration: "7 Días / 6 Noches",
-    departure: "07 FEB 2026",
-    price: "USD 1.358",
-    image:
-      "https://images.pexels.com/photos/3601425/pexels-photo-3601425.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Oferta",
-    includes: ["Hotel", "Aéreo", "City Tour"],
-  },
-  {
-    id: "f4",
-    title: "Cancún - México",
-    destination: "México",
-    duration: "5 Noches",
-    departure: "10 MAR 2026",
-    price: "USD 2.100",
-    image:
-      "https://images.pexels.com/photos/3280130/pexels-photo-3280130.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Imperdible",
-    includes: ["All Inclusive", "Aéreo", "Traslados"],
-  },
-];
-
-const argentinaPackages: TravelCard[] = [
-  {
-    id: "a1",
-    title: "Bariloche - Patagonia",
-    destination: "Argentina",
-    duration: "5 Noches",
-    departure: "Salidas diarias",
-    price: "ARS 890.000",
-    image:
-      "https://images.pexels.com/photos/1659438/pexels-photo-1659438.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Más Vendido",
-    includes: ["Hotel 4★", "Desayuno", "Traslados"],
-  },
-  {
-    id: "a2",
-    title: "Iguazú - Misiones",
-    destination: "Argentina",
-    duration: "4 Noches",
-    departure: "Salidas diarias",
-    price: "ARS 720.000",
-    image:
-      "https://images.pexels.com/photos/4825701/pexels-photo-4825701.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Imperdible",
-    includes: ["Hotel 4★", "Media pensión", "Cataratas"],
-  },
-  {
-    id: "a3",
-    title: "Mendoza - Bodegas",
-    destination: "Argentina",
-    duration: "4 Noches",
-    departure: "Salidas semanales",
-    price: "ARS 650.000",
-    image:
-      "https://images.pexels.com/photos/5947011/pexels-photo-5947011.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Oferta",
-    includes: ["Hotel boutique", "Tour bodegas", "City tour"],
-  },
-  {
-    id: "a4",
-    title: "Ushuaia - Fin del Mundo",
-    destination: "Argentina",
-    duration: "5 Noches",
-    departure: "Salidas diarias",
-    price: "ARS 980.000",
-    image:
-      "https://images.pexels.com/photos/301667/pexels-photo-301667.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Exclusivo",
-    includes: ["Hotel 4★", "Canal Beagle", "Glaciar"],
-  },
-];
-
-const circuitPackages: TravelCard[] = [
-  {
-    id: "c1",
-    title: "Europa Clásica",
-    destination: "Francia, Italia, España",
-    duration: "14 Días",
-    price: "USD 3.890",
-    image:
-      "https://images.pexels.com/photos/460672/pexels-photo-460672.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Circuito",
-    highlights: ["París", "Roma", "Barcelona"],
-  },
-  {
-    id: "c2",
-    title: "Asia Fascinante",
-    destination: "Tailandia, Vietnam, Camboya",
-    duration: "18 Días",
-    price: "USD 4.290",
-    image:
-      "https://images.pexels.com/photos/1007657/pexels-photo-1007657.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Circuito",
-    highlights: ["Bangkok", "Phnom Penh", "Ho Chi Minh"],
-  },
-  {
-    id: "c3",
-    title: "Perú Ancestral",
-    destination: "Machu Picchu, Cusco, Lima",
-    duration: "10 Días",
-    price: "USD 2.890",
-    image:
-      "https://images.pexels.com/photos/2356045/pexels-photo-2356045.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Circuito",
-    highlights: ["Machu Picchu", "Valle Sagrado", "Cusco"],
-  },
-  {
-    id: "c4",
-    title: "Medio Oriente Mágico",
-    destination: "Emiratos, Qatar",
-    duration: "12 Días",
-    price: "USD 5.490",
-    image:
-      "https://images.pexels.com/photos/3787839/pexels-photo-3787839.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Circuito",
-    highlights: ["Dubai", "Abu Dhabi", "Doha"],
-  },
-];
-
-const groupPackages: TravelCard[] = [
-  {
-    id: "g1",
-    title: "Grupo Joven - Caribe",
-    destination: "Caribe",
-    duration: "Grupal",
-    people: "Desde 15 personas",
-    price: "USD 950 p/p",
-    image:
-      "https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Grupal",
-    includes: ["Hotel 4★", "Traslados", "Actividades"],
-  },
-  {
-    id: "g2",
-    title: "Grupo Ejecutivo - España",
-    destination: "España",
-    duration: "Grupal",
-    people: "Desde 20 personas",
-    price: "USD 1.890 p/p",
-    image:
-      "https://images.pexels.com/photos/532826/pexels-photo-532826.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Grupal",
-    includes: ["Hotel 5★", "Guía profesional", "Tours privados"],
-  },
-  {
-    id: "g3",
-    title: "Grupo Familiar - Brasil",
-    destination: "Brasil",
-    duration: "Grupal",
-    people: "Desde 10 personas",
-    price: "USD 1.150 p/p",
-    image:
-      "https://images.pexels.com/photos/1619569/pexels-photo-1619569.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Grupal",
-    includes: ["Todo incluido", "Actividades familia", "Asistencia"],
-  },
-  {
-    id: "g4",
-    title: "Grupo Corporativo - Miami",
-    destination: "Estados Unidos",
-    duration: "Grupal",
-    people: "Desde 25 personas",
-    price: "USD 1.690 p/p",
-    image:
-      "https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Grupal",
-    includes: ["Hotel premium", "Team building", "VIP"],
-  },
-];
-
-const quincePackages: TravelCard[] = [
-  {
-    id: "q1",
-    title: "Caribe Soñado",
-    destination: "República Dominicana",
-    duration: "5 Noches",
-    price: "USD 1.890",
-    image:
-      "https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Quinceañeras",
-    includes: ["Fiesta temática", "Cena especial", "Fotos profesionales"],
-  },
-  {
-    id: "q2",
-    title: "Experiencia Europa",
-    destination: "España & Italia",
-    duration: "10 Días",
-    price: "USD 3.490",
-    image:
-      "https://images.pexels.com/photos/532826/pexels-photo-532826.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Quinceañeras",
-    includes: ["Guía especializado", "Experiencia VIP", "Regalo sorpresa"],
-  },
-  {
-    id: "q3",
-    title: "Lujo Miami",
-    destination: "Miami, Florida",
-    duration: "7 Noches",
-    price: "USD 2.690",
-    image:
-      "https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Quinceañeras",
-    includes: ["Shopping premium", "Cena de gala", "Spa & relax"],
-  },
-  {
-    id: "q4",
-    title: "Maldivas Inolvidable",
-    destination: "Islas Maldivas",
-    duration: "6 Noches",
-    price: "USD 4.290",
-    image:
-      "https://images.pexels.com/photos/3155666/pexels-photo-3155666.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Quinceañeras",
-    includes: [
-      "Resort all-inclusive",
-      "Experiencia de lujo",
-      "Recuerdos únicos",
-    ],
-  },
-];
-
-const luxuryExperiences: TravelCard[] = [
-  {
-    id: "l1",
-    title: "Maldivas Signature",
-    destination: "Maldivas",
-    duration: "6 Noches",
-    price: "USD 6.900",
-    image:
-      "https://images.pexels.com/photos/3155666/pexels-photo-3155666.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Luxury",
-    includes: ["Resort 5★", "Traslados privados", "Experiencia gourmet"],
-  },
-  {
-    id: "l2",
-    title: "Dubái & Abu Dhabi Luxury",
-    destination: "Emiratos Árabes",
-    duration: "7 Noches",
-    price: "USD 5.750",
-    image:
-      "https://images.pexels.com/photos/3787839/pexels-photo-3787839.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Luxury",
-    includes: ["Hotel de lujo", "Chofer privado", "Excursiones premium"],
-  },
-  {
-    id: "l3",
-    title: "Santorini Exclusive Escape",
-    destination: "Grecia",
-    duration: "5 Noches",
-    price: "USD 4.980",
-    image:
-      "https://images.pexels.com/photos/1010657/pexels-photo-1010657.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Luxury",
-    includes: ["Hotel boutique", "Sunset cruise", "Experiencia privada"],
-  },
-  {
-    id: "l4",
-    title: "Safari & Lodge de Lujo",
-    destination: "África",
-    duration: "8 Noches",
-    price: "USD 8.490",
-    image:
-      "https://images.pexels.com/photos/4577793/pexels-photo-4577793.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Luxury",
-    includes: ["Lodge premium", "Experiencia safari", "Asistencia exclusiva"],
-  },
-];
-
-const cruisePackages: TravelCard[] = [
-  {
-    id: "cr1",
-    title: "MSC Caribe",
-    destination: "Caribe",
-    duration: "8 Noches",
-    price: "USD 2.450",
-    image:
-      "https://images.pexels.com/photos/813011/pexels-photo-813011.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Cruceros",
-    includes: ["Cabina externa", "Pensión completa", "Entretenimiento"],
-  },
-  {
-    id: "cr2",
-    title: "Mediterráneo Clásico",
-    destination: "Italia, España, Francia",
-    duration: "10 Noches",
-    price: "USD 3.290",
-    image:
-      "https://images.pexels.com/photos/753331/pexels-photo-753331.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Cruceros",
-    includes: ["Cabina balcón", "Pensión completa", "Shows"],
-  },
-  {
-    id: "cr3",
-    title: "Sudamérica en Crucero",
-    destination: "Brasil & Uruguay",
-    duration: "7 Noches",
-    price: "USD 1.980",
-    image:
-      "https://images.pexels.com/photos/3278215/pexels-photo-3278215.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700",
-    badge: "Cruceros",
-    includes: ["Cabina interna", "A bordo", "Excursiones opcionales"],
-  },
-];
-
-const popularDestinations = [
-  {
-    name: "Caribe",
-    count: "120+ paquetes",
-    icon: "🏝️",
-    subtitle: "Playas, all inclusive y relax",
-  },
-  {
-    name: "Brasil",
-    count: "85+ paquetes",
-    icon: "⛪",
-    subtitle: "Cercanía, playa y diversión",
-  },
-  {
-    name: "Europa",
-    count: "200+ paquetes",
-    icon: "🗼",
-    subtitle: "Ciudades icónicas y circuitos",
-  },
-  {
-    name: "México",
-    count: "95+ paquetes",
-    icon: "🗿",
-    subtitle: "Caribe, cultura y gastronomía",
-  },
-  {
-    name: "Argentina",
-    count: "150+ paquetes",
-    icon: "🧉",
-    subtitle: "Conoce nuestro país",
-  },
-  {
-    name: "Estados Unidos",
-    count: "110+ paquetes",
-    icon: "🗽",
-    subtitle: "Compras, parques y estados",
-  },
-] as const;
-const destinationImages: Record<string, string> = {
-  Caribe: "/videos/destinospop/caribe.jpg",
-  Brasil: "/videos/destinospop/brasil.jpg",
-  Europa: "/videos/destinospop/europa.jpg",
-  México: "/videos/destinospop/mexico.jpg",
-  Argentina: "/videos/destinospop/argentina.jpg",
-  "Estados Unidos": "/videos/destinospop/estados-unidos.jpg",
-};
+import type { RouteKey, Accent, TravelCard } from "./types";
+import { SITE_CONFIG, heroSlides } from "./config/site";
+import { departureMonthOptions } from "./data/dates";
+import {
+  offersPackages,
+  featuredPackages,
+  argentinaPackages,
+  circuitPackages,
+  groupPackages,
+  quincePackages,
+  luxuryExperiences,
+  cruisePackages,
+  getAllPackages,
+} from "./data/packages";
+import { popularDestinations, destinationImages } from "./data/destinations";
+import { AdminPanel } from "./components/AdminPanel";
 
 function getRouteFromHash(hash: string): RouteKey {
   const cleaned = hash.replace("#", "").split("/")[0];
@@ -569,6 +31,7 @@ function getRouteFromHash(hash: string): RouteKey {
   if (cleaned === "grupales") return "grupales";
   if (cleaned === "circuitos") return "circuitos";
   if (cleaned === "package-detail") return "package-detail";
+  if (cleaned === "admin") return "admin";
   return "home";
 }
 
@@ -832,7 +295,7 @@ const configs: Record<
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-14">
           <h2
-            className={`text-3xl md:text-5xl font-black mb-3 ${darkMode ? "text-white" : "text-stone-900"}`}
+            className={`text-4xl md:text-6xl font-black mb-3 ${darkMode ? "text-white" : "text-stone-900"}`}
           >
             Destinos{" "}
             <span style={{ color: "var(--antares-red)" }}>Populares</span>
@@ -1795,19 +1258,6 @@ function BlogPage({
   );
 }
 
-function getAllPackages(): TravelCard[] {
-  return [
-    ...offersPackages,
-    ...featuredPackages,
-    ...argentinaPackages,
-    ...circuitPackages,
-    ...groupPackages,
-    ...quincePackages,
-    ...luxuryExperiences,
-    ...cruisePackages,
-  ];
-}
-
 function PackageDetailPage({
   packageId,
   darkMode,
@@ -2163,6 +1613,8 @@ export default function App() {
         return <LegalesPage darkMode={darkMode} />;
       case "package-detail":
         return <PackageDetailPage packageId={packageId} darkMode={darkMode} whatsappLink={wa} />;
+      case "admin":
+        return <AdminPanel darkMode={darkMode} />;
       default:
         return (
           <main>
@@ -2524,9 +1976,9 @@ export default function App() {
       className={`min-h-screen font-['Inter'] transition-colors duration-300 ${darkMode ? "antares-dark bg-stone-950" : "bg-stone-100"}`}
     >
       <nav
-        className={`fixed top-4 left-4 right-4 z-50 backdrop-blur-md shadow-md transition-all duration-300 ${navbarVisible ? "translate-y-0 opacity-100" : "-translate-y-24 opacity-0 pointer-events-none"} rounded-3xl ${darkMode ? "border border-stone-800 bg-stone-950/95" : "border border-stone-200 bg-white/98"}`}
+        className={`fixed top-2 left-0 right-0 z-50 backdrop-blur-md shadow-md transition-all duration-300 ${navbarVisible ? "translate-y-0 opacity-100" : "-translate-y-24 opacity-0 pointer-events-none"} mx-2 rounded-[32px] ${darkMode ? "border border-stone-800/50 bg-stone-950/30" : "border border-stone-200/50 bg-white/20"}`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 md:py-3">
+        <div className="px-4 sm:px-6 lg:px-8 py-2 md:py-3">
           <div className="flex h-20 items-center justify-between md:h-24">
             <a href="#" className="flex shrink-0 items-center gap-2 md:gap-3">
               <img
@@ -2820,11 +2272,11 @@ export default function App() {
         aria-label="Contactar por WhatsApp"
       >
         <svg
-          className="h-7 w-7 text-white"
+          className="h-6 w-6 text-white"
           fill="currentColor"
           viewBox="0 0 24 24"
         >
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a6.963 6.963 0 00-6.921 6.923c0 1.914.474 3.776 1.38 5.438L2.257 22l5.85-1.534c1.594.869 3.383 1.328 5.228 1.328 6.039 0 10.962-4.922 10.962-10.961 0-2.929-1.122-5.659-3.157-7.694-2.035-2.036-4.724-3.157-7.596-3.157" />
+          <path d="M20.52 3.48C18.25 1.25 15.3 0 12 0 5.48 0 0.04 5.42 0 12c0 2.1.55 4.16 1.59 5.97L0 24l6.26-1.64c1.74.95 3.7 1.45 5.74 1.45 6.52 0 11.96-5.42 12-12 0-3.2-1.25-6.21-3.52-8.48zM12 21.9c-1.78 0-3.53-.48-5.05-1.38l-.36-.22-3.74.98 1-3.64-.23-.37C2.48 15.39 2 13.73 2 12c0-5.41 4.41-9.82 9.82-9.82 2.62 0 5.08 1.02 6.92 2.88 1.84 1.86 2.85 4.33 2.85 6.95 0 5.41-4.41 9.82-9.82 9.82zm5.37-7.38c-.3-.15-1.75-.87-2.03-.97-.28-.1-.48-.15-.68.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.76-1.66-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.08-.15-.68-1.62-.93-2.21-.24-.58-.49-.5-.67-.51-.18-.01-.37-.01-.57-.01-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.22 3.08.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.62.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.42-.08-.13-.27-.2-.57-.35z" />
         </svg>
       </a>
 
