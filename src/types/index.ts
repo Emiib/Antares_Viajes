@@ -10,7 +10,8 @@ export type RouteKey =
   | "legales"
   | "grupales"
   | "circuitos"
-  | "package-detail";
+  | "package-detail"
+  | "admin";
 
 export type Accent = "red" | "amber" | "gold" | "rose";
 
