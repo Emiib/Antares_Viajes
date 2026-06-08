@@ -37,6 +37,11 @@ export default function App() {
       text ? `&text=${encodeURIComponent(text)}` : ""
     }`;
 
+  // Admin: sin navbar, footer ni WhatsApp
+  if (route === "admin") {
+    return <AdminPanel darkMode={darkMode} />;
+  }
+
   const renderRoute = () => {
     switch (route) {
       case "ofertas":
@@ -61,8 +66,6 @@ export default function App() {
         return <LegalesPage darkMode={darkMode} />;
       case "package-detail":
         return <PackageDetailPage packageId={packageId} darkMode={darkMode} whatsappLink={wa} />;
-      case "admin":
-        return <AdminPanel darkMode={darkMode} />;
       default:
         return <HomePage darkMode={darkMode} wa={wa} />;
     }
