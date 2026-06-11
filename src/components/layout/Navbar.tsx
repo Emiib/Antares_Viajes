@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { SITE_CONFIG } from "../../config/site";
 
 interface NavbarProps {
@@ -6,6 +7,13 @@ interface NavbarProps {
   setDarkMode: (v: boolean) => void;
   navbarVisible: boolean;
 }
+
+const NAV_LINKS = [
+  { label: "Argentina", to: "/argentina" },
+  { label: "Grupales", to: "/grupales" },
+  { label: "Circuitos", to: "/circuitos" },
+  { label: "Quinceañeras", to: "/quinceaneras" },
+];
 
 export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -24,24 +32,19 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
     >
       <div className="px-6 sm:px-10 lg:px-12 py-2 md:py-3">
         <div className="flex h-20 items-center justify-between md:h-24">
-          <a href="#" className="flex shrink-0 items-center gap-2 md:gap-3">
+          <Link to="/" className="flex shrink-0 items-center gap-2 md:gap-3">
             <img
               src={darkMode ? "/branding/logo-dark.png" : SITE_CONFIG.branding.logo}
               alt={SITE_CONFIG.branding.logoAlt}
               className="h-20 w-auto md:h-28"
             />
-          </a>
+          </Link>
 
           <div className="hidden items-center gap-1 xl:flex">
-            {[
-              { label: "Argentina", href: "#argentina" },
-              { label: "Grupales", href: "#grupales" },
-              { label: "Circuitos", href: "#circuitos" },
-              { label: "Quinceañeras", href: "#quinceaneras" },
-            ].map((item) => (
-              <a
+            {NAV_LINKS.map((item) => (
+              <Link
                 key={item.label}
-                href={item.href}
+                to={item.to}
                 className={
                   darkMode
                     ? "rounded-lg px-3 py-2 text-sm font-medium text-stone-300 transition-all hover:bg-stone-800 hover:text-red-400"
@@ -49,14 +52,14 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
                 }
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
-            <a
-              href="#experiencias"
+            <Link
+              to="/experiencias"
               className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--antares-gold)] transition-all hover:bg-amber-50/10"
             >
               Lujo
-            </a>
+            </Link>
           </div>
 
           <div className="flex items-center gap-2 md:gap-3">
@@ -72,8 +75,8 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
             >
               {darkMode ? "☀️" : "🌙"}
             </button>
-            <a
-              href="#ofertas"
+            <Link
+              to="/ofertas"
               className="relative flex h-9 w-9 items-center justify-center rounded-full text-lg transition-all hover:scale-110 group"
               aria-label="Ofertas"
             >
@@ -83,10 +86,11 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
                 Ofertas
                 <div className="absolute right-[-5px] top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-stone-900 rotate-45" />
               </div>
-            </a>
+            </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="rounded-lg p-2 transition-colors hover:bg-stone-100 xl:hidden"
+              aria-label="Abrir menú"
             >
               <svg className="h-5 w-5 text-stone-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {mobileMenuOpen ? (
@@ -102,16 +106,13 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
         {mobileMenuOpen && (
           <div className={`space-y-1 border-t pb-4 pt-3 xl:hidden ${darkMode ? "border-stone-800" : "border-stone-100"}`}>
             {[
-              { label: "Argentina", href: "#argentina" },
-              { label: "Grupales", href: "#grupales" },
-              { label: "Circuitos", href: "#circuitos" },
-              { label: "Quinceañeras", href: "#quinceaneras" },
-              { label: "Lujo", href: "#experiencias" },
-              { label: "Ofertas", href: "#ofertas" },
+              ...NAV_LINKS,
+              { label: "Lujo", to: "/experiencias" },
+              { label: "Ofertas", to: "/ofertas" },
             ].map((item) => (
-              <a
+              <Link
                 key={item.label}
-                href={item.href}
+                to={item.to}
                 onClick={() => setMobileMenuOpen(false)}
                 className={`block rounded-lg px-4 py-2.5 font-medium transition-all ${
                   darkMode
@@ -120,7 +121,7 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
                 }`}
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </div>
         )}

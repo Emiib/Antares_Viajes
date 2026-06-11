@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { blogPosts, continents } from "../data/blog";
 
 export function BlogPage({ darkMode }: { darkMode: boolean }) {
@@ -13,9 +14,9 @@ export function BlogPage({ darkMode }: { darkMode: boolean }) {
     <main className={`${darkMode ? "bg-stone-950" : "bg-stone-50"} min-h-screen`}>
       <section className={`pt-32 md:pt-40 pb-12 md:pb-16 ${darkMode ? "bg-stone-900" : "bg-stone-50"} border-b ${darkMode ? "border-stone-800" : "border-stone-100"}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <a href="#" className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-red-600">
+          <Link to="/" className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-red-600">
             ← Volver al inicio
-          </a>
+          </Link>
           <h1 className={`text-3xl md:text-5xl font-black ${darkMode ? "text-white" : "text-stone-900"} mb-3`}>
             Blog de Viajes
           </h1>

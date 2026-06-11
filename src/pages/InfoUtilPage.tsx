@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export function InfoUtilPage({ darkMode }: { darkMode: boolean }) {
   const sections = [
     {
@@ -49,18 +51,27 @@ export function InfoUtilPage({ darkMode }: { darkMode: boolean }) {
   ];
 
   return (
-    <main className={`${darkMode ? "bg-stone-950" : "bg-stone-50"} min-h-screen`}>
+    <main
+      className={`${darkMode ? "bg-stone-950" : "bg-stone-50"} min-h-[calc(100vh-80px)]`}
+    >
       <section
-        className={`pt-32 md:pt-40 pb-12 md:pb-16 ${darkMode ? "bg-stone-900" : "bg-stone-50"} border-b ${darkMode ? "border-stone-800" : "border-stone-100"}`}
+        className={`pt-28 pb-12 md:pt-32 md:pb-16 ${darkMode ? "bg-stone-900" : "bg-stone-50"} border-b ${darkMode ? "border-stone-800" : "border-stone-100"}`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <a href="#" className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-red-600">
+          <Link
+            to="/"
+            className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-red-600"
+          >
             ← Volver al inicio
-          </a>
-          <h1 className={`text-3xl md:text-5xl font-black ${darkMode ? "text-white" : "text-stone-900"} mb-3`}>
+          </Link>
+          <h1
+            className={`text-3xl md:text-5xl font-black ${darkMode ? "text-white" : "text-stone-900"} mb-3`}
+          >
             Información Útil
           </h1>
-          <p className={`${darkMode ? "text-stone-400" : "text-stone-600"} max-w-2xl text-base md:text-lg`}>
+          <p
+            className={`${darkMode ? "text-stone-400" : "text-stone-600"} max-w-2xl text-base md:text-lg`}
+          >
             Todo lo que necesitas saber antes de viajar: visas, trámites y recomendaciones.
           </p>
         </div>
@@ -73,7 +84,9 @@ export function InfoUtilPage({ darkMode }: { darkMode: boolean }) {
               <div key={section.id}>
                 <div className="flex items-center gap-3 mb-6">
                   <div className="text-4xl">{section.icon}</div>
-                  <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-stone-900"}`}>
+                  <h2
+                    className={`text-2xl font-bold ${darkMode ? "text-white" : "text-stone-900"}`}
+                  >
                     {section.title}
                   </h2>
                 </div>
@@ -83,10 +96,14 @@ export function InfoUtilPage({ darkMode }: { darkMode: boolean }) {
                       key={idx}
                       className={`rounded-xl p-4 border ${darkMode ? "bg-stone-900 border-stone-800" : "bg-stone-50 border-stone-200"}`}
                     >
-                      <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
+                      <h3
+                        className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}
+                      >
                         {item.country}
                       </h3>
-                      <p className={`text-sm ${darkMode ? "text-stone-400" : "text-stone-600"}`}>
+                      <p
+                        className={`text-sm ${darkMode ? "text-stone-400" : "text-stone-600"}`}
+                      >
                         {item.info}
                       </p>
                     </div>
@@ -99,14 +116,19 @@ export function InfoUtilPage({ darkMode }: { darkMode: boolean }) {
           <div
             className={`rounded-2xl border p-6 md:p-8 ${darkMode ? "bg-stone-900 border-stone-800" : "bg-stone-50 border-stone-200"}`}
           >
-            <h3 className={`text-lg font-bold mb-3 ${darkMode ? "text-white" : "text-stone-900"}`}>
+            <h3
+              className={`text-lg font-bold mb-3 ${darkMode ? "text-white" : "text-stone-900"}`}
+            >
               ¿Tenés dudas? Contactanos
             </h3>
-            <p className={`mb-4 ${darkMode ? "text-stone-400" : "text-stone-600"}`}>
-              Nuestro equipo está disponible para asesorarte sobre cualquier requisito específico de tu destino.
+            <p
+              className={`mb-4 ${darkMode ? "text-stone-400" : "text-stone-600"}`}
+            >
+              Nuestro equipo está disponible para asesorarte sobre cualquier
+              requisito específico de tu destino.
             </p>
             <a
-              href={`https://api.whatsapp.com/send?phone=5493446528749&text=${encodeURIComponent("Hola! Tengo dudas sobre requisitos de visa")}`}
+              href={`https://api.whatsapp.com/send?phone=5493446528749&text=${encodeURIComponent("Hola! Tengo dudas sobre requisitos de visa" )}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-green-600 to-green-500 px-6 py-3 text-sm font-bold text-white transition-all hover:shadow-lg"

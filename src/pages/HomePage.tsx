@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { SITE_CONFIG, heroSlides } from "../config/site";
+import { Link } from "react-router-dom";
+import { heroSlides } from "../config/site";
 import { departureMonthOptions } from "../data/dates";
 import {
   featuredPackages,
@@ -59,9 +60,15 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
 
         <div className="relative z-10 max-w-7xl mx-auto w-full px-4 py-16 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
-            <h1 className="mb-8 max-w-3xl text-4xl font-black leading-[0.95] tracking-tight text-white drop-shadow-[0_4px_18px_rgba(0,0,0,0.75)] sm:text-5xl md:text-7xl">
-              {SITE_CONFIG.slogan}
+            <h1 className="mb-5 max-w-3xl text-4xl font-black leading-[0.95] tracking-tight text-white drop-shadow-[0_4px_18px_rgba(0,0,0,0.75)] sm:text-5xl md:text-7xl">
+              Tu viaje soñado,
+              <span className="block text-red-500">armado a tu medida</span>
             </h1>
+            <p className="mb-7 max-w-xl text-base font-medium text-white/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)] sm:text-lg">
+              Hace más de 30 años convertimos ideas en viajes inolvidables. Vos
+              elegís el destino; nosotros nos ocupamos de todo — con asesoría
+              personalizada y guardia 24 hs durante todo el viaje.
+            </p>
             <form onSubmit={handleSearch} className="rounded-2xl bg-white p-4 shadow-2xl md:p-5">
               <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                 <div className="col-span-2 md:col-span-1">
@@ -103,11 +110,16 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
                 <div className="col-span-2 flex items-end md:col-span-1">
                   <button type="submit"
                     className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-5 py-2.5 text-sm font-bold text-white transition-all hover:from-red-700 hover:to-red-600 hover:shadow-lg">
-                    🔍 Buscar
+                    Buscar mi viaje →
                   </button>
                 </div>
               </div>
             </form>
+            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-white/90 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] sm:text-sm">
+              <span className="inline-flex items-center gap-1.5">✓ +30 años de experiencia</span>
+              <span className="inline-flex items-center gap-1.5">✓ Atención personalizada</span>
+              <span className="inline-flex items-center gap-1.5">✓ Guardia 24 hs en viaje</span>
+            </div>
           </div>
         </div>
       </section>
@@ -134,9 +146,9 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
             ))}
           </div>
           <div className="flex justify-center">
-            <a href="#ofertas" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1">
+            <Link to="/ofertas" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1">
               Ver más paquetes →
-            </a>
+            </Link>
           </div>
         </div>
       </AnimatedSection>
@@ -160,9 +172,9 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
             ))}
           </div>
           <div className="flex justify-center">
-            <a href="#circuitos" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1">
+            <Link to="/circuitos" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1">
               Ver más circuitos →
-            </a>
+            </Link>
           </div>
         </div>
       </AnimatedSection>
@@ -186,9 +198,9 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
             ))}
           </div>
           <div className="flex justify-center">
-            <a href="#grupales" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1">
+            <Link to="/grupales" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1">
               Ver más paquetes grupales →
-            </a>
+            </Link>
           </div>
         </div>
       </AnimatedSection>
@@ -212,9 +224,9 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
             ))}
           </div>
           <div className="flex justify-center">
-            <a href="#experiencias" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#C4A882] to-[#b89060] px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1">
+            <Link to="/experiencias" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#C4A882] to-[#b89060] px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1">
               Ver más experiencias →
-            </a>
+            </Link>
           </div>
         </div>
       </AnimatedSection>

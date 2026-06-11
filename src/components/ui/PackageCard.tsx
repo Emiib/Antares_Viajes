@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import type { TravelCard, Accent } from "../../types";
 
 export function PackageCard({
@@ -122,12 +123,12 @@ export function PackageCard({
               {pkg.price}
             </span>
           </div>
-          <a
-            href={`#package-detail/${pkg.id}`}
+          <Link
+            to={`/paquete/${pkg.id}`}
             className={`mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r py-2.5 text-sm font-bold text-white transition-all hover:shadow-lg ${buttonClass}`}
           >
-            Consultar
-          </a>
+            Ver Itinerario
+          </Link>
         </div>
       </div>
     </div>

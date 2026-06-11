@@ -1,4 +1,14 @@
+import { Link } from "react-router-dom";
 import { SITE_CONFIG } from "../../config/site";
+
+const NAV_LINKS = [
+  { label: "Argentina", to: "/argentina" },
+  { label: "Grupales", to: "/grupales" },
+  { label: "Circuitos", to: "/circuitos" },
+  { label: "Quinceañeras", to: "/quinceaneras" },
+  { label: "Experiencias de Lujo", to: "/experiencias" },
+  { label: "Cruceros", to: "/cruceros" },
+];
 
 export function Footer() {
   return (
@@ -30,16 +40,9 @@ export function Footer() {
           <div>
             <h4 className="mb-4 text-xs font-bold uppercase tracking-widest text-stone-500">Navegación</h4>
             <ul className="space-y-2.5">
-              {[
-                { label: "Argentina", href: "#argentina" },
-                { label: "Grupales", href: "#grupales" },
-                { label: "Circuitos", href: "#circuitos" },
-                { label: "Quinceañeras", href: "#quinceaneras" },
-                { label: "Experiencias de Lujo", href: "#experiencias" },
-                { label: "Cruceros", href: "#cruceros" },
-              ].map((item) => (
+              {NAV_LINKS.map((item) => (
                 <li key={item.label}>
-                  <a href={item.href} className="text-sm text-stone-500 transition-colors hover:text-white">{item.label}</a>
+                  <Link to={item.to} className="text-sm text-stone-500 transition-colors hover:text-white">{item.label}</Link>
                 </li>
               ))}
             </ul>
@@ -76,17 +79,17 @@ export function Footer() {
           <div>
             <h4 className="mb-4 text-xs font-bold uppercase tracking-widest text-stone-500">Info Útil</h4>
             <ul className="space-y-2.5">
-              <li><a href="#blog" className="text-sm text-stone-500 transition-colors hover:text-white">Blog de Viajes</a></li>
-              <li><a href="#infoUtil" className="text-sm text-stone-500 transition-colors hover:text-white">Visas</a></li>
-              <li><a href="#infoUtil" className="text-sm text-stone-500 transition-colors hover:text-white">Web Check-in</a></li>
+              <li><Link to="/blog" className="text-sm text-stone-500 transition-colors hover:text-white">Blog de Viajes</Link></li>
+              <li><Link to="/info-util" className="text-sm text-stone-500 transition-colors hover:text-white">Visas</Link></li>
+              <li><Link to="/info-util" className="text-sm text-stone-500 transition-colors hover:text-white">Web Check-in</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="mb-4 text-xs font-bold uppercase tracking-widest text-stone-500">Legales</h4>
             <ul className="space-y-2.5">
-              <li><a href="#legales" className="text-sm text-stone-500 transition-colors hover:text-white leading-snug">Condiciones de Contratación</a></li>
-              <li><a href="#legales" className="text-sm text-stone-500 transition-colors hover:text-white leading-snug">Botón de Arrepentimiento</a></li>
+              <li><Link to="/legales" className="text-sm text-stone-500 transition-colors hover:text-white leading-snug">Condiciones de Contratación</Link></li>
+              <li><Link to="/legales" className="text-sm text-stone-500 transition-colors hover:text-white leading-snug">Botón de Arrepentimiento</Link></li>
             </ul>
           </div>
         </div>
