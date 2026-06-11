@@ -5,6 +5,7 @@ import { SITE_CONFIG } from "./config/site";
 import { useDarkMode } from "./hooks/useDarkMode";
 import { useNavbarVisibility } from "./hooks/useNavbarVisibility";
 
+import { RouteSeo } from "./components/Seo";
 import { Navbar } from "./components/layout/Navbar";
 import { Footer } from "./components/layout/Footer";
 import { PageLayout } from "./components/layout/PageLayout";
@@ -65,6 +66,7 @@ function AppShell() {
       }`}
     >
       <ScrollToTop />
+      <RouteSeo />
       <Navbar darkMode={darkMode} setDarkMode={setDarkMode} navbarVisible={navbarVisible} />
 
       <Routes>
