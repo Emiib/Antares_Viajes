@@ -1,0 +1,25 @@
+# Blueprint de Render para el backend de Antares.
+# Deploy: en Render -> New -> Blueprint -> elegí este repo.
+# (El frontend sigue en Vercel; esto despliega solo server/.)
+services:
+  - type: web
+    name: antares-backend
+    runtime: node
+    rootDir: server
+    plan: free
+    region: virginia
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      # Render genera y guarda un secreto seguro automáticamente.
+      - key: JWT_SECRET
+        generateValue: true
+      # Estos los completás vos en el dashboard (Render no los pide en el blueprint).
+      - key: ADMIN_PASSWORD_HASH
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+      - key: SYNC_ON_STARTUP
+        value: "true"

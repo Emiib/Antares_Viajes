@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { initDatabase } = require('./db');
+const { syncAll } = require('./integrations/sync');
 const adminRoutes = require('./routes/admin');
 const publicRoutes = require('./routes/public');
 
@@ -39,9 +40,19 @@ app.get('/health', (req, res) => {
 async function startServer() {
   try {
     await initDatabase();
-    app.listen(PORT, () => {
-      console.log(`\n✅ Server running at http://localhost:${PORT}`);
-      console.log(`Admin panel: http://localhost:3000/#admin`);
+    app.listen(PORT, async () => {
+      console.log(`\n✅ Server running on port ${PORT}`);
+
+      // Repuebla los paquetes de mayoristas al arrancar (clave en hosts sin
+      // disco persistente, donde la DB se reinicia). Desactivable con SYNC_ON_STARTUP=false.
+      if (process.env.SYNC_ON_STARTUP !== 'false') {
+        try {
+          const results = await syncAll();
+          console.log('Sync inicial de mayoristas:', JSON.stringify(results));
+        } catch (err) {
+          console.error('Sync inicial falló:', err.message);
+        }
+      }
     });
   } catch (err) {
     console.error('Failed to start server:', err);
