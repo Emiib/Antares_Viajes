@@ -36,6 +36,8 @@ CREATE TABLE IF NOT EXISTS hero_slides (
 CREATE TABLE IF NOT EXISTS packages (
   id TEXT PRIMARY KEY,
   type TEXT,
+  source TEXT DEFAULT 'manual',
+  external_id TEXT,
   title TEXT NOT NULL,
   destination TEXT NOT NULL,
   duration TEXT,

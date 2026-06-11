@@ -21,14 +21,40 @@ function initDatabase() {
           if (err) {
             console.error('Error initializing database:', err);
             reject(err);
-          } else {
-            console.log('Database schema initialized');
-            resolve(db);
+            return;
           }
+          runMigrations(db)
+            .then(() => {
+              console.log('Database schema initialized');
+              resolve(db);
+            })
+            .catch(reject);
         });
       }
     });
   });
+}
+
+// Agrega columnas nuevas a bases de datos ya existentes (idempotente).
+function runMigrations(database) {
+  const statements = [
+    "ALTER TABLE packages ADD COLUMN source TEXT DEFAULT 'manual'",
+    "ALTER TABLE packages ADD COLUMN external_id TEXT",
+  ];
+  return Promise.all(
+    statements.map(
+      (sql) =>
+        new Promise((resolve) => {
+          database.run(sql, (err) => {
+            // "duplicate column name" significa que ya estaba migrada: lo ignoramos.
+            if (err && !/duplicate column name/i.test(err.message)) {
+              console.error('Migration error:', err.message);
+            }
+            resolve();
+          });
+        })
+    )
+  );
 }
 
 function getDB() {

@@ -1,26 +1,38 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const { getDB } = require('../db');
+const { verify, signSession } = require('../auth');
+const { syncAll } = require('../integrations/sync');
+const { listIntegrations } = require('../integrations/registry');
 
 const router = express.Router();
 
-// Middleware to verify authentication
+if (!process.env.ADMIN_PASSWORD_HASH) {
+  console.warn(
+    '⚠️  ADMIN_PASSWORD_HASH no está definido: el login compara en texto plano ' +
+    '(ADMIN_PASSWORD o "admin123"). Para producción generá un hash con ' +
+    '`node scripts/hash-password.js <tu-password>` y guardalo en server/.env.'
+  );
+}
+
+// Middleware: valida el token firmado (Authorization: Bearer <token>)
 const verifyAuth = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
-  if (!token) {
-    return res.status(401).json({ error: 'No token provided' });
+  const payload = token ? verify(token) : null;
+  if (!payload) {
+    return res.status(401).json({ error: 'No autorizado' });
   }
-
-  try {
-    const decoded = JSON.parse(Buffer.from(token, 'base64').toString());
-    if (decoded.password !== process.env.ADMIN_PASSWORD || Date.now() > decoded.expires) {
-      return res.status(401).json({ error: 'Invalid or expired token' });
-    }
-    next();
-  } catch (err) {
-    res.status(401).json({ error: 'Invalid token' });
-  }
+  req.admin = payload;
+  next();
 };
+
+// Verifica la contraseña: bcrypt contra el hash si existe; texto plano solo en dev.
+async function checkPassword(password) {
+  const hash = process.env.ADMIN_PASSWORD_HASH;
+  if (hash) return bcrypt.compare(password, hash);
+  const plain = process.env.ADMIN_PASSWORD || 'admin123';
+  return password === plain;
+}
 
 // Login endpoint
 router.post('/login', async (req, res) => {
@@ -30,19 +42,12 @@ router.post('/login', async (req, res) => {
     return res.status(400).json({ error: 'Password required' });
   }
 
-  // Simple password check (in production, use proper hashing)
-  const correctPassword = process.env.ADMIN_PASSWORD || 'admin123';
-
-  if (password !== correctPassword) {
+  const ok = await checkPassword(password);
+  if (!ok) {
     return res.status(401).json({ error: 'Invalid password' });
   }
 
-  // Create token (24 hour expiration)
-  const token = Buffer.from(JSON.stringify({
-    password: correctPassword,
-    expires: Date.now() + 24 * 60 * 60 * 1000
-  })).toString('base64');
-
+  const token = signSession();
   res.json({ token, expires: 24 * 60 * 60 });
 });
 
@@ -89,16 +94,16 @@ router.get('/packages', verifyAuth, (req, res) => {
 // Create package
 router.post('/packages', verifyAuth, (req, res) => {
   const db = getDB();
-  const { id, title, destination, duration, price, image_url, badge, departure, people, includes } = req.body;
+  const { id, type, title, destination, duration, price, image_url, badge, departure, people, includes } = req.body;
 
   if (!id || !title || !destination || !price) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
   db.run(
-    `INSERT INTO packages (id, title, destination, duration, price, image_url, badge, departure, people, active)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
-    [id, title, destination, duration, price, image_url, badge, departure, people],
+    `INSERT INTO packages (id, type, title, destination, duration, price, image_url, badge, departure, people, active)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+    [id, type, title, destination, duration, price, image_url, badge, departure, people],
     function(err) {
       if (err) return res.status(500).json({ error: err.message });
 
@@ -117,12 +122,12 @@ router.post('/packages', verifyAuth, (req, res) => {
 // Update package
 router.put('/packages/:id', verifyAuth, (req, res) => {
   const db = getDB();
-  const { title, destination, duration, price, image_url, badge, departure, people, includes } = req.body;
+  const { type, title, destination, duration, price, image_url, badge, departure, people, includes } = req.body;
 
   db.run(
-    `UPDATE packages SET title = ?, destination = ?, duration = ?, price = ?, image_url = ?, badge = ?, departure = ?, people = ?, updated_at = CURRENT_TIMESTAMP
+    `UPDATE packages SET type = ?, title = ?, destination = ?, duration = ?, price = ?, image_url = ?, badge = ?, departure = ?, people = ?, updated_at = CURRENT_TIMESTAMP
      WHERE id = ?`,
-    [title, destination, duration, price, image_url, badge, departure, people, req.params.id],
+    [type, title, destination, duration, price, image_url, badge, departure, people, req.params.id],
     function(err) {
       if (err) return res.status(500).json({ error: err.message });
 
@@ -243,6 +248,23 @@ router.put('/config', verifyAuth, (req, res) => {
       res.json({ message: 'Config updated' });
     }
   );
+});
+
+// ─── Mayoristas (integraciones) ───────────────────────────────
+
+// Lista los mayoristas registrados (sin exponer credenciales).
+router.get('/integrations', verifyAuth, (req, res) => {
+  res.json(listIntegrations());
+});
+
+// Dispara la sincronización de todos los mayoristas habilitados.
+router.post('/sync', verifyAuth, async (req, res) => {
+  try {
+    const results = await syncAll();
+    res.json({ results });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;

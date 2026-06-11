@@ -7,3 +7,7 @@ dist
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Backend
+server/data.db
+server/uploads/

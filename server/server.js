@@ -8,8 +8,18 @@ const publicRoutes = require('./routes/public');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
+// CORS: en producción se restringe a los orígenes de CORS_ORIGIN (separados por coma).
+const allowedOrigins = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+if (allowedOrigins.length) {
+  app.use(cors({ origin: allowedOrigins }));
+} else {
+  console.warn('⚠️  CORS_ORIGIN no definido: permitiendo todos los orígenes (solo para desarrollo).');
+  app.use(cors());
+}
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
