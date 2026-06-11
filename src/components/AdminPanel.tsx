@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { API_URL } from "../config/api";
 
 interface AdminPanelProps {
   darkMode: boolean;
@@ -22,7 +23,7 @@ export function AdminPanel({ darkMode }: AdminPanelProps) {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:5000/api/admin/login", {
+      const response = await fetch(`${API_URL}/api/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password })
@@ -141,7 +142,7 @@ function AdminDashboard({ darkMode }: { darkMode: boolean }) {
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem("admin_token");
-      const response = await fetch("http://localhost:5000/api/admin/dashboard", {
+      const response = await fetch(`${API_URL}/api/admin/dashboard`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const result = await response.json();
