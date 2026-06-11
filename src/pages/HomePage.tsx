@@ -3,12 +3,7 @@ import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { heroSlides } from "../config/site";
 import { departureMonthOptions } from "../data/dates";
-import {
-  featuredPackages,
-  circuitPackages,
-  groupPackages,
-  luxuryExperiences,
-} from "../data/packages";
+import { usePackages } from "../data/packagesStore";
 import { useHeroSlide } from "../hooks/useHeroSlide";
 import { useMobileViewport } from "../hooks/useMobileViewport";
 import { PopularDestinationsCarousel } from "../components/home/PopularDestinationsCarousel";
@@ -28,6 +23,7 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
   });
   const currentHeroSlide = useHeroSlide();
   const isMobileViewport = useMobileViewport();
+  const { byType } = usePackages();
 
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -139,7 +135,7 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
             </p>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-5 mb-8">
-            {featuredPackages.map((pkg, i) => (
+            {byType.featured.map((pkg, i) => (
               <div key={pkg.id} style={{ transitionDelay: `${i * 100}ms` }} className="h-full">
                 <PackageCard pkg={pkg} accent="red" darkMode={darkMode} />
               </div>
@@ -165,7 +161,7 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
             </p>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-5 mb-8">
-            {circuitPackages.map((pkg, i) => (
+            {byType.circuitos.map((pkg, i) => (
               <div key={pkg.id} style={{ transitionDelay: `${i * 100}ms` }} className="h-full">
                 <PackageCard pkg={pkg} accent="red" darkMode={darkMode} />
               </div>
@@ -191,7 +187,7 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
             </p>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-5 mb-8">
-            {groupPackages.map((pkg, i) => (
+            {byType.grupales.map((pkg, i) => (
               <div key={pkg.id} style={{ transitionDelay: `${i * 100}ms` }} className="h-full">
                 <PackageCard pkg={pkg} accent="red" darkMode={darkMode} />
               </div>
@@ -217,7 +213,7 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
             </p>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-5 mb-8">
-            {luxuryExperiences.map((pkg, i) => (
+            {byType.experiencias.map((pkg, i) => (
               <div key={pkg.id} style={{ transitionDelay: `${i * 100}ms` }} className="h-full">
                 <PackageCard pkg={pkg} accent="gold" darkMode={darkMode} />
               </div>

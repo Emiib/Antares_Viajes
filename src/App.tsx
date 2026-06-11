@@ -21,15 +21,7 @@ import { InfoUtilPage } from "./pages/InfoUtilPage";
 import { LegalesPage } from "./pages/LegalesPage";
 import { PackageDetailPage } from "./pages/PackageDetailPage";
 
-import {
-  offersPackages,
-  argentinaPackages,
-  quincePackages,
-  luxuryExperiences,
-  cruisePackages,
-  groupPackages,
-  circuitPackages,
-} from "./data/packages";
+import { PackagesProvider, usePackages } from "./data/packagesStore";
 
 /** Construye un enlace de WhatsApp con un mensaje opcional ya codificado. */
 export function wa(text?: string) {
@@ -52,6 +44,7 @@ function AppShell() {
   const navbarVisible = useNavbarVisibility();
   const [showTripForm, setShowTripForm] = useState(false);
   const { pathname } = useLocation();
+  const { byType } = usePackages();
 
   // El panel admin se muestra sin el chrome de marketing (navbar, footer, etc.).
   if (pathname.startsWith("/admin")) {
@@ -80,7 +73,7 @@ function AppShell() {
             <PageLayout
               title="Ofertas Flash"
               subtitle="Promociones y tarifas especiales con vigencia limitada."
-              cards={offersPackages}
+              cards={byType.ofertas}
               accent="red"
               darkMode={darkMode}
             />
@@ -92,7 +85,7 @@ function AppShell() {
             <PageLayout
               title="Descubrí Argentina"
               subtitle="Escapadas y viajes nacionales con los mejores destinos del país."
-              cards={argentinaPackages}
+              cards={byType.argentina}
               accent="amber"
               darkMode={darkMode}
             />
@@ -104,7 +97,7 @@ function AppShell() {
             <PageLayout
               title="Quinceañeras"
               subtitle="Programas pensados para viajes inolvidables de quince."
-              cards={quincePackages}
+              cards={byType.quinceaneras}
               accent="rose"
               darkMode={darkMode}
             />
@@ -116,7 +109,7 @@ function AppShell() {
             <PageLayout
               title="Experiencias de Lujo"
               subtitle="Propuestas premium y viajes exclusivos de otra categoría."
-              cards={luxuryExperiences}
+              cards={byType.experiencias}
               accent="gold"
               darkMode={darkMode}
             />
@@ -128,7 +121,7 @@ function AppShell() {
             <PageLayout
               title="Cruceros"
               subtitle="Preparado para futuras conexiones con MSC y Organfur Central de Cruceros."
-              cards={cruisePackages}
+              cards={byType.cruceros}
               accent="amber"
               darkMode={darkMode}
             />
@@ -140,7 +133,7 @@ function AppShell() {
             <PageLayout
               title="Viajes Grupales"
               subtitle="Paquetes especiales para empresas, amigos y familias con tarifas pensadas para grupos."
-              cards={groupPackages}
+              cards={byType.grupales}
               accent="red"
               darkMode={darkMode}
             />
@@ -152,7 +145,7 @@ function AppShell() {
             <PageLayout
               title="Circuitos Internacionales"
               subtitle="Rutas completas para descubrir grandes destinos con itinerarios armados."
-              cards={circuitPackages}
+              cards={byType.circuitos}
               accent="red"
               darkMode={darkMode}
             />
@@ -202,7 +195,9 @@ function AppShell() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AppShell />
+      <PackagesProvider>
+        <AppShell />
+      </PackagesProvider>
     </BrowserRouter>
   );
 }

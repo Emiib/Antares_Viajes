@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { getAllPackages } from "../data/packages";
+import { usePackages } from "../data/packagesStore";
 
 export function PackageDetailPage({
   darkMode,
@@ -9,8 +9,8 @@ export function PackageDetailPage({
   whatsappLink: (msg: string) => string;
 }) {
   const { id } = useParams(); // Obtenemos el ID de la URL automáticamente
-  const allPackages = getAllPackages();
-  const pkg = id ? allPackages.find((p) => p.id === id) : null;
+  const { getById } = usePackages();
+  const pkg = id ? getById(id) : null;
   if (!pkg) {
     return (
       <main
