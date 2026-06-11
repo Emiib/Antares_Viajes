@@ -1,36 +1,43 @@
 import React, { useState, useEffect } from "react";
 import { API_URL } from "../config/api";
+import { adminFetch } from "./admin/adminApi";
+import { AdminPackages } from "./admin/AdminPackages";
+import { AdminIntegrations } from "./admin/AdminIntegrations";
+import { AdminConfig } from "./admin/AdminConfig";
 
 interface AdminPanelProps {
   darkMode: boolean;
 }
 
+type Tab = "dashboard" | "packages" | "mayoristas" | "config";
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: "dashboard", label: "Dashboard" },
+  { id: "packages", label: "Paquetes" },
+  { id: "mayoristas", label: "Mayoristas" },
+  { id: "config", label: "Config" },
+];
+
 export function AdminPanel({ darkMode }: AdminPanelProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "packages" | "hero" | "config">("dashboard");
+  const [activeTab, setActiveTab] = useState<Tab>("dashboard");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem("admin_token");
-    if (token) {
-      setIsLoggedIn(true);
-    }
+    if (localStorage.getItem("admin_token")) setIsLoggedIn(true);
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
     try {
       const response = await fetch(`${API_URL}/api/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password })
+        body: JSON.stringify({ password }),
       });
-
       const data = await response.json();
-
       if (response.ok) {
         localStorage.setItem("admin_token", data.token);
         setIsLoggedIn(true);
@@ -38,8 +45,8 @@ export function AdminPanel({ darkMode }: AdminPanelProps) {
       } else {
         setError(data.error || "Login failed");
       }
-    } catch (err) {
-      setError("Connection error");
+    } catch {
+      setError("No se pudo conectar con el servidor.");
     }
   };
 
@@ -54,30 +61,27 @@ export function AdminPanel({ darkMode }: AdminPanelProps) {
       <div className={`min-h-screen flex items-center justify-center ${darkMode ? "bg-stone-950" : "bg-stone-50"}`}>
         <div className={`rounded-2xl border p-8 w-full max-w-md ${darkMode ? "bg-stone-900 border-stone-800" : "bg-white border-stone-200"}`}>
           <h1 className={`text-2xl font-black mb-6 text-center ${darkMode ? "text-white" : "text-stone-900"}`}>
-            Admin Panel
+            Antares Admin
           </h1>
-
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-stone-300" : "text-stone-700"}`}>
-                Password
+                Contraseña
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className={`w-full px-4 py-3 rounded-lg border ${darkMode ? "bg-stone-800 border-stone-700 text-white" : "bg-stone-50 border-stone-200"}`}
-                placeholder="Enter admin password"
+                placeholder="Ingresá la contraseña"
               />
             </div>
-
             {error && <div className="text-red-600 text-sm font-semibold">{error}</div>}
-
             <button
               type="submit"
               className="w-full bg-gradient-to-r from-red-600 to-red-500 text-white font-bold py-3 rounded-lg hover:shadow-lg transition-all"
             >
-              Enter
+              Entrar
             </button>
           </form>
         </div>
@@ -97,20 +101,14 @@ export function AdminPanel({ darkMode }: AdminPanelProps) {
               onClick={handleLogout}
               className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700"
             >
-              Logout
+              Cerrar sesión
             </button>
           </div>
-
           <div className="flex gap-2 mt-4">
-            {[
-              { id: "dashboard", label: "Dashboard" },
-              { id: "packages", label: "Packages" },
-              { id: "hero", label: "Hero Slides" },
-              { id: "config", label: "Config" }
-            ].map((tab) => (
+            {TABS.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id)}
                 className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                   activeTab === tab.id
                     ? "bg-red-600 text-white"
@@ -129,94 +127,53 @@ export function AdminPanel({ darkMode }: AdminPanelProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === "dashboard" && <AdminDashboard darkMode={darkMode} />}
         {activeTab === "packages" && <AdminPackages darkMode={darkMode} />}
-        {activeTab === "hero" && <AdminHeroSlides darkMode={darkMode} />}
+        {activeTab === "mayoristas" && <AdminIntegrations darkMode={darkMode} />}
         {activeTab === "config" && <AdminConfig darkMode={darkMode} />}
       </div>
     </div>
   );
 }
 
+type Dashboard = { activePackages?: number; activeSlides?: number; lastUpdated?: string };
+
 function AdminDashboard({ darkMode }: { darkMode: boolean }) {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<Dashboard | null>(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchData = async () => {
-      const token = localStorage.getItem("admin_token");
-      const response = await fetch(`${API_URL}/api/admin/dashboard`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const result = await response.json();
-      setData(result);
+    let active = true;
+    const fetchData = () => {
+      adminFetch<Dashboard>("/dashboard")
+        .then((d) => active && setData(d))
+        .catch((e) => active && setError((e as Error).message));
     };
-
     fetchData();
-    const interval = setInterval(fetchData, 10000);
-    return () => clearInterval(interval);
+    const interval = setInterval(fetchData, 15000);
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
   }, []);
 
+  const cardCls = darkMode ? "bg-stone-900 border-stone-800" : "bg-white border-stone-200";
+  const mutedCls = darkMode ? "text-stone-400" : "text-stone-600";
+
   return (
     <div>
-      <h2 className={`text-2xl font-black mb-6 ${darkMode ? "text-white" : "text-stone-900"}`}>
-        Dashboard
-      </h2>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className={`rounded-lg border p-6 ${darkMode ? "bg-stone-900 border-stone-800" : "bg-white border-stone-200"}`}>
-          <div className={`text-sm font-semibold mb-2 ${darkMode ? "text-stone-400" : "text-stone-600"}`}>
-            Active Packages
-          </div>
-          <div className="text-4xl font-black text-red-600">{data?.activePackages || 0}</div>
+      <h2 className={`text-2xl font-black mb-6 ${darkMode ? "text-white" : "text-stone-900"}`}>Dashboard</h2>
+      {error && <p className="text-red-600 text-sm font-semibold mb-4">{error}</p>}
+      <div className="grid grid-cols-2 gap-4 max-w-lg">
+        <div className={`rounded-lg border p-6 ${cardCls}`}>
+          <div className={`text-sm font-semibold mb-2 ${mutedCls}`}>Paquetes activos</div>
+          <div className="text-4xl font-black text-red-600">{data?.activePackages ?? "—"}</div>
         </div>
-
-        <div className={`rounded-lg border p-6 ${darkMode ? "bg-stone-900 border-stone-800" : "bg-white border-stone-200"}`}>
-          <div className={`text-sm font-semibold mb-2 ${darkMode ? "text-stone-400" : "text-stone-600"}`}>
-            Active Hero Slides
-          </div>
-          <div className="text-4xl font-black text-red-600">{data?.activeSlides || 0}</div>
+        <div className={`rounded-lg border p-6 ${cardCls}`}>
+          <div className={`text-sm font-semibold mb-2 ${mutedCls}`}>Hero slides activos</div>
+          <div className="text-4xl font-black text-red-600">{data?.activeSlides ?? "—"}</div>
         </div>
       </div>
-
-      <p className={`mt-6 text-sm ${darkMode ? "text-stone-400" : "text-stone-600"}`}>
-        Last updated: {data?.lastUpdated ? new Date(data.lastUpdated).toLocaleString() : "Loading..."}
-      </p>
-    </div>
-  );
-}
-
-function AdminPackages({ darkMode }: { darkMode: boolean }) {
-  return (
-    <div>
-      <h2 className={`text-2xl font-black mb-6 ${darkMode ? "text-white" : "text-stone-900"}`}>
-        Manage Packages
-      </h2>
-      <p className={`${darkMode ? "text-stone-400" : "text-stone-600"}`}>
-        Package management coming soon...
-      </p>
-    </div>
-  );
-}
-
-function AdminHeroSlides({ darkMode }: { darkMode: boolean }) {
-  return (
-    <div>
-      <h2 className={`text-2xl font-black mb-6 ${darkMode ? "text-white" : "text-stone-900"}`}>
-        Manage Hero Slides
-      </h2>
-      <p className={`${darkMode ? "text-stone-400" : "text-stone-600"}`}>
-        Hero slides management coming soon...
-      </p>
-    </div>
-  );
-}
-
-function AdminConfig({ darkMode }: { darkMode: boolean }) {
-  return (
-    <div>
-      <h2 className={`text-2xl font-black mb-6 ${darkMode ? "text-white" : "text-stone-900"}`}>
-        Site Configuration
-      </h2>
-      <p className={`${darkMode ? "text-stone-400" : "text-stone-600"}`}>
-        Configuration management coming soon...
+      <p className={`mt-6 text-sm ${mutedCls}`}>
+        Última actualización: {data?.lastUpdated ? new Date(data.lastUpdated).toLocaleString() : "—"}
       </p>
     </div>
   );
