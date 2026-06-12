@@ -7,6 +7,23 @@
   --antares-brown: #6B4E31;
 }
 
+/* Serif editorial: solo para la sección Antares Lujo */
+.font-serif-lux {
+  font-family: "Fraunces", Georgia, "Times New Roman", serif;
+}
+
+/* Accesibilidad: respeta la preferencia de menos movimiento del usuario */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 .antares-dark .bg-white,
 .antares-dark .bg-stone-50,
 .antares-dark .bg-red-50\/50,

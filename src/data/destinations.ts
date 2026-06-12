@@ -1,47 +1,38 @@
 export const popularDestinations = [
   {
     name: "Caribe",
-    count: "120+ paquetes",
-    icon: "🏝️",
     subtitle: "Playas, all inclusive y relax",
+    image: "/img/destinos/caribe.webp",
+    to: "/ofertas",
   },
   {
     name: "Brasil",
-    count: "85+ paquetes",
-    icon: "⛪",
     subtitle: "Cercanía, playa y diversión",
+    image: "/img/destinos/brasil.webp",
+    to: "/ofertas",
   },
   {
     name: "Europa",
-    count: "200+ paquetes",
-    icon: "🗼",
     subtitle: "Ciudades icónicas y circuitos",
+    image: "/img/destinos/europa.webp",
+    to: "/circuitos",
   },
   {
     name: "México",
-    count: "95+ paquetes",
-    icon: "🗿",
     subtitle: "Caribe, cultura y gastronomía",
+    image: "/img/destinos/mexico.webp",
+    to: "/ofertas",
   },
   {
     name: "Argentina",
-    count: "150+ paquetes",
-    icon: "🧉",
-    subtitle: "Conoce nuestro país",
+    subtitle: "Conocé nuestro país",
+    image: "/img/destinos/argentina.webp",
+    to: "/argentina",
   },
   {
     name: "Estados Unidos",
-    count: "110+ paquetes",
-    icon: "🗽",
-    subtitle: "Compras, parques y estados",
+    subtitle: "Compras, parques y ciudades",
+    image: "/img/destinos/estados-unidos.webp",
+    to: "/ofertas",
   },
 ] as const;
-
-export const destinationImages: Record<string, string> = {
-  Caribe: "/videos/destinospop/caribe.jpg",
-  Brasil: "/videos/destinospop/brasil.jpg",
-  Europa: "/videos/destinospop/europa.jpg",
-  México: "/videos/destinospop/mexico.jpg",
-  Argentina: "/videos/destinospop/argentina.jpg",
-  "Estados Unidos": "/videos/destinospop/estados-unidos.jpg",
-};

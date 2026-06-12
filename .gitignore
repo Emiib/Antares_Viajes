@@ -11,3 +11,6 @@ dist
 # Backend
 server/data.db
 server/uploads/
+
+# Videos master (crudos, solo locales - no se despliegan)
+media-originales/

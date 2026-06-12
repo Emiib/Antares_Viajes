@@ -4,9 +4,13 @@ import { Link } from "react-router-dom";
 import { heroSlides } from "../config/site";
 import { departureMonthOptions } from "../data/dates";
 import { usePackages } from "../data/packagesStore";
-import { useHeroSlide } from "../hooks/useHeroSlide";
+import { useHeroSlide, usePrefersReducedMotion } from "../hooks/useHeroSlide";
 import { useMobileViewport } from "../hooks/useMobileViewport";
-import { PopularDestinationsCarousel } from "../components/home/PopularDestinationsCarousel";
+import { trackEvent, trackStandard } from "../lib/tracking";
+import { Differentiators } from "../components/home/Differentiators";
+import { DestinationsGrid } from "../components/home/DestinationsGrid";
+import { LuxurySection } from "../components/home/LuxurySection";
+import { LeadQualifier } from "../components/home/LeadQualifier";
 import { AnimatedSection } from "../components/ui/AnimatedSection";
 import { PackageCard } from "../components/ui/PackageCard";
 
@@ -21,35 +25,54 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
     departure: "",
     passengers: "2",
   });
-  const currentHeroSlide = useHeroSlide();
+  const { currentSlide, advance } = useHeroSlide();
   const isMobileViewport = useMobileViewport();
+  const prefersReducedMotion = usePrefersReducedMotion();
   const { byType } = usePackages();
 
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     const msg = `Hola! Quiero buscar viajes:${searchData.destination ? ` Destino: ${searchData.destination}` : ""}${searchData.departure ? ` Fecha: ${searchData.departure}` : ""}${searchData.passengers ? ` Pasajeros: ${searchData.passengers}` : ""}`;
-    window.location.href = wa(msg);
+    trackStandard("Search", { search_term: searchData.destination || "(sin destino)" });
+    trackEvent("hero_search", { ...searchData });
+    window.open(wa(msg), "_blank", "noopener");
   };
 
-  const slide = heroSlides[currentHeroSlide];
+  const slide = heroSlides[currentSlide];
   const webm = isMobileViewport ? slide.sources.mobileWebm : slide.sources.desktopWebm;
   const mp4  = isMobileViewport ? slide.sources.mobileMp4  : slide.sources.desktopMp4;
 
   return (
     <main>
       {/* ── HERO ── */}
-      <section id="hero" className="relative min-h-screen overflow-hidden flex items-center md:min-h-[110vh]">
+      <section
+        id="hero"
+        data-track-section="hero"
+        className="relative min-h-screen overflow-hidden flex items-center md:min-h-[110vh]"
+      >
         <div className="absolute inset-0 z-0">
-          <video
-            key={`${slide.label}-${isMobileViewport ? "m" : "d"}`}
-            className="absolute inset-0 h-full w-full object-cover"
-            style={{ zIndex: 1 }}
-            poster={slide.poster}
-            autoPlay muted loop playsInline preload="auto"
-          >
-            <source src={webm} type="video/webm" />
-            <source src={mp4}  type="video/mp4"  />
-          </video>
+          {prefersReducedMotion ? (
+            /* Accesibilidad: sin autoplay si el usuario prefiere menos movimiento */
+            <img
+              src={slide.poster}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{ zIndex: 1 }}
+            />
+          ) : (
+            /* Cada video se reproduce UNA vez; al terminar avanza el slide */
+            <video
+              key={`${slide.label}-${isMobileViewport ? "m" : "d"}`}
+              className="animate-hero-video absolute inset-0 h-full w-full object-cover"
+              style={{ zIndex: 1 }}
+              poster={slide.poster}
+              onEnded={advance}
+              autoPlay muted playsInline preload="auto"
+            >
+              <source src={webm} type="video/webm" />
+              <source src={mp4}  type="video/mp4"  />
+            </video>
+          )}
           <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/12 to-transparent" style={{ zIndex: 2 }} />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"  style={{ zIndex: 2 }} />
         </div>
@@ -68,8 +91,9 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
             <form onSubmit={handleSearch} className="rounded-2xl bg-white p-4 shadow-2xl md:p-5">
               <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                 <div className="col-span-2 md:col-span-1">
-                  <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-stone-500">Destino</label>
+                  <label htmlFor="hero-destination" className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-stone-500">Destino</label>
                   <input
+                    id="hero-destination"
                     type="text" placeholder="¿A dónde?"
                     value={searchData.destination}
                     onChange={(e) => setSearchData({ ...searchData, destination: e.target.value })}
@@ -77,8 +101,9 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
                   />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-stone-500">Fecha</label>
+                  <label htmlFor="hero-departure" className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-stone-500">Fecha</label>
                   <select
+                    id="hero-departure"
                     value={searchData.departure}
                     onChange={(e) => setSearchData({ ...searchData, departure: e.target.value })}
                     className={`w-full appearance-none rounded-xl border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-red-400 ${searchData.departure ? "text-stone-900" : "text-stone-400"}`}
@@ -90,8 +115,9 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-stone-500">Pasajeros</label>
+                  <label htmlFor="hero-passengers" className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-stone-500">Pasajeros</label>
                   <select
+                    id="hero-passengers"
                     value={searchData.passengers}
                     onChange={(e) => setSearchData({ ...searchData, passengers: e.target.value })}
                     className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-red-400"
@@ -105,7 +131,7 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
                 </div>
                 <div className="col-span-2 flex items-end md:col-span-1">
                   <button type="submit"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-5 py-2.5 text-sm font-bold text-white transition-all hover:from-red-700 hover:to-red-600 hover:shadow-lg">
+                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-5 py-2.5 text-sm font-bold text-white transition-all hover:from-red-700 hover:to-red-600 hover:shadow-lg">
                     Buscar mi viaje →
                   </button>
                 </div>
@@ -120,11 +146,11 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
         </div>
       </section>
 
-      {/* ── DESTINOS POPULARES ── */}
-      <PopularDestinationsCarousel darkMode={darkMode} whatsappLink={wa} />
+      {/* ── LA DIFERENCIA ANTARES (somos personas) ── */}
+      <Differentiators darkMode={darkMode} />
 
       {/* ── FAVORITOS ── */}
-      <AnimatedSection id="paquetes" className={`${darkMode ? "bg-stone-900" : "bg-stone-50"} py-14 md:py-20`}>
+      <AnimatedSection id="paquetes" data-track-section="favoritos" className={`${darkMode ? "bg-stone-900" : "bg-stone-50"} py-14 md:py-20`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-10 flex flex-col items-center justify-center gap-4 text-center">
             <h2 className={`mb-2 text-3xl font-black leading-tight md:text-5xl ${darkMode ? "text-white" : "text-stone-900"}`}>
@@ -142,15 +168,18 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
             ))}
           </div>
           <div className="flex justify-center">
-            <Link to="/ofertas" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1">
+            <Link to="/ofertas" className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1">
               Ver más paquetes →
             </Link>
           </div>
         </div>
       </AnimatedSection>
 
+      {/* ── DESTINOS ── */}
+      <DestinationsGrid darkMode={darkMode} />
+
       {/* ── CIRCUITOS ── */}
-      <AnimatedSection id="circuitos" className={`${darkMode ? "bg-stone-950" : "bg-stone-50"} py-14 md:py-20`}>
+      <AnimatedSection id="circuitos" data-track-section="circuitos" className={`${darkMode ? "bg-stone-900" : "bg-stone-50"} py-14 md:py-20`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-10 flex flex-col items-center justify-center gap-4 text-center">
             <h2 className={`mb-2 text-3xl font-black leading-tight md:text-5xl ${darkMode ? "text-white" : "text-stone-900"}`}>
@@ -168,7 +197,7 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
             ))}
           </div>
           <div className="flex justify-center">
-            <Link to="/circuitos" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1">
+            <Link to="/circuitos" className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1">
               Ver más circuitos →
             </Link>
           </div>
@@ -176,7 +205,7 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
       </AnimatedSection>
 
       {/* ── GRUPALES ── */}
-      <AnimatedSection id="grupales" className={`${darkMode ? "bg-stone-900" : "bg-stone-50"} py-14 md:py-20`}>
+      <AnimatedSection id="grupales" data-track-section="grupales" className={`${darkMode ? "bg-stone-950" : "bg-white"} py-14 md:py-20`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-10 text-center">
             <h2 className={`mb-2 text-3xl font-black md:text-5xl ${darkMode ? "text-white" : "text-stone-900"}`}>
@@ -194,67 +223,18 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
             ))}
           </div>
           <div className="flex justify-center">
-            <Link to="/grupales" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1">
+            <Link to="/grupales" className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1">
               Ver más paquetes grupales →
             </Link>
           </div>
         </div>
       </AnimatedSection>
 
-      {/* ── LUJO ── */}
-      <AnimatedSection id="experiencias-home" className={`${darkMode ? "bg-stone-950" : "bg-stone-50"} py-14 md:py-20`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-10 text-center">
-            <h2 className={`mb-2 text-3xl font-black md:text-5xl ${darkMode ? "text-white" : "text-stone-900"}`}>
-              Experiencias de <span style={{ color: "var(--antares-gold)" }}>Lujo</span>
-            </h2>
-            <p className={`${darkMode ? "text-stone-400" : "text-stone-600"} mx-auto max-w-2xl text-base md:text-lg`}>
-              Una categoría premium con servicio exclusivo y atención de primer nivel.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-5 mb-8">
-            {byType.experiencias.map((pkg, i) => (
-              <div key={pkg.id} style={{ transitionDelay: `${i * 100}ms` }} className="h-full">
-                <PackageCard pkg={pkg} accent="gold" darkMode={darkMode} />
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-center">
-            <Link to="/experiencias" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#C4A882] to-[#b89060] px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1">
-              Ver más experiencias →
-            </Link>
-          </div>
-        </div>
-      </AnimatedSection>
+      {/* ── ANTARES LUJO ── */}
+      <LuxurySection cards={byType.experiencias} />
 
-      {/* ── ¿POR QUÉ ANTARES? ── */}
-      <AnimatedSection className="bg-stone-900 py-14 text-white md:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-10 text-center">
-            <h2 className="mb-3 text-3xl font-black md:text-5xl">
-              ¿Por qué <span style={{ color: "var(--antares-gold)" }}>Antares</span>?
-            </h2>
-          </div>
-          <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
-            {[
-              { icon: "🚨", title: "Guardia 24hs",           desc: "Atención 24/7 para nuestros pasajeros en viaje." },
-              { icon: "🏆", title: "Trayectoria",            desc: "Más de 30 años nos avalan en experiencias." },
-              { icon: "🎯", title: "Atención Personalizada", desc: "Asesoramiento cercano y pensado para cada cliente." },
-              { icon: "🧳", title: "Viajes a medida",        desc: "Armamos tu idea de viaje según tus tiempos, gustos y presupuesto." },
-            ].map((item, idx) => (
-              <div
-                key={item.title}
-                style={{ transitionDelay: `${idx * 80}ms` }}
-                className="rounded-2xl border border-white/20 bg-white/10 p-6 text-center backdrop-blur-sm transition-all hover:bg-white/20"
-              >
-                <div className="mb-3 text-3xl md:text-4xl">{item.icon}</div>
-                <h3 className="mb-1 text-base font-bold md:text-lg">{item.title}</h3>
-                <p className="text-xs text-stone-300 md:text-sm">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </AnimatedSection>
+      {/* ── CONTANOS TU VIAJE (filtro de leads) ── */}
+      <LeadQualifier wa={wa} />
     </main>
   );
 }
