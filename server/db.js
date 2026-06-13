@@ -2,7 +2,8 @@ const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
 const path = require('path');
 
-const DB_PATH = path.join(__dirname, 'data.db');
+// Por defecto data.db junto al server; configurable con DB_PATH (útil en tests).
+const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'data.db');
 
 let db = null;
 

@@ -3,6 +3,7 @@ import { API_URL } from "../config/api";
 import { adminFetch } from "./admin/adminApi";
 import { AdminPackages } from "./admin/AdminPackages";
 import { AdminBlog } from "./admin/AdminBlog";
+import { AdminLeads } from "./admin/AdminLeads";
 import { AdminIntegrations } from "./admin/AdminIntegrations";
 import { AdminConfig } from "./admin/AdminConfig";
 
@@ -10,12 +11,13 @@ interface AdminPanelProps {
   darkMode: boolean;
 }
 
-type Tab = "dashboard" | "packages" | "blog" | "mayoristas" | "config";
+type Tab = "dashboard" | "packages" | "blog" | "leads" | "mayoristas" | "config";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "dashboard", label: "Dashboard" },
   { id: "packages", label: "Paquetes" },
   { id: "blog", label: "Blog" },
+  { id: "leads", label: "Leads" },
   { id: "mayoristas", label: "Mayoristas" },
   { id: "config", label: "Config" },
 ];
@@ -130,6 +132,7 @@ export function AdminPanel({ darkMode }: AdminPanelProps) {
         {activeTab === "dashboard" && <AdminDashboard darkMode={darkMode} />}
         {activeTab === "packages" && <AdminPackages darkMode={darkMode} />}
         {activeTab === "blog" && <AdminBlog darkMode={darkMode} />}
+        {activeTab === "leads" && <AdminLeads darkMode={darkMode} />}
         {activeTab === "mayoristas" && <AdminIntegrations darkMode={darkMode} />}
         {activeTab === "config" && <AdminConfig darkMode={darkMode} />}
       </div>
@@ -137,7 +140,7 @@ export function AdminPanel({ darkMode }: AdminPanelProps) {
   );
 }
 
-type Dashboard = { activePackages?: number; activeSlides?: number; lastUpdated?: string };
+type Dashboard = { activePackages?: number; activeSlides?: number; newLeads?: number; lastUpdated?: string };
 
 function AdminDashboard({ darkMode }: { darkMode: boolean }) {
   const [data, setData] = useState<Dashboard | null>(null);
@@ -165,7 +168,13 @@ function AdminDashboard({ darkMode }: { darkMode: boolean }) {
     <div>
       <h2 className={`text-2xl font-black mb-6 ${darkMode ? "text-white" : "text-stone-900"}`}>Dashboard</h2>
       {error && <p className="text-red-600 text-sm font-semibold mb-4">{error}</p>}
-      <div className="grid grid-cols-2 gap-4 max-w-lg">
+      <div className="grid grid-cols-2 gap-4 max-w-2xl lg:grid-cols-3">
+        <div className={`rounded-lg border p-6 ${cardCls}`}>
+          <div className={`text-sm font-semibold mb-2 ${mutedCls}`}>Leads sin contestar</div>
+          <div className={`text-4xl font-black ${data?.newLeads ? "text-red-600" : darkMode ? "text-white" : "text-stone-900"}`}>
+            {data?.newLeads ?? "—"}
+          </div>
+        </div>
         <div className={`rounded-lg border p-6 ${cardCls}`}>
           <div className={`text-sm font-semibold mb-2 ${mutedCls}`}>Paquetes activos</div>
           <div className="text-4xl font-black text-red-600">{data?.activePackages ?? "—"}</div>

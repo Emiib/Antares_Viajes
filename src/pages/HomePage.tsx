@@ -7,6 +7,7 @@ import { usePackages } from "../data/packagesStore";
 import { useHeroSlide, usePrefersReducedMotion } from "../hooks/useHeroSlide";
 import { useMobileViewport } from "../hooks/useMobileViewport";
 import { trackEvent, trackStandard } from "../lib/tracking";
+import { captureLead } from "../lib/leads";
 import { Differentiators } from "../components/home/Differentiators";
 import { DestinationsGrid } from "../components/home/DestinationsGrid";
 import { LuxurySection } from "../components/home/LuxurySection";
@@ -35,6 +36,11 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
     const msg = `Hola! Quiero buscar viajes:${searchData.destination ? ` Destino: ${searchData.destination}` : ""}${searchData.departure ? ` Fecha: ${searchData.departure}` : ""}${searchData.passengers ? ` Pasajeros: ${searchData.passengers}` : ""}`;
     trackStandard("Search", { search_term: searchData.destination || "(sin destino)" });
     trackEvent("hero_search", { ...searchData });
+    captureLead({
+      source: "hero_search",
+      destination: searchData.destination,
+      payload: { departure: searchData.departure, passengers: searchData.passengers },
+    });
     window.open(wa(msg), "_blank", "noopener");
   };
 

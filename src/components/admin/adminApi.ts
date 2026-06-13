@@ -35,6 +35,23 @@ export type BlogPost = {
   published_at?: string;
 };
 
+export type Lead = {
+  id: number;
+  name?: string;
+  contact?: string;
+  email?: string;
+  source?: string;
+  destination?: string;
+  message?: string;
+  payload?: string;
+  status?: string;
+  assigned_to?: string;
+  first_contacted_at?: string;
+  notes?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+
 export type SiteConfig = {
   whatsapp?: string;
   sales_email?: string;
@@ -111,6 +128,13 @@ export const deletePost = (id: string) =>
   adminFetch(`/blog/${encodeURIComponent(id)}`, { method: "DELETE" });
 export const togglePost = (id: string) =>
   adminFetch(`/blog/${encodeURIComponent(id)}/toggle`, { method: "PUT" });
+
+// ─── Leads (mini-CRM) ───
+export const getLeads = () => adminFetch<Lead[]>("/leads");
+export const updateLead = (id: number, patch: Partial<Lead>) =>
+  adminFetch(`/leads/${id}`, { method: "PUT", body: JSON.stringify(patch) });
+export const deleteLead = (id: number) =>
+  adminFetch(`/leads/${id}`, { method: "DELETE" });
 
 // ─── Config ───
 export const getConfig = () => adminFetch<SiteConfig>("/config");

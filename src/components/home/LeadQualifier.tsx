@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { departureMonthOptions } from "../../data/dates";
 import { trackEvent, trackStandard } from "../../lib/tracking";
+import { captureLead } from "../../lib/leads";
 import { AnimatedSection } from "../ui/AnimatedSection";
 
 const BUDGETS = [
@@ -56,6 +57,12 @@ export function LeadQualifier({ wa }: LeadQualifierProps) {
 
     trackStandard("Lead", { destination: form.destination, budget: form.budget, style: form.style });
     trackEvent("lead_qualifier_submit", { ...form });
+    captureLead({
+      source: "lead_qualifier",
+      destination: form.destination,
+      message: lines.slice(1).join("\n"),
+      payload: { month: form.month, travelers: form.travelers, budget: form.budget, style: form.style },
+    });
     window.open(wa(lines.join("\n")), "_blank", "noopener");
   };
 

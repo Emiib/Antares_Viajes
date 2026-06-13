@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { departureMonthOptions } from "../../data/dates";
+import { captureLead } from "../../lib/leads";
 
 interface TripFormModalProps {
   darkMode: boolean;
@@ -16,6 +17,14 @@ export function TripFormModal({ darkMode, wa, onClose }: TripFormModalProps) {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const msg = `Hola! Quiero armar un viaje a medida.\n\nNombre: ${tripForm.name}\nTeléfono: ${tripForm.phone}\nDestino: ${tripForm.destination}\nFecha: ${tripForm.date}\nDetalles: ${tripForm.details}`;
+    captureLead({
+      source: "trip_form",
+      name: tripForm.name,
+      contact: tripForm.phone,
+      destination: tripForm.destination,
+      message: tripForm.details,
+      payload: { date: tripForm.date },
+    });
     window.location.href = wa(msg);
     onClose();
   };

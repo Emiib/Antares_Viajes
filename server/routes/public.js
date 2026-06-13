@@ -24,6 +24,42 @@ router.get('/data', (req, res) => {
   });
 });
 
+// Captura de leads desde los formularios del sitio (sin auth).
+// Fire-and-forget: el front no espera respuesta. Validamos mínimamente y
+// recortamos longitudes para evitar abuso.
+router.post('/leads', (req, res) => {
+  const db = getDB();
+  const clip = (v, n) => (typeof v === 'string' ? v.slice(0, n) : null);
+
+  const name = clip(req.body.name, 120);
+  const contact = clip(req.body.contact, 120);
+  const email = clip(req.body.email, 160);
+  const source = clip(req.body.source, 40) || 'web';
+  const destination = clip(req.body.destination, 200);
+  const message = clip(req.body.message, 4000);
+  let payload = req.body.payload;
+  if (payload && typeof payload === 'object') {
+    try { payload = JSON.stringify(payload).slice(0, 4000); } catch { payload = null; }
+  } else {
+    payload = clip(payload, 4000);
+  }
+
+  // Necesitamos al menos algo de contenido para no guardar registros vacíos.
+  if (!name && !contact && !destination && !message) {
+    return res.status(204).end();
+  }
+
+  db.run(
+    `INSERT INTO leads (name, contact, email, source, destination, message, payload)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [name, contact, email, source, destination, message, payload],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(201).json({ id: this.lastID });
+    }
+  );
+});
+
 function getConfig() {
   return new Promise((resolve, reject) => {
     const db = getDB();

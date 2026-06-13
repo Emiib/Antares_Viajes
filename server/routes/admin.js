@@ -61,10 +61,15 @@ router.get('/dashboard', verifyAuth, (req, res) => {
     db.all('SELECT COUNT(*) as count FROM hero_slides WHERE active = 1', (err, slidesCount) => {
       if (err) return res.status(500).json({ error: err.message });
 
-      res.json({
-        activePackages: packagesCount[0]?.count || 0,
-        activeSlides: slidesCount[0]?.count || 0,
-        lastUpdated: new Date().toISOString()
+      db.all("SELECT COUNT(*) as count FROM leads WHERE status = 'nuevo'", (err, leadsCount) => {
+        if (err) return res.status(500).json({ error: err.message });
+
+        res.json({
+          activePackages: packagesCount[0]?.count || 0,
+          activeSlides: slidesCount[0]?.count || 0,
+          newLeads: leadsCount[0]?.count || 0,
+          lastUpdated: new Date().toISOString()
+        });
       });
     });
   });
@@ -292,6 +297,53 @@ router.put('/blog/:id/toggle', verifyAuth, (req, res) => {
       res.json({ message: 'Post visibility toggled' });
     }
   );
+});
+
+// ─── Leads (mini-CRM) ──────────────────────────────────────────
+
+// Lista todos los leads, los más nuevos primero.
+router.get('/leads', verifyAuth, (req, res) => {
+  const db = getDB();
+  db.all('SELECT * FROM leads ORDER BY created_at DESC', (err, leads) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(leads);
+  });
+});
+
+// Actualiza un lead (estado, asignado, notas).
+// Al pasar de "nuevo" a cualquier otro estado se registra la hora del primer
+// contacto (si todavía no estaba), para medir el tiempo de respuesta.
+router.put('/leads/:id', verifyAuth, (req, res) => {
+  const db = getDB();
+  const id = req.params.id;
+  const { status, assigned_to, notes } = req.body;
+
+  db.get('SELECT first_contacted_at FROM leads WHERE id = ?', [id], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!row) return res.status(404).json({ error: 'Lead no encontrado' });
+
+    const markContacted = !row.first_contacted_at && status && status !== 'nuevo';
+    const firstContactedSql = markContacted ? ', first_contacted_at = CURRENT_TIMESTAMP' : '';
+
+    db.run(
+      `UPDATE leads SET status = ?, assigned_to = ?, notes = ?${firstContactedSql}, updated_at = CURRENT_TIMESTAMP
+       WHERE id = ?`,
+      [status || 'nuevo', assigned_to ?? null, notes ?? null, id],
+      function (err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: 'Lead updated' });
+      }
+    );
+  });
+});
+
+// Borra un lead.
+router.delete('/leads/:id', verifyAuth, (req, res) => {
+  const db = getDB();
+  db.run('DELETE FROM leads WHERE id = ?', [req.params.id], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: 'Lead deleted' });
+  });
 });
 
 // Get hero slides

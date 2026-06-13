@@ -74,6 +74,24 @@ CREATE TABLE IF NOT EXISTS blog_posts (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Leads Table (mini-CRM): consultas de los formularios del sitio.
+CREATE TABLE IF NOT EXISTS leads (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT,
+  contact TEXT,
+  email TEXT,
+  source TEXT,
+  destination TEXT,
+  message TEXT,
+  payload TEXT,
+  status TEXT DEFAULT 'nuevo',
+  assigned_to TEXT,
+  first_contacted_at DATETIME,
+  notes TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Package Includes Table
 CREATE TABLE IF NOT EXISTS package_includes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
