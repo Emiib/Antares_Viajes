@@ -17,6 +17,7 @@ import { AdminPanel } from "./components/AdminPanel";
 
 import { HomePage } from "./pages/HomePage";
 import { BlogPage } from "./pages/BlogPage";
+import { BlogPostPage } from "./pages/BlogPostPage";
 import { InfoUtilPage } from "./pages/InfoUtilPage";
 import { LegalesPage } from "./pages/LegalesPage";
 import { PackageDetailPage } from "./pages/PackageDetailPage";
@@ -153,6 +154,7 @@ function AppShell() {
         />
 
         <Route path="/blog" element={<BlogPage darkMode={darkMode} />} />
+        <Route path="/blog/:slug" element={<BlogPostPage darkMode={darkMode} />} />
         <Route path="/info-util" element={<InfoUtilPage darkMode={darkMode} />} />
         <Route path="/legales" element={<LegalesPage darkMode={darkMode} />} />
         <Route

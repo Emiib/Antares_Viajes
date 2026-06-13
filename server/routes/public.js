@@ -10,12 +10,14 @@ router.get('/data', (req, res) => {
   Promise.all([
     getConfig(),
     getActivePackages(),
-    getActiveHeroSlides()
-  ]).then(([config, packages, heroSlides]) => {
+    getActiveHeroSlides(),
+    getActiveBlogPosts()
+  ]).then(([config, packages, heroSlides, blogPosts]) => {
     res.json({
       config,
       packages,
-      heroSlides
+      heroSlides,
+      blogPosts
     });
   }).catch(err => {
     res.status(500).json({ error: err.message });
@@ -58,6 +60,19 @@ function getActivePackages() {
         });
       }
     });
+  });
+}
+
+function getActiveBlogPosts() {
+  return new Promise((resolve, reject) => {
+    const db = getDB();
+    db.all(
+      `SELECT * FROM blog_posts WHERE active = 1 ORDER BY display_order ASC, published_at DESC, created_at DESC`,
+      (err, posts) => {
+        if (err) reject(err);
+        else resolve(posts || []);
+      }
+    );
   });
 }
 

@@ -214,6 +214,86 @@ router.put('/packages/:id/feature', verifyAuth, (req, res) => {
   );
 });
 
+// ─── Blog ──────────────────────────────────────────────────────
+
+// Lista todas las notas (incluye borradores) para el panel.
+router.get('/blog', verifyAuth, (req, res) => {
+  const db = getDB();
+  db.all('SELECT * FROM blog_posts ORDER BY display_order ASC, created_at DESC', (err, posts) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(posts);
+  });
+});
+
+// Crea una nota. Por defecto entra como BORRADOR (active = 0).
+router.post('/blog', verifyAuth, (req, res) => {
+  const db = getDB();
+  const {
+    id, slug, title, excerpt, body, image_url, continent, country,
+    read_time, active, display_order, published_at,
+  } = req.body;
+
+  if (!id || !title) {
+    return res.status(400).json({ error: 'Missing required fields (id, title)' });
+  }
+
+  db.run(
+    `INSERT INTO blog_posts
+       (id, slug, title, excerpt, body, image_url, continent, country, read_time, active, display_order, published_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      id, slug || id, title, excerpt, body, image_url, continent, country,
+      read_time, active ? 1 : 0, Number(display_order) || 0, published_at || null,
+    ],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(201).json({ id, message: 'Post created' });
+    }
+  );
+});
+
+// Actualiza una nota.
+router.put('/blog/:id', verifyAuth, (req, res) => {
+  const db = getDB();
+  const b = req.body;
+  db.run(
+    `UPDATE blog_posts SET slug = ?, title = ?, excerpt = ?, body = ?, image_url = ?,
+       continent = ?, country = ?, read_time = ?, display_order = ?, published_at = ?, updated_at = CURRENT_TIMESTAMP
+     WHERE id = ?`,
+    [
+      b.slug || req.params.id, b.title, b.excerpt, b.body, b.image_url,
+      b.continent, b.country, b.read_time, Number(b.display_order) || 0, b.published_at || null,
+      req.params.id,
+    ],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: 'Post updated' });
+    }
+  );
+});
+
+// Borra una nota.
+router.delete('/blog/:id', verifyAuth, (req, res) => {
+  const db = getDB();
+  db.run('DELETE FROM blog_posts WHERE id = ?', [req.params.id], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: 'Post deleted' });
+  });
+});
+
+// Publica / despublica una nota.
+router.put('/blog/:id/toggle', verifyAuth, (req, res) => {
+  const db = getDB();
+  db.run(
+    'UPDATE blog_posts SET active = CASE WHEN active = 1 THEN 0 ELSE 1 END, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+    [req.params.id],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: 'Post visibility toggled' });
+    }
+  );
+});
+
 // Get hero slides
 router.get('/hero-slides', verifyAuth, (req, res) => {
   const db = getDB();

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { getAllPackages } from "../data/packages";
+import { blogPosts } from "../data/blog";
 
 const SITE_NAME = "Antares Viajes y Turismo";
 const BASE_URL = "https://www.antaresviajes.tur.ar";
@@ -98,6 +99,17 @@ function resolveMeta(pathname: string): Meta {
         description: `${pkg.title} — ${pkg.destination}, ${pkg.duration}. Consultá disponibilidad y precios por WhatsApp con Antares Viajes.`,
       };
     }
+  }
+
+  if (pathname.startsWith("/blog/")) {
+    const slug = decodeURIComponent(pathname.split("/")[2] || "");
+    // Las notas estáticas se resuelven acá; las creadas en el panel ajustan su
+    // propio título desde BlogPostPage al cargar los datos del backend.
+    const post = blogPosts.find((p) => p.slug === slug);
+    if (post) {
+      return { title: `${post.title} | ${SITE_NAME}`, description: post.excerpt };
+    }
+    return META_BY_PATH["/blog"];
   }
 
   return META_BY_PATH["/"];

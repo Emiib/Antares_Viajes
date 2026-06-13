@@ -56,6 +56,24 @@ CREATE TABLE IF NOT EXISTS packages (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Blog Posts Table
+CREATE TABLE IF NOT EXISTS blog_posts (
+  id TEXT PRIMARY KEY,
+  slug TEXT,
+  title TEXT NOT NULL,
+  excerpt TEXT,
+  body TEXT,
+  image_url TEXT,
+  continent TEXT,
+  country TEXT,
+  read_time TEXT,
+  active INTEGER DEFAULT 0,
+  display_order INTEGER DEFAULT 0,
+  published_at TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Package Includes Table
 CREATE TABLE IF NOT EXISTS package_includes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

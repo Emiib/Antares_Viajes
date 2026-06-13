@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { API_URL } from "../config/api";
 import { adminFetch } from "./admin/adminApi";
 import { AdminPackages } from "./admin/AdminPackages";
+import { AdminBlog } from "./admin/AdminBlog";
 import { AdminIntegrations } from "./admin/AdminIntegrations";
 import { AdminConfig } from "./admin/AdminConfig";
 
@@ -9,11 +10,12 @@ interface AdminPanelProps {
   darkMode: boolean;
 }
 
-type Tab = "dashboard" | "packages" | "mayoristas" | "config";
+type Tab = "dashboard" | "packages" | "blog" | "mayoristas" | "config";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "dashboard", label: "Dashboard" },
   { id: "packages", label: "Paquetes" },
+  { id: "blog", label: "Blog" },
   { id: "mayoristas", label: "Mayoristas" },
   { id: "config", label: "Config" },
 ];
@@ -127,6 +129,7 @@ export function AdminPanel({ darkMode }: AdminPanelProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === "dashboard" && <AdminDashboard darkMode={darkMode} />}
         {activeTab === "packages" && <AdminPackages darkMode={darkMode} />}
+        {activeTab === "blog" && <AdminBlog darkMode={darkMode} />}
         {activeTab === "mayoristas" && <AdminIntegrations darkMode={darkMode} />}
         {activeTab === "config" && <AdminConfig darkMode={darkMode} />}
       </div>

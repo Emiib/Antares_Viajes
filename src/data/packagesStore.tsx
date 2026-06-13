@@ -12,6 +12,7 @@ import {
   luxuryExperiences,
   cruisePackages,
 } from "./packages";
+import { blogPosts as staticBlogPosts } from "./blog";
 
 export type PackageType =
   | "ofertas"
@@ -75,11 +76,66 @@ export type SiteConfig = {
   legal_text?: string;
 };
 
+export type BlogPost = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  body?: string;
+  continent: string;
+  country: string;
+  image: string;
+  date: string;
+  readTime: string;
+};
+
+type BackendBlogPost = {
+  id: string;
+  slug?: string;
+  title: string;
+  excerpt?: string;
+  body?: string;
+  image_url?: string;
+  continent?: string;
+  country?: string;
+  read_time?: string;
+  published_at?: string;
+  created_at?: string;
+};
+
+const STATIC_BLOG: BlogPost[] = staticBlogPosts.map((p) => ({
+  id: String(p.id),
+  slug: p.slug,
+  title: p.title,
+  excerpt: p.excerpt,
+  continent: p.continent,
+  country: p.country,
+  image: p.image,
+  date: p.date,
+  readTime: p.readTime,
+}));
+
+function toBlogPost(p: BackendBlogPost): BlogPost {
+  return {
+    id: p.id,
+    slug: p.slug || p.id,
+    title: p.title,
+    excerpt: p.excerpt ?? "",
+    body: p.body || undefined,
+    continent: p.continent ?? "",
+    country: p.country ?? "",
+    image: p.image_url ?? "",
+    date: (p.published_at || p.created_at || "").slice(0, 10),
+    readTime: p.read_time ?? "",
+  };
+}
+
 type Store = {
   byType: Record<PackageType, TravelCard[]>;
   all: TravelCard[];
   getById: (id: string) => TravelCard | undefined;
   config: SiteConfig;
+  blogPosts: BlogPost[];
   source: "static" | "live";
 };
 
@@ -88,6 +144,7 @@ const PackagesContext = createContext<Store | null>(null);
 export function PackagesProvider({ children }: { children: ReactNode }) {
   const [byType, setByType] = useState<Record<PackageType, TravelCard[]>>(STATIC_BY_TYPE);
   const [config, setConfig] = useState<SiteConfig>({});
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(STATIC_BLOG);
   const [source, setSource] = useState<"static" | "live">("static");
 
   useEffect(() => {
@@ -98,6 +155,9 @@ export function PackagesProvider({ children }: { children: ReactNode }) {
       .then((data) => {
         if (cancelled) return;
         if (data?.config && typeof data.config === "object") setConfig(data.config);
+        if (Array.isArray(data?.blogPosts) && data.blogPosts.length > 0) {
+          setBlogPosts(data.blogPosts.map(toBlogPost));
+        }
         const packages: BackendPackage[] = Array.isArray(data?.packages) ? data.packages : [];
         if (packages.length === 0) return;
 
@@ -137,8 +197,8 @@ export function PackagesProvider({ children }: { children: ReactNode }) {
   const value = useMemo<Store>(() => {
     const all = Object.values(byType).flat();
     const map = new Map(all.map((p) => [p.id, p]));
-    return { byType, all, getById: (id) => map.get(id), config, source };
-  }, [byType, config, source]);
+    return { byType, all, getById: (id) => map.get(id), config, blogPosts, source };
+  }, [byType, config, blogPosts, source]);
 
   return <PackagesContext.Provider value={value}>{children}</PackagesContext.Provider>;
 }

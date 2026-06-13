@@ -20,6 +20,21 @@ export type AdminPackage = {
   includes?: string[];
 };
 
+export type BlogPost = {
+  id: string;
+  slug?: string;
+  title: string;
+  excerpt?: string;
+  body?: string;
+  image_url?: string;
+  continent?: string;
+  country?: string;
+  read_time?: string;
+  active?: number;
+  display_order?: number;
+  published_at?: string;
+};
+
 export type SiteConfig = {
   whatsapp?: string;
   sales_email?: string;
@@ -85,6 +100,17 @@ export const togglePackage = (id: string) =>
   adminFetch(`/packages/${encodeURIComponent(id)}/toggle`, { method: "PUT" });
 export const featurePackage = (id: string) =>
   adminFetch(`/packages/${encodeURIComponent(id)}/feature`, { method: "PUT" });
+
+// ─── Blog ───
+export const getPosts = () => adminFetch<BlogPost[]>("/blog");
+export const createPost = (post: BlogPost) =>
+  adminFetch("/blog", { method: "POST", body: JSON.stringify(post) });
+export const updatePost = (id: string, post: BlogPost) =>
+  adminFetch(`/blog/${encodeURIComponent(id)}`, { method: "PUT", body: JSON.stringify(post) });
+export const deletePost = (id: string) =>
+  adminFetch(`/blog/${encodeURIComponent(id)}`, { method: "DELETE" });
+export const togglePost = (id: string) =>
+  adminFetch(`/blog/${encodeURIComponent(id)}/toggle`, { method: "PUT" });
 
 // ─── Config ───
 export const getConfig = () => adminFetch<SiteConfig>("/config");
