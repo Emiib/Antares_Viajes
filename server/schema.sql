@@ -47,6 +47,9 @@ CREATE TABLE IF NOT EXISTS packages (
   departure TEXT,
   people TEXT,
   active INTEGER DEFAULT 1,
+  featured INTEGER DEFAULT 0,
+  valid_until TEXT,
+  display_order INTEGER DEFAULT 0,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );

@@ -3,7 +3,7 @@ export const SITE_CONFIG = {
   salesEmail: "ventas@antaresviajes.com.ar",
   slogan: "El mejor de los viajes es el próximo",
   branding: {
-    logo: "/branding/logo-header.png",
+    logo: "/branding/logo-header.webp",
     logoAlt: "Antares Viajes",
     footerShowcase: {
       type: "gradient" as "gradient" | "image" | "video",

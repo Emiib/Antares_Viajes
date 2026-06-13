@@ -40,6 +40,9 @@ function runMigrations(database) {
   const statements = [
     "ALTER TABLE packages ADD COLUMN source TEXT DEFAULT 'manual'",
     "ALTER TABLE packages ADD COLUMN external_id TEXT",
+    "ALTER TABLE packages ADD COLUMN featured INTEGER DEFAULT 0",
+    "ALTER TABLE packages ADD COLUMN valid_until TEXT",
+    "ALTER TABLE packages ADD COLUMN display_order INTEGER DEFAULT 0",
   ];
   return Promise.all(
     statements.map(

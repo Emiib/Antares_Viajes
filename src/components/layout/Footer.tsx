@@ -17,7 +17,7 @@ export function Footer() {
         <div className="mb-8 grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-6">
           <div className="col-span-2 md:col-span-1 lg:col-span-1">
             <div className="mb-4">
-              <img src="/branding/Logo-footer.png" alt={SITE_CONFIG.branding.logoAlt} className="h-16 w-auto" />
+              <img src="/branding/Logo-footer.webp" alt={SITE_CONFIG.branding.logoAlt} className="h-16 w-auto" loading="lazy" decoding="async" />
             </div>
             <div className="flex gap-3">
               <a href="https://www.instagram.com/antares_viajes/" target="_blank" rel="noopener noreferrer"

@@ -14,6 +14,9 @@ export type AdminPackage = {
   departure?: string;
   people?: string;
   active?: number;
+  featured?: number;
+  valid_until?: string;
+  display_order?: number;
   includes?: string[];
 };
 
@@ -78,6 +81,8 @@ export const deletePackage = (id: string) =>
   adminFetch(`/packages/${encodeURIComponent(id)}`, { method: "DELETE" });
 export const togglePackage = (id: string) =>
   adminFetch(`/packages/${encodeURIComponent(id)}/toggle`, { method: "PUT" });
+export const featurePackage = (id: string) =>
+  adminFetch(`/packages/${encodeURIComponent(id)}/feature`, { method: "PUT" });
 
 // ─── Config ───
 export const getConfig = () => adminFetch<SiteConfig>("/config");

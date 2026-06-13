@@ -34,7 +34,7 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
         <div className="flex h-20 items-center justify-between md:h-24">
           <Link to="/" className="flex shrink-0 items-center gap-2 md:gap-3">
             <img
-              src={darkMode ? "/branding/logo-dark.png" : SITE_CONFIG.branding.logo}
+              src={darkMode ? "/branding/logo-dark.webp" : SITE_CONFIG.branding.logo}
               alt={SITE_CONFIG.branding.logoAlt}
               className="h-20 w-auto md:h-28"
             />

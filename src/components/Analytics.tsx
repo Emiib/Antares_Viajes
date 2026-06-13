@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
+import { initAttribution, trackEvent } from "../lib/tracking";
 
 // IDs de analítica. Si están vacíos (sitio sin publicar), no se carga nada.
 const GA_ID = import.meta.env.VITE_GA_ID;
@@ -59,8 +60,26 @@ export function Analytics() {
   useEffect(() => {
     if (initialized.current) return;
     initialized.current = true;
+    initAttribution();
     if (GA_ID) loadGA(GA_ID);
     if (PIXEL_ID) loadPixel(PIXEL_ID);
+  }, []);
+
+  // Conversión: cualquier click a WhatsApp en el sitio se registra con su
+  // sección de origen (data-track-section más cercano) y la atribución UTM.
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      const link = target?.closest?.<HTMLAnchorElement>(
+        'a[href*="wa.me"], a[href*="api.whatsapp.com"]'
+      );
+      if (!link) return;
+      const section =
+        link.closest("[data-track-section]")?.getAttribute("data-track-section") || "general";
+      trackEvent("whatsapp_click", { section, page: window.location.pathname });
+    };
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
   }, []);
 
   useEffect(() => {
