@@ -38,6 +38,7 @@ const STATIC_BY_TYPE: Record<PackageType, TravelCard[]> = {
 type BackendPackage = {
   id: string;
   type?: string;
+  featured?: number;
   title: string;
   destination: string;
   duration?: string;
@@ -86,13 +87,19 @@ export function PackagesProvider({ children }: { children: ReactNode }) {
         const packages: BackendPackage[] = Array.isArray(data?.packages) ? data.packages : [];
         if (cancelled || packages.length === 0) return;
 
-        // Agrupamos los paquetes del backend por categoría.
+        // Agrupamos los paquetes del backend por categoría. "featured" no es una
+        // categoría sino un flag: un paquete destacado aparece en su página de
+        // categoría Y en los "Favoritos" del home.
         const live: Partial<Record<PackageType, TravelCard[]>> = {};
+        const liveFeatured: TravelCard[] = [];
         for (const p of packages) {
           const type = (p.type as PackageType) || "ofertas";
+          const card = toTravelCard(p);
           if (!live[type]) live[type] = [];
-          live[type]!.push(toTravelCard(p));
+          live[type]!.push(card);
+          if (p.featured) liveFeatured.push(card);
         }
+        if (liveFeatured.length > 0) live.featured = liveFeatured;
 
         // Merge por tipo: usamos los del backend donde existan, estáticos en el resto.
         setByType((prev) => {

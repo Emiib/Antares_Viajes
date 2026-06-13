@@ -24,15 +24,22 @@ function applyMarkup(pkg, markupPct) {
 
 async function upsertPackage(db, source, p) {
   const id = `${source}:${p.externalId}`;
+  // Curaduría: el mayorista es dueño del CONTENIDO (título, precio, fechas…);
+  // el admin es dueño de la UBICACIÓN (categoría, destacado, imagen curada,
+  // publicado, vencimiento, orden). Por eso, al re-sincronizar SOLO se pisan
+  // las columnas de contenido y se preservan las de curaduría.
+  // En el primer alta entra como BORRADOR (active=0): nada va al sitio sin que
+  // el admin lo publique. La categoría/imagen/badge del mayorista solo siembran
+  // el valor inicial; después manda el admin.
   await run(
     db,
     `INSERT INTO packages
-       (id, source, external_id, type, title, destination, duration, price, image_url, badge, departure, people, active, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP)
+       (id, source, external_id, type, title, destination, duration, price, image_url, badge, departure, people, active, featured, display_order, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0, CURRENT_TIMESTAMP)
      ON CONFLICT(id) DO UPDATE SET
-       type=excluded.type, title=excluded.title, destination=excluded.destination,
-       duration=excluded.duration, price=excluded.price, image_url=excluded.image_url,
-       badge=excluded.badge, departure=excluded.departure, people=excluded.people,
+       title=excluded.title, destination=excluded.destination,
+       duration=excluded.duration, price=excluded.price,
+       departure=excluded.departure, people=excluded.people,
        updated_at=CURRENT_TIMESTAMP`,
     [
       id, source, String(p.externalId), p.type || null, p.title, p.destination,

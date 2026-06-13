@@ -91,23 +91,29 @@ router.get('/packages', verifyAuth, (req, res) => {
   });
 });
 
-// Create package
+// Create package (manual). Se crea PUBLICADO por defecto (el admin lo cargó a propósito).
 router.post('/packages', verifyAuth, (req, res) => {
   const db = getDB();
-  const { id, type, title, destination, duration, price, image_url, badge, departure, people, includes } = req.body;
+  const {
+    id, type, title, destination, duration, price, image_url, badge,
+    departure, people, includes, featured, valid_until, display_order, active,
+  } = req.body;
 
   if (!id || !title || !destination || !price) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
   db.run(
-    `INSERT INTO packages (id, type, title, destination, duration, price, image_url, badge, departure, people, active)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
-    [id, type, title, destination, duration, price, image_url, badge, departure, people],
+    `INSERT INTO packages
+       (id, type, title, destination, duration, price, image_url, badge, departure, people, active, featured, valid_until, display_order)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      id, type, title, destination, duration, price, image_url, badge, departure, people,
+      active === 0 ? 0 : 1, featured ? 1 : 0, valid_until || null, Number(display_order) || 0,
+    ],
     function(err) {
       if (err) return res.status(500).json({ error: err.message });
 
-      // Insert includes
       if (includes && includes.length > 0) {
         includes.forEach(inc => {
           db.run('INSERT INTO package_includes (package_id, include_text) VALUES (?, ?)', [id, inc]);
@@ -119,29 +125,55 @@ router.post('/packages', verifyAuth, (req, res) => {
   );
 });
 
-// Update package
+// Update package. Consciente del origen:
+//  - manual: edición completa (contenido + curaduría + includes).
+//  - sincronizado: SOLO campos de curaduría (categoría, imagen, badge, destacado,
+//    vencimiento, orden). El contenido lo manda el mayorista y no se toca.
+// `active` (publicado) no se modifica acá: se cambia con el toggle dedicado.
 router.put('/packages/:id', verifyAuth, (req, res) => {
   const db = getDB();
-  const { type, title, destination, duration, price, image_url, badge, departure, people, includes } = req.body;
+  const pkgId = req.params.id;
+  const b = req.body;
+  const curaduria = [b.type, b.image_url, b.badge, b.featured ? 1 : 0, b.valid_until || null, Number(b.display_order) || 0];
 
-  db.run(
-    `UPDATE packages SET type = ?, title = ?, destination = ?, duration = ?, price = ?, image_url = ?, badge = ?, departure = ?, people = ?, updated_at = CURRENT_TIMESTAMP
-     WHERE id = ?`,
-    [type, title, destination, duration, price, image_url, badge, departure, people, req.params.id],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
+  db.get('SELECT source FROM packages WHERE id = ?', [pkgId], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!row) return res.status(404).json({ error: 'Paquete no encontrado' });
 
-      // Delete old includes and add new ones
-      db.run('DELETE FROM package_includes WHERE package_id = ?', [req.params.id], () => {
-        if (includes && includes.length > 0) {
-          includes.forEach(inc => {
-            db.run('INSERT INTO package_includes (package_id, include_text) VALUES (?, ?)', [req.params.id, inc]);
-          });
+    const isManual = !row.source || row.source === 'manual';
+
+    if (!isManual) {
+      db.run(
+        `UPDATE packages SET type = ?, image_url = ?, badge = ?, featured = ?, valid_until = ?, display_order = ?, updated_at = CURRENT_TIMESTAMP
+         WHERE id = ?`,
+        [...curaduria, pkgId],
+        function(err) {
+          if (err) return res.status(500).json({ error: err.message });
+          res.json({ message: 'Ubicación actualizada' });
         }
-        res.json({ message: 'Package updated' });
-      });
+      );
+      return;
     }
-  );
+
+    db.run(
+      `UPDATE packages SET type = ?, image_url = ?, badge = ?, featured = ?, valid_until = ?, display_order = ?,
+         title = ?, destination = ?, duration = ?, price = ?, departure = ?, people = ?, updated_at = CURRENT_TIMESTAMP
+       WHERE id = ?`,
+      [...curaduria, b.title, b.destination, b.duration, b.price, b.departure, b.people, pkgId],
+      function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+
+        db.run('DELETE FROM package_includes WHERE package_id = ?', [pkgId], () => {
+          if (b.includes && b.includes.length > 0) {
+            b.includes.forEach(inc => {
+              db.run('INSERT INTO package_includes (package_id, include_text) VALUES (?, ?)', [pkgId, inc]);
+            });
+          }
+          res.json({ message: 'Package updated' });
+        });
+      }
+    );
+  });
 });
 
 // Delete package
@@ -154,7 +186,7 @@ router.delete('/packages/:id', verifyAuth, (req, res) => {
   });
 });
 
-// Toggle package active status
+// Toggle package active status (publicar / despublicar)
 router.put('/packages/:id/toggle', verifyAuth, (req, res) => {
   const db = getDB();
 
@@ -164,6 +196,20 @@ router.put('/packages/:id/toggle', verifyAuth, (req, res) => {
     function(err) {
       if (err) return res.status(500).json({ error: err.message });
       res.json({ message: 'Package visibility toggled' });
+    }
+  );
+});
+
+// Toggle destacado (aparece en "Favoritos" del home, sin importar su categoría)
+router.put('/packages/:id/feature', verifyAuth, (req, res) => {
+  const db = getDB();
+
+  db.run(
+    'UPDATE packages SET featured = CASE WHEN featured = 1 THEN 0 ELSE 1 END, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+    [req.params.id],
+    function(err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: 'Package featured toggled' });
     }
   );
 });

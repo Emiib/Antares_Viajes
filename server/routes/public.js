@@ -35,7 +35,13 @@ function getConfig() {
 function getActivePackages() {
   return new Promise((resolve, reject) => {
     const db = getDB();
-    db.all('SELECT * FROM packages WHERE active = 1 ORDER BY created_at DESC', (err, packages) => {
+    // Solo publicados y no vencidos. Orden de curaduría primero.
+    db.all(
+      `SELECT * FROM packages
+       WHERE active = 1
+         AND (valid_until IS NULL OR valid_until = '' OR valid_until >= date('now'))
+       ORDER BY display_order ASC, created_at DESC`,
+      (err, packages) => {
       if (err) {
         reject(err);
       } else {
