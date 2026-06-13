@@ -9,6 +9,7 @@ import {
   featurePackage,
 } from "./adminApi";
 import type { AdminPackage } from "./adminApi";
+import { CloudinaryUploader } from "./CloudinaryUploader";
 
 /** Categorías = páginas del sitio. "Destacar" es un flag aparte, no una categoría. */
 const CATEGORIES: { value: string; label: string }[] = [
@@ -274,8 +275,16 @@ export function AdminPackages({ darkMode }: { darkMode: boolean }) {
               <input className={inputCls} value={draft.duration} disabled={lockedContent} onChange={(e) => setDraft({ ...draft, duration: e.target.value })} placeholder="7 noches" />
             </div>
             <div>
-              <label className={labelCls}>Imagen (URL)</label>
+              <label className={labelCls}>Imagen</label>
               <input className={inputCls} value={draft.image_url} onChange={(e) => setDraft({ ...draft, image_url: e.target.value })} placeholder="/img/... o https://..." />
+              <div className="mt-2">
+                <CloudinaryUploader
+                  darkMode={darkMode}
+                  accept="image"
+                  value={draft.image_url}
+                  onUploaded={(url) => setDraft((d) => (d ? { ...d, image_url: url } : d))}
+                />
+              </div>
             </div>
             <div>
               <label className={labelCls}>Badge</label>

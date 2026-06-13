@@ -26,6 +26,8 @@ export type SiteConfig = {
   slogan?: string;
   logo_header_path?: string;
   logo_dark_path?: string;
+  legal_pdf_url?: string;
+  legal_text?: string;
 };
 
 export type Integration = {

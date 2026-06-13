@@ -65,10 +65,21 @@ function toTravelCard(p: BackendPackage): TravelCard {
   };
 }
 
+export type SiteConfig = {
+  whatsapp?: string;
+  sales_email?: string;
+  slogan?: string;
+  logo_header_path?: string;
+  logo_dark_path?: string;
+  legal_pdf_url?: string;
+  legal_text?: string;
+};
+
 type Store = {
   byType: Record<PackageType, TravelCard[]>;
   all: TravelCard[];
   getById: (id: string) => TravelCard | undefined;
+  config: SiteConfig;
   source: "static" | "live";
 };
 
@@ -76,6 +87,7 @@ const PackagesContext = createContext<Store | null>(null);
 
 export function PackagesProvider({ children }: { children: ReactNode }) {
   const [byType, setByType] = useState<Record<PackageType, TravelCard[]>>(STATIC_BY_TYPE);
+  const [config, setConfig] = useState<SiteConfig>({});
   const [source, setSource] = useState<"static" | "live">("static");
 
   useEffect(() => {
@@ -84,8 +96,10 @@ export function PackagesProvider({ children }: { children: ReactNode }) {
     fetch(`${API_URL}/api/data`)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
       .then((data) => {
+        if (cancelled) return;
+        if (data?.config && typeof data.config === "object") setConfig(data.config);
         const packages: BackendPackage[] = Array.isArray(data?.packages) ? data.packages : [];
-        if (cancelled || packages.length === 0) return;
+        if (packages.length === 0) return;
 
         // Agrupamos los paquetes del backend por categoría. "featured" no es una
         // categoría sino un flag: un paquete destacado aparece en su página de
@@ -123,8 +137,8 @@ export function PackagesProvider({ children }: { children: ReactNode }) {
   const value = useMemo<Store>(() => {
     const all = Object.values(byType).flat();
     const map = new Map(all.map((p) => [p.id, p]));
-    return { byType, all, getById: (id) => map.get(id), source };
-  }, [byType, source]);
+    return { byType, all, getById: (id) => map.get(id), config, source };
+  }, [byType, config, source]);
 
   return <PackagesContext.Provider value={value}>{children}</PackagesContext.Provider>;
 }

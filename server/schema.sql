@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS site_config (
   slogan TEXT,
   logo_header_path TEXT,
   logo_dark_path TEXT,
+  legal_pdf_url TEXT,
+  legal_text TEXT,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 

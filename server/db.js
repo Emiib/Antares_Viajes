@@ -43,6 +43,8 @@ function runMigrations(database) {
     "ALTER TABLE packages ADD COLUMN featured INTEGER DEFAULT 0",
     "ALTER TABLE packages ADD COLUMN valid_until TEXT",
     "ALTER TABLE packages ADD COLUMN display_order INTEGER DEFAULT 0",
+    "ALTER TABLE site_config ADD COLUMN legal_pdf_url TEXT",
+    "ALTER TABLE site_config ADD COLUMN legal_text TEXT",
   ];
   return Promise.all(
     statements.map(

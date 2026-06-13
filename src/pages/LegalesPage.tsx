@@ -1,7 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { usePackages } from "../data/packagesStore";
 
 export function LegalesPage({ darkMode }: { darkMode: boolean }) {
+  const { config } = usePackages();
+  const legalText = config.legal_text?.trim();
+  // Separa el texto en párrafos por líneas en blanco; si no hay, por saltos simples.
+  const legalParagraphs = legalText
+    ? legalText.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
+    : [];
+
   const [showRepentanceForm, setShowRepentanceForm] = useState(false);
   const [repentanceForm, setRepentanceForm] = useState({
     name: "",
@@ -52,74 +60,97 @@ export function LegalesPage({ darkMode }: { darkMode: boolean }) {
             <div
               className={`rounded-2xl border p-6 lg:col-span-2 ${darkMode ? "bg-stone-900 border-stone-800" : "bg-stone-50 border-stone-200"}`}
             >
-              <div className="flex items-start gap-3 mb-4">
-                <div className="text-3xl">📋</div>
-                <h2
-                  className={`text-2xl font-bold ${darkMode ? "text-white" : "text-stone-900"}`}
+              <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+                <div className="flex items-start gap-3">
+                  <div className="text-3xl">📋</div>
+                  <h2
+                    className={`text-2xl font-bold ${darkMode ? "text-white" : "text-stone-900"}`}
+                  >
+                    Condiciones de Contratación
+                  </h2>
+                </div>
+                {config.legal_pdf_url && (
+                  <a
+                    href={config.legal_pdf_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-lg border border-red-600/40 px-3 py-1.5 text-xs font-semibold text-red-600 transition-colors hover:bg-red-600/10"
+                  >
+                    ↓ Descargar PDF
+                  </a>
+                )}
+              </div>
+
+              {legalParagraphs.length > 0 ? (
+                <div
+                  className={`text-sm leading-relaxed space-y-3 ${darkMode ? "text-stone-300" : "text-stone-600"}`}
                 >
-                  Condiciones de Contratación
-                </h2>
-              </div>
-              <div
-                className={`text-sm leading-relaxed space-y-4 ${darkMode ? "text-stone-400" : "text-stone-600"}`}
-              >
-                <div>
-                  <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
-                    A) SOLICITUDES Y PAGOS
-                  </h3>
-                  <p>
-                    Los precios son orientativos y no revisten confirmación. Los depósitos iniciales funcionan como reserva, no confirmación. El pago total debe realizarse antes de la fecha establecida.
-                  </p>
+                  {legalParagraphs.map((p, i) => (
+                    <p key={i} className="whitespace-pre-line">{p}</p>
+                  ))}
                 </div>
-                <div>
-                  <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
-                    B) SERVICIOS INCLUIDOS
-                  </h3>
-                  <p>
-                    Transporte, alojamiento en categorías oficiales, comidas según se indique, excursiones, traslados aeroportuarios.
-                  </p>
+              ) : (
+                <div
+                  className={`text-sm leading-relaxed space-y-4 ${darkMode ? "text-stone-400" : "text-stone-600"}`}
+                >
+                  <div>
+                    <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
+                      A) SOLICITUDES Y PAGOS
+                    </h3>
+                    <p>
+                      Los precios son orientativos y no revisten confirmación. Los depósitos iniciales funcionan como reserva, no confirmación. El pago total debe realizarse antes de la fecha establecida.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
+                      B) SERVICIOS INCLUIDOS
+                    </h3>
+                    <p>
+                      Transporte, alojamiento en categorías oficiales, comidas según se indique, excursiones, traslados aeroportuarios.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
+                      C) SERVICIOS NO INCLUIDOS
+                    </h3>
+                    <p>
+                      Bebidas, propinas, tasas de embarque, seguros, exceso de equipaje, gastos de visado, excursiones opcionales.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
+                      D) VIAJES EN GRUPO
+                    </h3>
+                    <p>
+                      Requieren mínimo 30 personas. Sin alcanzar ese número, pueden cancelar con 10 días de anticipación.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
+                      G) CANCELACIONES
+                    </h3>
+                    <p>
+                      Políticas específicas según servicios contratados. Para charter: se perderá la totalidad de lo abonado en transporte no regular.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
+                      J) RESPONSABILIDAD
+                    </h3>
+                    <p>
+                      La agencia actúa como intermediaria. Declina responsabilidad por deficiencias de terceros prestadores.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
+                      O) JURISDICCIÓN
+                    </h3>
+                    <p>
+                      Tribunales provinciales de Gualeguaychú, Entre Ríos.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
-                    C) SERVICIOS NO INCLUIDOS
-                  </h3>
-                  <p>
-                    Bebidas, propinas, tasas de embarque, seguros, exceso de equipaje, gastos de visado, excursiones opcionales.
-                  </p>
-                </div>
-                <div>
-                  <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
-                    D) VIAJES EN GRUPO
-                  </h3>
-                  <p>
-                    Requieren mínimo 30 personas. Sin alcanzar ese número, pueden cancelar con 10 días de anticipación.
-                  </p>
-                </div>
-                <div>
-                  <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
-                    G) CANCELACIONES
-                  </h3>
-                  <p>
-                    Políticas específicas según servicios contratados. Para charter: se perderá la totalidad de lo abonado en transporte no regular.
-                  </p>
-                </div>
-                <div>
-                  <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
-                    J) RESPONSABILIDAD
-                  </h3>
-                  <p>
-                    La agencia actúa como intermediaria. Declina responsabilidad por deficiencias de terceros prestadores.
-                  </p>
-                </div>
-                <div>
-                  <h3 className={`font-semibold mb-2 ${darkMode ? "text-white" : "text-stone-900"}`}>
-                    O) JURISDICCIÓN
-                  </h3>
-                  <p>
-                    Tribunales provinciales de Gualeguaychú, Entre Ríos.
-                  </p>
-                </div>
-              </div>
+              )}
             </div>
 
             {/* Botón de Arrepentimiento */}
