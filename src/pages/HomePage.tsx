@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { heroSlides } from "../config/site";
 import { departureMonthOptions } from "../data/dates";
 import { usePackages } from "../data/packagesStore";
-import { useHeroSlide, usePrefersReducedMotion } from "../hooks/useHeroSlide";
+import { useHeroSlide } from "../hooks/useHeroSlide";
 import { useMobileViewport } from "../hooks/useMobileViewport";
 import { trackEvent, trackStandard } from "../lib/tracking";
 import { captureLead } from "../lib/leads";
@@ -28,7 +28,6 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
   });
   const { currentSlide, advance } = useHeroSlide();
   const isMobileViewport = useMobileViewport();
-  const prefersReducedMotion = usePrefersReducedMotion();
   const { byType } = usePackages();
 
   const handleSearch = (e: FormEvent) => {
@@ -50,103 +49,72 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
 
   return (
     <main>
-      {/* ── HERO ── */}
-      <section
-        id="hero"
-        data-track-section="hero"
-        className="relative min-h-screen overflow-hidden flex items-center md:min-h-[110vh]"
-      >
+      {/* ── HERO (video, editorial) ── */}
+      <section id="hero" data-track-section="hero" className="relative flex min-h-screen items-center overflow-hidden md:min-h-[105vh]">
         <div className="absolute inset-0 z-0">
-          {prefersReducedMotion ? (
-            /* Accesibilidad: sin autoplay si el usuario prefiere menos movimiento */
-            <img
-              src={slide.poster}
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover"
-              style={{ zIndex: 1 }}
-            />
-          ) : (
-            /* Cada video se reproduce UNA vez; al terminar avanza el slide */
-            <video
-              key={`${slide.label}-${isMobileViewport ? "m" : "d"}`}
-              className="animate-hero-video absolute inset-0 h-full w-full object-cover"
-              style={{ zIndex: 1 }}
-              poster={slide.poster}
-              onEnded={advance}
-              autoPlay muted playsInline preload="auto"
-            >
-              <source src={webm} type="video/webm" />
-              <source src={mp4}  type="video/mp4"  />
-            </video>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/12 to-transparent" style={{ zIndex: 2 }} />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"  style={{ zIndex: 2 }} />
+          <video
+            key={`${slide.label}-${isMobileViewport ? "m" : "d"}`}
+            className="animate-hero-video absolute inset-0 h-full w-full object-cover"
+            poster={slide.poster}
+            onEnded={advance}
+            autoPlay muted playsInline preload="auto"
+          >
+            <source src={webm} type="video/webm" />
+            <source src={mp4} type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/25 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto w-full px-4 py-16 sm:px-6 lg:px-8">
+        <div className="relative z-10 mx-auto w-full max-w-[1340px] px-5 py-16 sm:px-8">
           <div className="max-w-2xl">
-            <h1 className="mb-5 max-w-3xl text-4xl font-black leading-[0.95] tracking-tight text-white drop-shadow-[0_4px_18px_rgba(0,0,0,0.75)] sm:text-5xl md:text-7xl">
+            <h1 className="font-display mb-5 max-w-3xl font-medium leading-[0.98] text-white text-balance" style={{ fontSize: "clamp(2.6rem,7vw,5.4rem)" }}>
               Tu viaje soñado,
-              <span className="block text-red-500">armado a tu medida</span>
+              <span className="block italic" style={{ color: "#F1E4DC" }}>armado a tu medida.</span>
             </h1>
-            <p className="mb-7 max-w-xl text-base font-medium text-white/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)] sm:text-lg">
-              Hace más de 30 años convertimos ideas en viajes inolvidables. Vos
-              elegís el destino; nosotros nos ocupamos de todo — con asesoría
-              personalizada y guardia 24 hs durante todo el viaje.
+            <p className="mb-7 max-w-xl text-base font-medium text-white/90 sm:text-lg">
+              Hace más de 30 años convertimos ideas en viajes inolvidables. Vos elegís el destino;
+              nosotros nos ocupamos de todo — con asesoría personalizada y guardia 24 hs durante todo el viaje.
             </p>
-            <form onSubmit={handleSearch} className="rounded-2xl bg-white p-4 shadow-2xl md:p-5">
+            <form onSubmit={handleSearch} className="card-base rounded-2xl p-4 shadow-2xl md:p-5">
               <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                 <div className="col-span-2 md:col-span-1">
-                  <label htmlFor="hero-destination" className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-stone-500">Destino</label>
-                  <input
-                    id="hero-destination"
-                    type="text" placeholder="¿A dónde?"
-                    value={searchData.destination}
-                    onChange={(e) => setSearchData({ ...searchData, destination: e.target.value })}
-                    className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-red-400"
-                  />
+                  <label htmlFor="hero-destination" className="t-mut mb-1.5 block text-[10px] font-semibold uppercase tracking-wider">Destino</label>
+                  <input id="hero-destination" type="text" placeholder="¿A dónde?"
+                    value={searchData.destination} onChange={(e) => setSearchData({ ...searchData, destination: e.target.value })}
+                    className="w-full rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[var(--terra)]"
+                    style={{ border: "1px solid var(--line)", background: "var(--bg)", color: "var(--text)" }} />
                 </div>
                 <div>
-                  <label htmlFor="hero-departure" className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-stone-500">Fecha</label>
-                  <select
-                    id="hero-departure"
-                    value={searchData.departure}
-                    onChange={(e) => setSearchData({ ...searchData, departure: e.target.value })}
-                    className={`w-full appearance-none rounded-xl border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-red-400 ${searchData.departure ? "text-stone-900" : "text-stone-400"}`}
-                  >
+                  <label htmlFor="hero-departure" className="t-mut mb-1.5 block text-[10px] font-semibold uppercase tracking-wider">Fecha</label>
+                  <select id="hero-departure" value={searchData.departure} onChange={(e) => setSearchData({ ...searchData, departure: e.target.value })}
+                    className="w-full appearance-none rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[var(--terra)]"
+                    style={{ border: "1px solid var(--line)", background: "var(--bg)", color: "var(--text)" }}>
                     <option value="">¿Cuándo?</option>
-                    {departureMonthOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
+                    {departureMonthOptions.map((opt) => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="hero-passengers" className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-stone-500">Pasajeros</label>
-                  <select
-                    id="hero-passengers"
-                    value={searchData.passengers}
-                    onChange={(e) => setSearchData({ ...searchData, passengers: e.target.value })}
-                    className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-red-400"
-                  >
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5+">5+</option>
+                  <label htmlFor="hero-passengers" className="t-mut mb-1.5 block text-[10px] font-semibold uppercase tracking-wider">Pasajeros</label>
+                  <select id="hero-passengers" value={searchData.passengers} onChange={(e) => setSearchData({ ...searchData, passengers: e.target.value })}
+                    className="w-full rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[var(--terra)]"
+                    style={{ border: "1px solid var(--line)", background: "var(--bg)", color: "var(--text)" }}>
+                    {["1","2","3","4","5+"].map((n) => (<option key={n} value={n}>{n}</option>))}
                   </select>
                 </div>
                 <div className="col-span-2 flex items-end md:col-span-1">
                   <button type="submit"
-                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-5 py-2.5 text-sm font-bold text-white transition-all hover:from-red-700 hover:to-red-600 hover:shadow-lg">
+                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold text-white transition-all hover:-translate-y-0.5"
+                    style={{ background: "var(--terra)" }}>
                     Buscar mi viaje →
                   </button>
                 </div>
               </div>
             </form>
-            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-white/90 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] sm:text-sm">
-              <span className="inline-flex items-center gap-1.5">✓ +30 años de experiencia</span>
-              <span className="inline-flex items-center gap-1.5">✓ Atención personalizada</span>
-              <span className="inline-flex items-center gap-1.5">✓ Guardia 24 hs en viaje</span>
+            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-white/90 sm:text-sm">
+              <span>✓ +30 años de experiencia</span>
+              <span>✓ Atención personalizada</span>
+              <span>✓ Guardia 24 hs en viaje</span>
             </div>
           </div>
         </div>
