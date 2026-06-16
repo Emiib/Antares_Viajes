@@ -127,7 +127,7 @@
 .t-soft { color: var(--text-70); }
 .t-mut { color: var(--text-55); }
 .t-faint { color: var(--text-40); }
-.border-base { border-color: var(--line) !important; }
+.border-base { border-color: var(--line); }
 .terra { color: var(--terra); }
 .text-terrasoft { color: var(--terra-soft); }
 
