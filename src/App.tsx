@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
 import { SITE_CONFIG } from "./config/site";
@@ -10,9 +10,6 @@ import { RouteSeo } from "./components/Seo";
 import { Navbar } from "./components/layout/Navbar";
 import { Footer } from "./components/layout/Footer";
 import { PageLayout } from "./components/layout/PageLayout";
-import { FooterShowcase } from "./components/home/FooterShowcase";
-import { ScrollPlane } from "./components/home/ScrollPlane";
-import { TripFormModal } from "./components/modals/TripFormModal";
 import { AdminPanel } from "./components/AdminPanel";
 
 import { HomePage } from "./pages/HomePage";
@@ -45,7 +42,6 @@ function ScrollToTop() {
 function AppShell() {
   const { darkMode, setDarkMode } = useDarkMode();
   const navbarVisible = useNavbarVisibility();
-  const [showTripForm, setShowTripForm] = useState(false);
   const { pathname } = useLocation();
   const { byType } = usePackages();
 
@@ -53,8 +49,6 @@ function AppShell() {
   if (pathname.startsWith("/admin")) {
     return <AdminPanel darkMode={darkMode} />;
   }
-
-  const isHome = pathname === "/";
 
   return (
     <div
@@ -168,13 +162,7 @@ function AppShell() {
         <Route path="*" element={<HomePage darkMode={darkMode} wa={wa} />} />
       </Routes>
 
-      {isHome && (
-        <FooterShowcase darkMode={darkMode} onOpenForm={() => setShowTripForm(true)} />
-      )}
-
       <Footer />
-
-      {isHome && <ScrollPlane darkMode={darkMode} />}
 
       <LeadModal wa={wa} />
 
@@ -191,9 +179,6 @@ function AppShell() {
         </svg>
       </a>
 
-      {showTripForm && (
-        <TripFormModal darkMode={darkMode} wa={wa} onClose={() => setShowTripForm(false)} />
-      )}
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Link } from "react-router-dom";
 import { heroSlides } from "../config/site";
 import { departureMonthOptions } from "../data/dates";
 import { usePackages } from "../data/packagesStore";
@@ -8,19 +7,20 @@ import { useHeroSlide } from "../hooks/useHeroSlide";
 import { useMobileViewport } from "../hooks/useMobileViewport";
 import { trackEvent, trackStandard } from "../lib/tracking";
 import { captureLead } from "../lib/leads";
-import { Differentiators } from "../components/home/Differentiators";
-import { DestinationsGrid } from "../components/home/DestinationsGrid";
+import { ServicesEditorial } from "../components/home/ServicesEditorial";
+import { DestinationsStrip } from "../components/home/DestinationsStrip";
+import { WhyUs } from "../components/home/WhyUs";
 import { LuxurySection } from "../components/home/LuxurySection";
+import { Testimonials } from "../components/home/Testimonials";
 import { LeadQualifier } from "../components/home/LeadQualifier";
-import { AnimatedSection } from "../components/ui/AnimatedSection";
-import { PackageCard } from "../components/ui/PackageCard";
+import { FooterCTA } from "../components/home/FooterCTA";
 
 interface HomePageProps {
   darkMode: boolean;
   wa: (text?: string) => string;
 }
 
-export function HomePage({ darkMode, wa }: HomePageProps) {
+export function HomePage({ wa }: HomePageProps) {
   const [searchData, setSearchData] = useState({
     destination: "",
     departure: "",
@@ -120,95 +120,13 @@ export function HomePage({ darkMode, wa }: HomePageProps) {
         </div>
       </section>
 
-      {/* ── LA DIFERENCIA ANTARES (somos personas) ── */}
-      <Differentiators darkMode={darkMode} />
-
-      {/* ── FAVORITOS ── */}
-      <AnimatedSection id="paquetes" data-track-section="favoritos" className={`${darkMode ? "bg-stone-900" : "bg-stone-50"} py-14 md:py-20`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-10 flex flex-col items-center justify-center gap-4 text-center">
-            <h2 className={`mb-2 text-3xl font-black leading-tight md:text-5xl ${darkMode ? "text-white" : "text-stone-900"}`}>
-              Antares <span className="text-red-600">Favoritos</span>
-            </h2>
-            <p className={`${darkMode ? "text-stone-400" : "text-stone-600"} text-base md:text-lg max-w-2xl`}>
-              Las propuestas más elegidas para viajar en pareja, en familia o con amigos.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-5 mb-8">
-            {byType.featured.map((pkg, i) => (
-              <div key={pkg.id} style={{ transitionDelay: `${i * 100}ms` }} className="h-full">
-                <PackageCard pkg={pkg} accent="red" darkMode={darkMode} />
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-center">
-            <Link to="/ofertas" className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1">
-              Ver más paquetes →
-            </Link>
-          </div>
-        </div>
-      </AnimatedSection>
-
-      {/* ── DESTINOS ── */}
-      <DestinationsGrid darkMode={darkMode} />
-
-      {/* ── CIRCUITOS ── */}
-      <AnimatedSection id="circuitos" data-track-section="circuitos" className={`${darkMode ? "bg-stone-900" : "bg-stone-50"} py-14 md:py-20`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-10 flex flex-col items-center justify-center gap-4 text-center">
-            <h2 className={`mb-2 text-3xl font-black leading-tight md:text-5xl ${darkMode ? "text-white" : "text-stone-900"}`}>
-              Circuitos <span className="text-red-600">Internacionales</span>
-            </h2>
-            <p className={`${darkMode ? "text-stone-400" : "text-stone-600"} text-base md:text-lg max-w-2xl`}>
-              Rutas completas para descubrir grandes destinos con itinerarios armados.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-5 mb-8">
-            {byType.circuitos.map((pkg, i) => (
-              <div key={pkg.id} style={{ transitionDelay: `${i * 100}ms` }} className="h-full">
-                <PackageCard pkg={pkg} accent="red" darkMode={darkMode} />
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-center">
-            <Link to="/circuitos" className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1">
-              Ver más circuitos →
-            </Link>
-          </div>
-        </div>
-      </AnimatedSection>
-
-      {/* ── GRUPALES ── */}
-      <AnimatedSection id="grupales" data-track-section="grupales" className={`${darkMode ? "bg-stone-950" : "bg-white"} py-14 md:py-20`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-10 text-center">
-            <h2 className={`mb-2 text-3xl font-black md:text-5xl ${darkMode ? "text-white" : "text-stone-900"}`}>
-              Viajes <span className="text-red-600">Grupales</span>
-            </h2>
-            <p className={`${darkMode ? "text-stone-400" : "text-stone-600"} mx-auto max-w-2xl text-base md:text-lg`}>
-              Paquetes especiales para empresas, amigos y familias con tarifas pensadas para grupos.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-5 mb-8">
-            {byType.grupales.map((pkg, i) => (
-              <div key={pkg.id} style={{ transitionDelay: `${i * 100}ms` }} className="h-full">
-                <PackageCard pkg={pkg} accent="red" darkMode={darkMode} />
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-center">
-            <Link to="/grupales" className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-8 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:-translate-y-1">
-              Ver más paquetes grupales →
-            </Link>
-          </div>
-        </div>
-      </AnimatedSection>
-
-      {/* ── ANTARES LUJO ── */}
+      <ServicesEditorial />
+      <DestinationsStrip />
+      <WhyUs />
       <LuxurySection cards={byType.experiencias} />
-
-      {/* ── CONTANOS TU VIAJE (filtro de leads) ── */}
+      <Testimonials />
       <LeadQualifier wa={wa} />
+      <FooterCTA />
     </main>
   );
 }
