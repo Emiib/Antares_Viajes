@@ -5,6 +5,24 @@
   --antares-red-dark: #B91C1C;
   --antares-gold: #C4A882;
   --antares-brown: #6B4E31;
+
+  /* ── Tokens rediseño Home (light por defecto) ── */
+  --terra: #D94E3F;
+  --terra-dk: #B83C2F;
+  --terra-soft: #E8836F;
+  --gold: #C6A461;
+  --gold-soft: #E2C893;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --bg: #F4EFE7;
+  --text: #1B1610;
+  --text-70: rgba(27,22,16,.72);
+  --text-55: rgba(27,22,16,.55);
+  --text-40: rgba(27,22,16,.40);
+  --line: rgba(27,22,16,.13);
+  --card: #ffffff;
+  --nav-solid: rgba(244,239,231,0.82);
+  --nav-border: rgba(27,22,16,.08);
 }
 
 /* Serif editorial: solo para la sección Antares Lujo */
@@ -87,4 +105,54 @@
 
 .animate-hero-video {
   animation: heroVideoIn 900ms ease-out both;
+}
+
+/* ── Tokens rediseño Home (dark) ── */
+.antares-dark {
+  --bg: #0E0C0B;
+  --text: #F4EDE2;
+  --text-70: rgba(244,237,226,.72);
+  --text-55: rgba(244,237,226,.55);
+  --text-40: rgba(244,237,226,.40);
+  --line: rgba(244,237,226,.13);
+  --card: #181410;
+  --nav-solid: rgba(14,12,11,0.72);
+  --nav-border: rgba(244,237,226,.08);
+}
+
+/* Clases theme-aware del Home */
+.bg-base { background-color: var(--bg); }
+.card-base { background-color: var(--card); }
+.t1 { color: var(--text); }
+.t-soft { color: var(--text-70); }
+.t-mut { color: var(--text-55); }
+.t-faint { color: var(--text-40); }
+.border-base { border-color: var(--line) !important; }
+.terra { color: var(--terra); }
+.text-terrasoft { color: var(--terra-soft); }
+
+.font-display { font-family: "Playfair Display", Georgia, serif; }
+.font-ui { font-family: "Plus Jakarta Sans", system-ui, sans-serif; }
+.ls-wide { letter-spacing: 0.42em; }
+.ls-mid { letter-spacing: 0.22em; }
+.text-balance { text-wrap: balance; }
+.text-pretty { text-wrap: pretty; }
+.no-bar { scrollbar-width: none; }
+.no-bar::-webkit-scrollbar { display: none; }
+
+/* Premium (dorado, confinado a #premium) */
+.gold-line { background: linear-gradient(90deg, transparent, var(--gold) 22%, var(--gold) 78%, transparent); }
+.gold-text { background: linear-gradient(100deg, var(--gold-soft), var(--gold) 55%, #9e7e44);
+  -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* Reveal-on-enter (la clase .in la agrega el componente Reveal) */
+.reveal { opacity: 0; transform: translateY(28px);
+  transition: opacity .8s var(--ease), transform .8s var(--ease); will-change: opacity, transform; }
+.reveal.in { opacity: 1; transform: none; }
+.reveal-l { transform: translateX(-28px); }
+.reveal-r { transform: translateX(28px); }
+.reveal-l.in, .reveal-r.in { transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal-l, .reveal-r { opacity: 1 !important; transform: none !important; }
 }
