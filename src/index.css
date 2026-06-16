@@ -156,3 +156,9 @@
 @media (prefers-reduced-motion: reduce) {
   .reveal, .reveal-l, .reveal-r { opacity: 1 !important; transform: none !important; }
 }
+
+.lead-input { width: 100%; background: transparent; border: 0; border-bottom: 1px solid var(--line);
+  padding: .7rem 0; font-size: 1rem; color: var(--text); outline: none; transition: border-color .3s var(--ease); }
+.lead-input::placeholder { color: var(--text-40); }
+.lead-input:focus { border-color: var(--terra); }
+textarea.lead-input { resize: none; }
