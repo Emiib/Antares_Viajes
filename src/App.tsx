@@ -23,6 +23,8 @@ import { LegalesPage } from "./pages/LegalesPage";
 import { PackageDetailPage } from "./pages/PackageDetailPage";
 
 import { PackagesProvider, usePackages } from "./data/packagesStore";
+import { LeadModalProvider } from "./context/LeadModalContext";
+import { LeadModal } from "./components/modals/LeadModal";
 
 /** Construye un enlace de WhatsApp con un mensaje opcional ya codificado. */
 export function wa(text?: string) {
@@ -174,6 +176,8 @@ function AppShell() {
 
       {isHome && <ScrollPlane darkMode={darkMode} />}
 
+      <LeadModal wa={wa} />
+
       {/* Botón flotante de WhatsApp */}
       <a
         href={wa()}
@@ -198,7 +202,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <PackagesProvider>
-        <AppShell />
+        <LeadModalProvider>
+          <AppShell />
+        </LeadModalProvider>
       </PackagesProvider>
     </BrowserRouter>
   );
