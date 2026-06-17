@@ -4,15 +4,15 @@ import type { IconName } from "../ui/Icon";
 import { useCountUp } from "../../hooks/useCountUp";
 
 const STATS = [
-  { target: 30, prefix: "+", label: "Años de trayectoria", note: "Operando sin interrupciones desde 1994." },
-  { target: 5000, prefix: "+", label: "Viajeros acompañados", note: "Familias, parejas y contingentes." },
+  { target: 25, prefix: "+", label: "Años de trayectoria", note: "Más de un cuarto de siglo de operación ininterrumpida." },
+  { target: 5000, prefix: "+", label: "Viajeros acompañados", note: "Familias, parejas y grupos." },
   { target: 80, prefix: "+", label: "Destinos coordinados", note: "En los cinco continentes." },
 ];
 
 const FEATURES: { icon: IconName; title: string; copy: string }[] = [
   { icon: "compass", title: "Asesoramiento real", copy: "Diseñamos cada itinerario con vos. Sin plantillas, sin paquetes genéricos." },
-  { icon: "shield", title: "Respaldo de tres décadas", copy: "Treinta años operando en Entre Ríos nos avalan ante cada cliente." },
-  { icon: "concierge", title: "De principio a fin", copy: "Te acompañamos antes, durante y después del viaje, estés donde estés." },
+  { icon: "shield", title: "Guardia 24 hs en viaje", copy: "Ante cualquier imprevisto nos llamás y te ayudamos a resolverlo, sea la hora que sea." },
+  { icon: "globe", title: "Un especialista por destino", copy: "Cada destino del mundo tiene en Antares alguien que lo conoce a fondo y arma tu itinerario con criterio, no con plantillas." },
 ];
 
 function Stat({ s }: { s: (typeof STATS)[number] }) {
