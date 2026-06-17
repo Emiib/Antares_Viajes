@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import { SITE_CONFIG } from "./config/site";
 import { useDarkMode } from "./hooks/useDarkMode";
@@ -13,6 +13,7 @@ import { PageLayout } from "./components/layout/PageLayout";
 import { AdminPanel } from "./components/AdminPanel";
 
 import { HomePage } from "./pages/HomePage";
+import { PaquetesPage } from "./pages/PaquetesPage";
 import { BlogPage } from "./pages/BlogPage";
 import { BlogPostPage } from "./pages/BlogPostPage";
 import { InfoUtilPage } from "./pages/InfoUtilPage";
@@ -65,18 +66,8 @@ function AppShell() {
       <Routes>
         <Route path="/" element={<HomePage darkMode={darkMode} wa={wa} />} />
 
-        <Route
-          path="/ofertas"
-          element={
-            <PageLayout
-              title="Ofertas Flash"
-              subtitle="Promociones y tarifas especiales con vigencia limitada."
-              cards={byType.ofertas}
-              accent="red"
-              darkMode={darkMode}
-            />
-          }
-        />
+        <Route path="/paquetes" element={<PaquetesPage darkMode={darkMode} />} />
+        <Route path="/ofertas" element={<Navigate to="/paquetes?filtro=ofertas" replace />} />
         <Route
           path="/argentina"
           element={
