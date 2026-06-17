@@ -3,7 +3,6 @@ import type { TravelCard } from "../../types";
 import { Reveal } from "../ui/Reveal";
 import { Icon } from "../ui/Icon";
 import type { IconName } from "../ui/Icon";
-import { useLeadModal } from "../../context/LeadModalContext";
 
 const HALLMARKS: { icon: IconName; title: string; copy: string }[] = [
   { icon: "key", title: "Acceso, no catálogo", copy: "Suites que no se reservan online, mesas sin disponibilidad pública, guías privados que solo trabajan con nosotros." },
@@ -12,7 +11,6 @@ const HALLMARKS: { icon: IconName; title: string; copy: string }[] = [
 ];
 
 export function LuxurySection({ cards }: { cards: TravelCard[] }) {
-  const { openLead } = useLeadModal();
   const featured = cards.slice(0, 3);
 
   return (
@@ -84,12 +82,12 @@ export function LuxurySection({ cards }: { cards: TravelCard[] }) {
           <p className="font-display max-w-[26rem] text-[1.6rem] italic leading-[1.15] sm:text-[2rem]" style={{ color: "rgba(244,237,226,.85)" }}>
             Contanos qué imaginás. El resto lo resolvemos nosotros.
           </p>
-          <button onClick={() => openLead({ destino: "Antares Luxury", context: "premium" })}
+          <Link to="/experiencias"
             className="group inline-flex shrink-0 items-center gap-3 rounded-full py-4 pl-8 pr-7 text-[0.94rem] font-semibold transition-all duration-300 hover:-translate-y-0.5"
             style={{ background: "linear-gradient(100deg, var(--gold-soft), var(--gold))", color: "#2a2008", boxShadow: "0 18px 44px -18px rgba(198,164,97,.7)" }}>
-            Solicitar propuesta privada
+            Ver experiencias de lujo
             <Icon name="arrowR" className="h-[1.05rem] w-[1.05rem] transition-transform duration-300 group-hover:translate-x-1" />
-          </button>
+          </Link>
         </Reveal>
       </div>
     </section>
