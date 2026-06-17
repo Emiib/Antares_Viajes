@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import { SITE_CONFIG } from "./config/site";
 import { useDarkMode } from "./hooks/useDarkMode";
@@ -10,12 +10,11 @@ import { RouteSeo } from "./components/Seo";
 import { Navbar } from "./components/layout/Navbar";
 import { Footer } from "./components/layout/Footer";
 import { PageLayout } from "./components/layout/PageLayout";
-import { FooterShowcase } from "./components/home/FooterShowcase";
-import { ScrollPlane } from "./components/home/ScrollPlane";
-import { TripFormModal } from "./components/modals/TripFormModal";
 import { AdminPanel } from "./components/AdminPanel";
 
 import { HomePage } from "./pages/HomePage";
+import { PaquetesPage } from "./pages/PaquetesPage";
+import { NosotrosPage } from "./pages/NosotrosPage";
 import { BlogPage } from "./pages/BlogPage";
 import { BlogPostPage } from "./pages/BlogPostPage";
 import { InfoUtilPage } from "./pages/InfoUtilPage";
@@ -23,6 +22,9 @@ import { LegalesPage } from "./pages/LegalesPage";
 import { PackageDetailPage } from "./pages/PackageDetailPage";
 
 import { PackagesProvider, usePackages } from "./data/packagesStore";
+import { LeadModalProvider } from "./context/LeadModalContext";
+import { LeadModal } from "./components/modals/LeadModal";
+import { Icon } from "./components/ui/Icon";
 
 /** Construye un enlace de WhatsApp con un mensaje opcional ya codificado. */
 export function wa(text?: string) {
@@ -43,7 +45,6 @@ function ScrollToTop() {
 function AppShell() {
   const { darkMode, setDarkMode } = useDarkMode();
   const navbarVisible = useNavbarVisibility();
-  const [showTripForm, setShowTripForm] = useState(false);
   const { pathname } = useLocation();
   const { byType } = usePackages();
 
@@ -51,8 +52,6 @@ function AppShell() {
   if (pathname.startsWith("/admin")) {
     return <AdminPanel darkMode={darkMode} />;
   }
-
-  const isHome = pathname === "/";
 
   return (
     <div
@@ -68,18 +67,9 @@ function AppShell() {
       <Routes>
         <Route path="/" element={<HomePage darkMode={darkMode} wa={wa} />} />
 
-        <Route
-          path="/ofertas"
-          element={
-            <PageLayout
-              title="Ofertas Flash"
-              subtitle="Promociones y tarifas especiales con vigencia limitada."
-              cards={byType.ofertas}
-              accent="red"
-              darkMode={darkMode}
-            />
-          }
-        />
+        <Route path="/paquetes" element={<PaquetesPage darkMode={darkMode} />} />
+        <Route path="/ofertas" element={<Navigate to="/paquetes?filtro=ofertas" replace />} />
+        <Route path="/nosotros" element={<NosotrosPage />} />
         <Route
           path="/argentina"
           element={
@@ -166,13 +156,9 @@ function AppShell() {
         <Route path="*" element={<HomePage darkMode={darkMode} wa={wa} />} />
       </Routes>
 
-      {isHome && (
-        <FooterShowcase darkMode={darkMode} onOpenForm={() => setShowTripForm(true)} />
-      )}
-
       <Footer />
 
-      {isHome && <ScrollPlane darkMode={darkMode} />}
+      <LeadModal wa={wa} />
 
       {/* Botón flotante de WhatsApp */}
       <a
@@ -180,16 +166,12 @@ function AppShell() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Escribinos por WhatsApp"
-        className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-green-500 shadow-2xl transition-all hover:scale-110 hover:bg-green-600"
+        className="wa-bob fixed bottom-5 right-5 z-50 grid h-14 w-14 place-items-center rounded-full text-white"
+        style={{ background: "#25D366", boxShadow: "0 14px 34px -10px rgba(37,211,102,.8)" }}
       >
-        <svg className="h-7 w-7 text-white" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2z" />
-        </svg>
+        <Icon name="whatsapp" className="h-8 w-8" />
       </a>
 
-      {showTripForm && (
-        <TripFormModal darkMode={darkMode} wa={wa} onClose={() => setShowTripForm(false)} />
-      )}
     </div>
   );
 }
@@ -198,7 +180,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <PackagesProvider>
-        <AppShell />
+        <LeadModalProvider>
+          <AppShell />
+        </LeadModalProvider>
       </PackagesProvider>
     </BrowserRouter>
   );

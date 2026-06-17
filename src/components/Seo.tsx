@@ -6,7 +6,7 @@ import { blogPosts } from "../data/blog";
 const SITE_NAME = "Antares Viajes y Turismo";
 const BASE_URL = "https://www.antaresviajes.tur.ar";
 const DEFAULT_DESC =
-  "Agencia de viajes con más de 30 años de experiencia. Paquetes turísticos, circuitos internacionales, viajes grupales y experiencias de lujo armados a tu medida.";
+  "Agencia de viajes con más de 25 años de experiencia. Paquetes turísticos, circuitos internacionales, viajes grupales y experiencias de lujo armados a tu medida.";
 
 type Meta = { title: string; description: string };
 
