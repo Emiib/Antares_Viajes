@@ -162,3 +162,7 @@
 .lead-input::placeholder { color: var(--text-40); }
 .lead-input:focus { border-color: var(--terra); }
 textarea.lead-input { resize: none; }
+
+/* WhatsApp FAB: sube y baja suave (respeta prefers-reduced-motion vía el reset global) */
+@keyframes wa-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+.wa-bob { animation: wa-bob 2.6s var(--ease) infinite; }

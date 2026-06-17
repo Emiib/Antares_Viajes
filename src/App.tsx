@@ -22,6 +22,7 @@ import { PackageDetailPage } from "./pages/PackageDetailPage";
 import { PackagesProvider, usePackages } from "./data/packagesStore";
 import { LeadModalProvider } from "./context/LeadModalContext";
 import { LeadModal } from "./components/modals/LeadModal";
+import { Icon } from "./components/ui/Icon";
 
 /** Construye un enlace de WhatsApp con un mensaje opcional ya codificado. */
 export function wa(text?: string) {
@@ -172,11 +173,10 @@ function AppShell() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Escribinos por WhatsApp"
-        className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-green-500 shadow-2xl transition-all hover:scale-110 hover:bg-green-600"
+        className="wa-bob fixed bottom-5 right-5 z-50 grid h-14 w-14 place-items-center rounded-full text-white"
+        style={{ background: "#25D366", boxShadow: "0 14px 34px -10px rgba(37,211,102,.8)" }}
       >
-        <svg className="h-7 w-7 text-white" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2z" />
-        </svg>
+        <Icon name="whatsapp" className="h-8 w-8" />
       </a>
 
     </div>
