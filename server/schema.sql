@@ -74,6 +74,18 @@ CREATE TABLE IF NOT EXISTS blog_posts (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Testimonials Table (Opiniones de clientes, editables desde el panel)
+CREATE TABLE IF NOT EXISTS testimonials (
+  id TEXT PRIMARY KEY,
+  quote TEXT NOT NULL,
+  name TEXT,
+  city TEXT,
+  active INTEGER DEFAULT 1,
+  display_order INTEGER DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Leads Table (mini-CRM): consultas de los formularios del sitio.
 CREATE TABLE IF NOT EXISTS leads (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

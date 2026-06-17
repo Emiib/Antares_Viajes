@@ -3,6 +3,7 @@ import { API_URL } from "../config/api";
 import { adminFetch } from "./admin/adminApi";
 import { AdminPackages } from "./admin/AdminPackages";
 import { AdminBlog } from "./admin/AdminBlog";
+import { AdminTestimonials } from "./admin/AdminTestimonials";
 import { AdminLeads } from "./admin/AdminLeads";
 import { AdminIntegrations } from "./admin/AdminIntegrations";
 import { AdminConfig } from "./admin/AdminConfig";
@@ -11,12 +12,13 @@ interface AdminPanelProps {
   darkMode: boolean;
 }
 
-type Tab = "dashboard" | "packages" | "blog" | "leads" | "mayoristas" | "config";
+type Tab = "dashboard" | "packages" | "blog" | "opiniones" | "leads" | "mayoristas" | "config";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "dashboard", label: "Dashboard" },
   { id: "packages", label: "Paquetes" },
   { id: "blog", label: "Blog" },
+  { id: "opiniones", label: "Opiniones" },
   { id: "leads", label: "Leads" },
   { id: "mayoristas", label: "Mayoristas" },
   { id: "config", label: "Config" },
@@ -132,6 +134,7 @@ export function AdminPanel({ darkMode }: AdminPanelProps) {
         {activeTab === "dashboard" && <AdminDashboard darkMode={darkMode} />}
         {activeTab === "packages" && <AdminPackages darkMode={darkMode} />}
         {activeTab === "blog" && <AdminBlog darkMode={darkMode} />}
+        {activeTab === "opiniones" && <AdminTestimonials darkMode={darkMode} />}
         {activeTab === "leads" && <AdminLeads darkMode={darkMode} />}
         {activeTab === "mayoristas" && <AdminIntegrations darkMode={darkMode} />}
         {activeTab === "config" && <AdminConfig darkMode={darkMode} />}

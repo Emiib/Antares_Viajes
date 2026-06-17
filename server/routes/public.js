@@ -11,13 +11,15 @@ router.get('/data', (req, res) => {
     getConfig(),
     getActivePackages(),
     getActiveHeroSlides(),
-    getActiveBlogPosts()
-  ]).then(([config, packages, heroSlides, blogPosts]) => {
+    getActiveBlogPosts(),
+    getActiveTestimonials()
+  ]).then(([config, packages, heroSlides, blogPosts, testimonials]) => {
     res.json({
       config,
       packages,
       heroSlides,
-      blogPosts
+      blogPosts,
+      testimonials
     });
   }).catch(err => {
     res.status(500).json({ error: err.message });
@@ -107,6 +109,19 @@ function getActiveBlogPosts() {
       (err, posts) => {
         if (err) reject(err);
         else resolve(posts || []);
+      }
+    );
+  });
+}
+
+function getActiveTestimonials() {
+  return new Promise((resolve, reject) => {
+    const db = getDB();
+    db.all(
+      'SELECT * FROM testimonials WHERE active = 1 ORDER BY display_order ASC, created_at DESC',
+      (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows || []);
       }
     );
   });

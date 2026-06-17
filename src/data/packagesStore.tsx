@@ -130,12 +130,27 @@ function toBlogPost(p: BackendBlogPost): BlogPost {
   };
 }
 
+export type Testimonial = { text: string; name: string; city: string };
+
+const STATIC_TESTIMONIALS: Testimonial[] = [
+  { text: "Volvimos enamorados de la Patagonia. Cada traslado, cada hotel, cada detalle estaba pensado antes de que lo pidiéramos.", name: "María Elena R.", city: "Concepción del Uruguay" },
+  { text: "Organizaron nuestra luna de miel en la Toscana de principio a fin. No tuvimos que ocuparnos de nada más que disfrutar.", name: "Lucas y Paula", city: "Gualeguaychú" },
+  { text: "Viajamos treinta personas a Brasil y todo salió impecable. Es la tranquilidad de viajar con gente que conoce su oficio.", name: "Club de Jubilados", city: "Urdinarrain" },
+  { text: "Hace quince años que viajo solo con ellos. Ya no me imagino planear unas vacaciones de otra manera.", name: "Jorge B.", city: "Larroque" },
+];
+
+type BackendTestimonial = { id: string; quote: string; name?: string; city?: string };
+function toTestimonial(t: BackendTestimonial): Testimonial {
+  return { text: t.quote, name: t.name ?? "", city: t.city ?? "" };
+}
+
 type Store = {
   byType: Record<PackageType, TravelCard[]>;
   all: TravelCard[];
   getById: (id: string) => TravelCard | undefined;
   config: SiteConfig;
   blogPosts: BlogPost[];
+  testimonials: Testimonial[];
   source: "static" | "live";
 };
 
@@ -145,6 +160,7 @@ export function PackagesProvider({ children }: { children: ReactNode }) {
   const [byType, setByType] = useState<Record<PackageType, TravelCard[]>>(STATIC_BY_TYPE);
   const [config, setConfig] = useState<SiteConfig>({});
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>(STATIC_BLOG);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(STATIC_TESTIMONIALS);
   const [source, setSource] = useState<"static" | "live">("static");
 
   useEffect(() => {
@@ -157,6 +173,9 @@ export function PackagesProvider({ children }: { children: ReactNode }) {
         if (data?.config && typeof data.config === "object") setConfig(data.config);
         if (Array.isArray(data?.blogPosts) && data.blogPosts.length > 0) {
           setBlogPosts(data.blogPosts.map(toBlogPost));
+        }
+        if (Array.isArray(data?.testimonials) && data.testimonials.length > 0) {
+          setTestimonials(data.testimonials.map(toTestimonial));
         }
         const packages: BackendPackage[] = Array.isArray(data?.packages) ? data.packages : [];
         if (packages.length === 0) return;
@@ -197,8 +216,8 @@ export function PackagesProvider({ children }: { children: ReactNode }) {
   const value = useMemo<Store>(() => {
     const all = Object.values(byType).flat();
     const map = new Map(all.map((p) => [p.id, p]));
-    return { byType, all, getById: (id) => map.get(id), config, blogPosts, source };
-  }, [byType, config, blogPosts, source]);
+    return { byType, all, getById: (id) => map.get(id), config, blogPosts, testimonials, source };
+  }, [byType, config, blogPosts, testimonials, source]);
 
   return <PackagesContext.Provider value={value}>{children}</PackagesContext.Provider>;
 }

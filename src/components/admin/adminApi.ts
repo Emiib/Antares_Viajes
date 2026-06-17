@@ -35,6 +35,15 @@ export type BlogPost = {
   published_at?: string;
 };
 
+export type Testimonial = {
+  id: string;
+  quote: string;
+  name?: string;
+  city?: string;
+  active?: number;
+  display_order?: number;
+};
+
 export type Lead = {
   id: number;
   name?: string;
@@ -128,6 +137,17 @@ export const deletePost = (id: string) =>
   adminFetch(`/blog/${encodeURIComponent(id)}`, { method: "DELETE" });
 export const togglePost = (id: string) =>
   adminFetch(`/blog/${encodeURIComponent(id)}/toggle`, { method: "PUT" });
+
+// ─── Opiniones (testimonios) ───
+export const getTestimonials = () => adminFetch<Testimonial[]>("/testimonials");
+export const createTestimonial = (t: Testimonial) =>
+  adminFetch("/testimonials", { method: "POST", body: JSON.stringify(t) });
+export const updateTestimonial = (id: string, t: Testimonial) =>
+  adminFetch(`/testimonials/${encodeURIComponent(id)}`, { method: "PUT", body: JSON.stringify(t) });
+export const deleteTestimonial = (id: string) =>
+  adminFetch(`/testimonials/${encodeURIComponent(id)}`, { method: "DELETE" });
+export const toggleTestimonial = (id: string) =>
+  adminFetch(`/testimonials/${encodeURIComponent(id)}/toggle`, { method: "PUT" });
 
 // ─── Leads (mini-CRM) ───
 export const getLeads = () => adminFetch<Lead[]>("/leads");

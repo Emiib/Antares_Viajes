@@ -299,6 +299,67 @@ router.put('/blog/:id/toggle', verifyAuth, (req, res) => {
   );
 });
 
+// ─── Opiniones (testimonios) ───────────────────────────────────
+
+router.get('/testimonials', verifyAuth, (req, res) => {
+  const db = getDB();
+  db.all('SELECT * FROM testimonials ORDER BY display_order ASC, created_at DESC', (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+router.post('/testimonials', verifyAuth, (req, res) => {
+  const db = getDB();
+  const { id, quote, name, city, active, display_order } = req.body;
+  if (!id || !quote) {
+    return res.status(400).json({ error: 'Missing required fields (id, quote)' });
+  }
+  db.run(
+    `INSERT INTO testimonials (id, quote, name, city, active, display_order)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+    [id, quote, name ?? null, city ?? null, active === 0 ? 0 : 1, Number(display_order) || 0],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(201).json({ id, message: 'Testimonial created' });
+    }
+  );
+});
+
+router.put('/testimonials/:id', verifyAuth, (req, res) => {
+  const db = getDB();
+  const b = req.body;
+  db.run(
+    `UPDATE testimonials SET quote = ?, name = ?, city = ?, display_order = ?, updated_at = CURRENT_TIMESTAMP
+     WHERE id = ?`,
+    [b.quote, b.name ?? null, b.city ?? null, Number(b.display_order) || 0, req.params.id],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: 'Testimonial updated' });
+    }
+  );
+});
+
+router.delete('/testimonials/:id', verifyAuth, (req, res) => {
+  const db = getDB();
+  db.run('DELETE FROM testimonials WHERE id = ?', [req.params.id], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: 'Testimonial deleted' });
+  });
+});
+
+router.put('/testimonials/:id/toggle', verifyAuth, (req, res) => {
+  const db = getDB();
+  db.run(
+    'UPDATE testimonials SET active = CASE WHEN active = 1 THEN 0 ELSE 1 END, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+    [req.params.id],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: 'Testimonial visibility toggled' });
+    }
+  );
+});
+
 // ─── Leads (mini-CRM) ──────────────────────────────────────────
 
 // Lista todos los leads, los más nuevos primero.
