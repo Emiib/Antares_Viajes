@@ -7,7 +7,6 @@ import { DestinationsStrip } from "../components/home/DestinationsStrip";
 import { WhyUs } from "../components/home/WhyUs";
 import { LuxurySection } from "../components/home/LuxurySection";
 import { Testimonials } from "../components/home/Testimonials";
-import { LeadQualifier } from "../components/home/LeadQualifier";
 import { FooterCTA } from "../components/home/FooterCTA";
 
 interface HomePageProps {
@@ -15,7 +14,7 @@ interface HomePageProps {
   wa: (text?: string) => string;
 }
 
-export function HomePage({ wa }: HomePageProps) {
+export function HomePage(_props: HomePageProps) {
   const { currentSlide, advance } = useHeroSlide();
   const isMobileViewport = useMobileViewport();
   const { byType } = usePackages();
@@ -58,7 +57,6 @@ export function HomePage({ wa }: HomePageProps) {
       <WhyUs />
       <LuxurySection cards={byType.experiencias} />
       <Testimonials />
-      <LeadQualifier wa={wa} />
       <FooterCTA />
     </main>
   );

@@ -3,15 +3,36 @@ import type { FormEvent } from "react";
 import { Icon } from "../ui/Icon";
 import { captureLead } from "../../lib/leads";
 import { useLeadModal } from "../../context/LeadModalContext";
+import { departureMonthOptions } from "../../data/dates";
 
 interface LeadModalProps {
   wa: (text?: string) => string;
 }
 
-/** Modal único de captura. Persiste el lead (fire-and-forget) y ofrece seguir por WhatsApp. */
+const BUDGETS = [
+  "Hasta USD 1.000 por persona",
+  "USD 1.000 a 2.000 por persona",
+  "USD 2.000 a 4.000 por persona",
+  "Más de USD 4.000 por persona",
+  "Prefiero que me asesoren",
+];
+
+const STYLES = [
+  "Playa y relax",
+  "Ciudades y cultura",
+  "Circuito / varios destinos",
+  "Luna de miel",
+  "Viaje familiar",
+  "Quinceañera",
+  "Otro",
+];
+
+const EMPTY = { nombre: "", contacto: "", destino: "", month: "", travelers: "2", budget: "", style: "", mensaje: "" };
+
+/** Modal único de captura — incluye los campos de calificación del viaje. */
 export function LeadModal({ wa }: LeadModalProps) {
   const { open, prefill, closeLead } = useLeadModal();
-  const [data, setData] = useState({ nombre: "", contacto: "", destino: "", mensaje: "" });
+  const [data, setData] = useState(EMPTY);
   const [sent, setSent] = useState(false);
   const firstRef = useRef<HTMLInputElement | null>(null);
 
@@ -30,12 +51,19 @@ export function LeadModal({ wa }: LeadModalProps) {
     return () => window.removeEventListener("keydown", onKey);
   }, [open, closeLead]);
 
-  const set = (key: keyof typeof data) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+  const set = (key: keyof typeof data) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setData((d) => ({ ...d, [key]: e.target.value }));
 
-  const waMsg = () =>
-    `Hola Antares, soy ${data.nombre || "—"}. Quiero consultar por ${data.destino || "un viaje"}.` +
-    (data.mensaje ? ` ${data.mensaje}` : "");
+  const lines = () =>
+    [
+      `Hola Antares, soy ${data.nombre || "—"}. Quiero una propuesta de viaje:`,
+      data.destino && `• Destino: ${data.destino}`,
+      data.month && `• Cuándo: ${data.month}`,
+      `• Viajeros: ${data.travelers}`,
+      data.budget && `• Presupuesto: ${data.budget}`,
+      data.style && `• Estilo: ${data.style}`,
+      data.mensaje && `• ${data.mensaje}`,
+    ].filter(Boolean) as string[];
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -44,10 +72,13 @@ export function LeadModal({ wa }: LeadModalProps) {
       name: data.nombre,
       contact: data.contacto,
       destination: data.destino,
-      message: data.mensaje,
+      message: lines().slice(1).join("\n"),
+      payload: { month: data.month, travelers: data.travelers, budget: data.budget, style: data.style },
     });
     setSent(true);
   };
+
+  const labelCls = "mb-1 block text-[0.6rem] font-semibold uppercase tracking-wider t-faint";
 
   return (
     <div
@@ -60,7 +91,7 @@ export function LeadModal({ wa }: LeadModalProps) {
       onMouseDown={(e) => e.target === e.currentTarget && closeLead()}
     >
       <div
-        className="card-base font-ui relative w-full rounded-t-2xl p-7 sm:max-w-[460px] sm:rounded-md sm:p-9"
+        className="card-base font-ui relative max-h-[92vh] w-full overflow-y-auto rounded-t-2xl p-7 sm:max-w-[480px] sm:rounded-md sm:p-9"
         style={{
           boxShadow: "0 40px 90px -30px rgba(0,0,0,.8)",
           opacity: open ? 1 : 0, transform: open ? "none" : "translateY(28px)",
@@ -80,15 +111,44 @@ export function LeadModal({ wa }: LeadModalProps) {
               <span className="terra text-[0.66rem] font-semibold uppercase ls-wide">Consulta sin compromiso</span>
             </div>
             <h3 className="font-display t1 leading-[1.05]" style={{ fontSize: "clamp(1.8rem,5vw,2.3rem)" }}>
-              Armemos tu<span className="italic"> viaje.</span>
+              Contanos tu<span className="italic"> viaje.</span>
             </h3>
             <p className="t-mut mt-3 text-[0.92rem] leading-relaxed">
-              Dejanos tus datos y te respondemos con una propuesta hecha a tu medida.
+              Un asesor — no un bot — te responde con una propuesta pensada para vos.
             </p>
-            <form onSubmit={onSubmit} className="mt-7 flex flex-col gap-5">
+            <form onSubmit={onSubmit} className="mt-6 flex flex-col gap-4">
               <input ref={firstRef} className="lead-input" placeholder="Tu nombre" required value={data.nombre} onChange={set("nombre")} />
               <input className="lead-input" placeholder="Teléfono o email" required value={data.contacto} onChange={set("contacto")} />
               <input className="lead-input" placeholder="¿A dónde querés ir?" value={data.destino} onChange={set("destino")} />
+              <div className="grid grid-cols-2 gap-x-5 gap-y-4">
+                <div>
+                  <label className={labelCls}>¿Cuándo?</label>
+                  <select className="lead-input" value={data.month} onChange={set("month")}>
+                    <option value="">Aún no lo sé</option>
+                    {departureMonthOptions.map((o) => <option key={o.value} value={o.label}>{o.label}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className={labelCls}>¿Cuántos viajan?</label>
+                  <select className="lead-input" value={data.travelers} onChange={set("travelers")}>
+                    {["1", "2", "3", "4", "5+", "Grupo grande"].map((n) => <option key={n} value={n}>{n}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className={labelCls}>Presupuesto</label>
+                  <select className="lead-input" value={data.budget} onChange={set("budget")}>
+                    <option value="">A definir</option>
+                    {BUDGETS.map((b) => <option key={b} value={b}>{b}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className={labelCls}>Estilo</label>
+                  <select className="lead-input" value={data.style} onChange={set("style")}>
+                    <option value="">¿Qué buscás?</option>
+                    {STYLES.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+              </div>
               <textarea className="lead-input" rows={2} placeholder="Contanos más (opcional)" value={data.mensaje} onChange={set("mensaje")} />
               <button type="submit"
                 className="group mt-2 inline-flex items-center justify-center gap-2.5 rounded-full py-3.5 text-[0.92rem] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5"
@@ -96,6 +156,7 @@ export function LeadModal({ wa }: LeadModalProps) {
                 Enviar consulta
                 <Icon name="arrowR" className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
               </button>
+              <p className="t-faint text-center text-[0.72rem]">Te respondemos por WhatsApp en horario de atención.</p>
             </form>
           </>
         ) : (
@@ -110,7 +171,7 @@ export function LeadModal({ wa }: LeadModalProps) {
             <p className="t-mut mx-auto mt-3 max-w-[24rem] text-[0.95rem] leading-relaxed sm:mx-0">
               Recibimos tu consulta. Seguí la conversación por WhatsApp y empezamos a diseñar tu itinerario ahora mismo.
             </p>
-            <a href={wa(waMsg())} target="_blank" rel="noopener noreferrer"
+            <a href={wa(lines().join("\n"))} target="_blank" rel="noopener noreferrer"
               className="mt-7 inline-flex items-center gap-2.5 rounded-full py-3.5 pl-7 pr-6 text-[0.92rem] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5"
               style={{ background: "#25D366", boxShadow: "0 16px 40px -16px rgba(37,211,102,.8)" }}>
               <Icon name="whatsapp" className="h-5 w-5" />
