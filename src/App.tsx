@@ -14,6 +14,7 @@ import { AdminPanel } from "./components/AdminPanel";
 
 import { HomePage } from "./pages/HomePage";
 import { PaquetesPage } from "./pages/PaquetesPage";
+import { NosotrosPage } from "./pages/NosotrosPage";
 import { BlogPage } from "./pages/BlogPage";
 import { BlogPostPage } from "./pages/BlogPostPage";
 import { InfoUtilPage } from "./pages/InfoUtilPage";
@@ -68,6 +69,7 @@ function AppShell() {
 
         <Route path="/paquetes" element={<PaquetesPage darkMode={darkMode} />} />
         <Route path="/ofertas" element={<Navigate to="/paquetes?filtro=ofertas" replace />} />
+        <Route path="/nosotros" element={<NosotrosPage />} />
         <Route
           path="/argentina"
           element={

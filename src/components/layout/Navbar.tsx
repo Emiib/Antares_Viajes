@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Icon } from "../ui/Icon";
 import { useLeadModal } from "../../context/LeadModalContext";
 
@@ -36,6 +36,7 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
   const [open, setOpen] = useState(false);
   const [serviciosOpen, setServiciosOpen] = useState(false);
   const { openLead } = useLeadModal();
+  const { pathname } = useLocation();
 
   useEffect(() => {
     const onScroll = () => setSolid(window.scrollY > 90);
@@ -46,8 +47,9 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
 
   useEffect(() => { document.body.style.overflow = open ? "hidden" : ""; }, [open]);
 
-  // Arriba del hero (no sólido) el texto va en crema; ya sólido, sigue el tema.
-  const onDark = !solid || darkMode;
+  // Solo el home tiene hero oscuro detrás; en el resto la barra va sólida siempre.
+  const isSolid = solid || pathname !== "/";
+  const onDark = !isSolid || darkMode;
   const navColor = onDark ? "#F4EDE2" : "#1B1610";
   const logoSrc = onDark ? "/branding/logo-dark.webp" : "/branding/logo-header.webp";
 
@@ -57,9 +59,9 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
         className="fixed left-0 right-0 top-0 z-50 transition-all duration-500"
         style={{
           transform: navbarVisible ? "translateY(0)" : "translateY(-110%)",
-          background: solid ? "var(--nav-solid)" : "transparent",
-          backdropFilter: solid ? "blur(16px) saturate(1.2)" : "none",
-          borderBottom: solid ? "1px solid var(--nav-border)" : "1px solid transparent",
+          background: isSolid ? "var(--nav-solid)" : "transparent",
+          backdropFilter: isSolid ? "blur(16px) saturate(1.2)" : "none",
+          borderBottom: isSolid ? "1px solid var(--nav-border)" : "1px solid transparent",
         }}
       >
         <div className="mx-auto flex h-[76px] max-w-[1340px] items-center justify-between px-5 sm:px-8">
