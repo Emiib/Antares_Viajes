@@ -360,6 +360,67 @@ router.put('/testimonials/:id/toggle', verifyAuth, (req, res) => {
   );
 });
 
+// ─── Equipo (team members) ─────────────────────────────────────
+
+router.get('/team', verifyAuth, (req, res) => {
+  const db = getDB();
+  db.all('SELECT * FROM team_members ORDER BY display_order ASC, created_at DESC', (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+router.post('/team', verifyAuth, (req, res) => {
+  const db = getDB();
+  const { id, name, role, photo_url, active, display_order } = req.body;
+  if (!id || !name) {
+    return res.status(400).json({ error: 'Missing required fields (id, name)' });
+  }
+  db.run(
+    `INSERT INTO team_members (id, name, role, photo_url, active, display_order)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+    [id, name, role ?? null, photo_url ?? null, active === 0 ? 0 : 1, Number(display_order) || 0],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(201).json({ id, message: 'Team member created' });
+    }
+  );
+});
+
+router.put('/team/:id', verifyAuth, (req, res) => {
+  const db = getDB();
+  const b = req.body;
+  db.run(
+    `UPDATE team_members SET name = ?, role = ?, photo_url = ?, display_order = ?, updated_at = CURRENT_TIMESTAMP
+     WHERE id = ?`,
+    [b.name, b.role ?? null, b.photo_url ?? null, Number(b.display_order) || 0, req.params.id],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: 'Team member updated' });
+    }
+  );
+});
+
+router.delete('/team/:id', verifyAuth, (req, res) => {
+  const db = getDB();
+  db.run('DELETE FROM team_members WHERE id = ?', [req.params.id], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: 'Team member deleted' });
+  });
+});
+
+router.put('/team/:id/toggle', verifyAuth, (req, res) => {
+  const db = getDB();
+  db.run(
+    'UPDATE team_members SET active = CASE WHEN active = 1 THEN 0 ELSE 1 END, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+    [req.params.id],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: 'Team member visibility toggled' });
+    }
+  );
+});
+
 // ─── Leads (mini-CRM) ──────────────────────────────────────────
 
 // Lista todos los leads, los más nuevos primero.

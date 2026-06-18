@@ -12,14 +12,16 @@ router.get('/data', (req, res) => {
     getActivePackages(),
     getActiveHeroSlides(),
     getActiveBlogPosts(),
-    getActiveTestimonials()
-  ]).then(([config, packages, heroSlides, blogPosts, testimonials]) => {
+    getActiveTestimonials(),
+    getActiveTeam()
+  ]).then(([config, packages, heroSlides, blogPosts, testimonials, team]) => {
     res.json({
       config,
       packages,
       heroSlides,
       blogPosts,
-      testimonials
+      testimonials,
+      team
     });
   }).catch(err => {
     res.status(500).json({ error: err.message });
@@ -134,6 +136,19 @@ function getActiveHeroSlides() {
       if (err) reject(err);
       else resolve(slides || []);
     });
+  });
+}
+
+function getActiveTeam() {
+  return new Promise((resolve, reject) => {
+    const db = getDB();
+    db.all(
+      'SELECT * FROM team_members WHERE active = 1 ORDER BY display_order ASC, created_at DESC',
+      (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows || []);
+      }
+    );
   });
 }
 
