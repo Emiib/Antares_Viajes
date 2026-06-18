@@ -152,7 +152,7 @@ type Dashboard = { activePackages?: number; activeSlides?: number; newLeads?: nu
 function AdminDashboard({ darkMode, onSeeAllLeads }: { darkMode: boolean; onSeeAllLeads: () => void }) {
   const [data, setData] = useState<Dashboard | null>(null);
   const [error, setError] = useState("");
-  const [recentLeads, setRecentLeads] = useState<Lead[]>([]);
+  const [recentLeads, setRecentLeads] = useState<Lead[] | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -162,7 +162,7 @@ function AdminDashboard({ darkMode, onSeeAllLeads }: { darkMode: boolean; onSeeA
         .catch((e) => active && setError((e as Error).message));
       getLeads()
         .then((ls) => active && setRecentLeads(ls.slice(0, 5)))
-        .catch(() => {});
+        .catch(() => active && setRecentLeads([]));
     };
     fetchData();
     const interval = setInterval(fetchData, 15000);
@@ -204,7 +204,9 @@ function AdminDashboard({ darkMode, onSeeAllLeads }: { darkMode: boolean; onSeeA
             Ver todos
           </button>
         </div>
-        {recentLeads.length === 0 ? (
+        {recentLeads === null ? (
+          <p className={`px-5 pb-5 text-sm ${mutedCls}`}>Cargando…</p>
+        ) : recentLeads.length === 0 ? (
           <p className={`px-5 pb-5 text-sm ${mutedCls}`}>Todavía no hay consultas.</p>
         ) : (
           <ul className={`divide-y ${darkMode ? "divide-stone-800" : "divide-stone-100"}`}>
