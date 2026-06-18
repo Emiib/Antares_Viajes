@@ -476,14 +476,27 @@ router.get('/config', verifyAuth, (req, res) => {
 // Update config
 router.put('/config', verifyAuth, (req, res) => {
   const db = getDB();
-  const { whatsapp, sales_email, slogan, logo_header_path, logo_dark_path, legal_pdf_url, legal_text } = req.body;
+  const {
+    whatsapp, sales_email, slogan,
+    logo_header_path, logo_dark_path, logo_footer_path,
+    legal_pdf_url, legal_text,
+    service_paquetes_img, service_grupales_img, service_circuitos_img, historia_img,
+  } = req.body;
 
   db.run(
-    `UPDATE site_config SET whatsapp = ?, sales_email = ?, slogan = ?, logo_header_path = ?, logo_dark_path = ?,
-       legal_pdf_url = ?, legal_text = ?, updated_at = CURRENT_TIMESTAMP
+    `UPDATE site_config SET whatsapp = ?, sales_email = ?, slogan = ?,
+       logo_header_path = ?, logo_dark_path = ?, logo_footer_path = ?,
+       legal_pdf_url = ?, legal_text = ?,
+       service_paquetes_img = ?, service_grupales_img = ?, service_circuitos_img = ?, historia_img = ?,
+       updated_at = CURRENT_TIMESTAMP
      WHERE id = 1`,
-    [whatsapp, sales_email, slogan, logo_header_path, logo_dark_path, legal_pdf_url ?? null, legal_text ?? null],
-    function(err) {
+    [
+      whatsapp, sales_email, slogan,
+      logo_header_path, logo_dark_path, logo_footer_path ?? null,
+      legal_pdf_url ?? null, legal_text ?? null,
+      service_paquetes_img ?? null, service_grupales_img ?? null, service_circuitos_img ?? null, historia_img ?? null,
+    ],
+    function (err) {
       if (err) return res.status(500).json({ error: err.message });
       res.json({ message: 'Config updated' });
     }
