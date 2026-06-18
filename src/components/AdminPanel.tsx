@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { API_URL } from "../config/api";
-import { adminFetch } from "./admin/adminApi";
+import { adminFetch, getLeads } from "./admin/adminApi";
+import type { Lead } from "./admin/adminApi";
 import { AdminPackages } from "./admin/AdminPackages";
 import { AdminBlog } from "./admin/AdminBlog";
 import { AdminTestimonials } from "./admin/AdminTestimonials";
@@ -133,7 +134,7 @@ export function AdminPanel({ darkMode }: AdminPanelProps) {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === "dashboard" && <AdminDashboard darkMode={darkMode} />}
+        {activeTab === "dashboard" && <AdminDashboard darkMode={darkMode} onSeeAllLeads={() => setActiveTab("leads")} />}
         {activeTab === "packages" && <AdminPackages darkMode={darkMode} />}
         {activeTab === "blog" && <AdminBlog darkMode={darkMode} />}
         {activeTab === "opiniones" && <AdminTestimonials darkMode={darkMode} />}
@@ -148,9 +149,10 @@ export function AdminPanel({ darkMode }: AdminPanelProps) {
 
 type Dashboard = { activePackages?: number; activeSlides?: number; newLeads?: number; lastUpdated?: string };
 
-function AdminDashboard({ darkMode }: { darkMode: boolean }) {
+function AdminDashboard({ darkMode, onSeeAllLeads }: { darkMode: boolean; onSeeAllLeads: () => void }) {
   const [data, setData] = useState<Dashboard | null>(null);
   const [error, setError] = useState("");
+  const [recentLeads, setRecentLeads] = useState<Lead[]>([]);
 
   useEffect(() => {
     let active = true;
@@ -158,6 +160,9 @@ function AdminDashboard({ darkMode }: { darkMode: boolean }) {
       adminFetch<Dashboard>("/dashboard")
         .then((d) => active && setData(d))
         .catch((e) => active && setError((e as Error).message));
+      getLeads()
+        .then((ls) => active && setRecentLeads(ls.slice(0, 5)))
+        .catch(() => {});
     };
     fetchData();
     const interval = setInterval(fetchData, 15000);
@@ -169,15 +174,16 @@ function AdminDashboard({ darkMode }: { darkMode: boolean }) {
 
   const cardCls = darkMode ? "bg-stone-900 border-stone-800" : "bg-white border-stone-200";
   const mutedCls = darkMode ? "text-stone-400" : "text-stone-600";
+  const textCls = darkMode ? "text-white" : "text-stone-900";
 
   return (
     <div>
-      <h2 className={`text-2xl font-black mb-6 ${darkMode ? "text-white" : "text-stone-900"}`}>Dashboard</h2>
+      <h2 className={`text-2xl font-black mb-6 ${textCls}`}>Dashboard</h2>
       {error && <p className="text-red-600 text-sm font-semibold mb-4">{error}</p>}
       <div className="grid grid-cols-2 gap-4 max-w-2xl lg:grid-cols-3">
         <div className={`rounded-lg border p-6 ${cardCls}`}>
           <div className={`text-sm font-semibold mb-2 ${mutedCls}`}>Leads sin contestar</div>
-          <div className={`text-4xl font-black ${data?.newLeads ? "text-red-600" : darkMode ? "text-white" : "text-stone-900"}`}>
+          <div className={`text-4xl font-black ${data?.newLeads ? "text-red-600" : textCls}`}>
             {data?.newLeads ?? "—"}
           </div>
         </div>
@@ -190,6 +196,33 @@ function AdminDashboard({ darkMode }: { darkMode: boolean }) {
           <div className="text-4xl font-black text-red-600">{data?.activeSlides ?? "—"}</div>
         </div>
       </div>
+
+      <div className={`mt-8 rounded-xl border ${cardCls} max-w-3xl`}>
+        <div className="flex items-center justify-between px-5 py-4">
+          <h3 className={`text-base font-bold ${textCls}`}>Últimos leads</h3>
+          <button onClick={onSeeAllLeads} className="text-xs font-semibold text-red-600 hover:underline cursor-pointer">
+            Ver todos
+          </button>
+        </div>
+        {recentLeads.length === 0 ? (
+          <p className={`px-5 pb-5 text-sm ${mutedCls}`}>Todavía no hay consultas.</p>
+        ) : (
+          <ul className={`divide-y ${darkMode ? "divide-stone-800" : "divide-stone-100"}`}>
+            {recentLeads.map((l) => (
+              <li key={l.id} className="flex items-center justify-between px-5 py-3 text-sm">
+                <div className="min-w-0">
+                  <span className={`font-semibold ${textCls}`}>{l.name || "Sin nombre"}</span>
+                  {l.destination ? <span className={mutedCls}> · {l.destination}</span> : null}
+                </div>
+                <span className={`shrink-0 text-xs ${mutedCls}`}>
+                  {l.created_at ? new Date(l.created_at).toLocaleDateString() : ""}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
       <p className={`mt-6 text-sm ${mutedCls}`}>
         Última actualización: {data?.lastUpdated ? new Date(data.lastUpdated).toLocaleString() : "—"}
       </p>
