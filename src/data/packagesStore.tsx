@@ -72,8 +72,13 @@ export type SiteConfig = {
   slogan?: string;
   logo_header_path?: string;
   logo_dark_path?: string;
+  logo_footer_path?: string;
   legal_pdf_url?: string;
   legal_text?: string;
+  service_paquetes_img?: string;
+  service_grupales_img?: string;
+  service_circuitos_img?: string;
+  historia_img?: string;
 };
 
 export type BlogPost = {
@@ -144,6 +149,13 @@ function toTestimonial(t: BackendTestimonial): Testimonial {
   return { text: t.quote, name: t.name ?? "", city: t.city ?? "" };
 }
 
+export type TeamMember = { name: string; role: string; photo: string };
+
+type BackendTeamMember = { id: string; name: string; role?: string; photo_url?: string };
+function toTeamMember(m: BackendTeamMember): TeamMember {
+  return { name: m.name, role: m.role ?? "", photo: m.photo_url ?? "" };
+}
+
 type Store = {
   byType: Record<PackageType, TravelCard[]>;
   all: TravelCard[];
@@ -151,6 +163,7 @@ type Store = {
   config: SiteConfig;
   blogPosts: BlogPost[];
   testimonials: Testimonial[];
+  team: TeamMember[];
   source: "static" | "live";
 };
 
@@ -161,6 +174,7 @@ export function PackagesProvider({ children }: { children: ReactNode }) {
   const [config, setConfig] = useState<SiteConfig>({});
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>(STATIC_BLOG);
   const [testimonials, setTestimonials] = useState<Testimonial[]>(STATIC_TESTIMONIALS);
+  const [team, setTeam] = useState<TeamMember[]>([]);
   const [source, setSource] = useState<"static" | "live">("static");
 
   useEffect(() => {
@@ -176,6 +190,9 @@ export function PackagesProvider({ children }: { children: ReactNode }) {
         }
         if (Array.isArray(data?.testimonials) && data.testimonials.length > 0) {
           setTestimonials(data.testimonials.map(toTestimonial));
+        }
+        if (Array.isArray(data?.team)) {
+          setTeam(data.team.map(toTeamMember));
         }
         const packages: BackendPackage[] = Array.isArray(data?.packages) ? data.packages : [];
         if (packages.length === 0) return;
@@ -216,8 +233,8 @@ export function PackagesProvider({ children }: { children: ReactNode }) {
   const value = useMemo<Store>(() => {
     const all = Object.values(byType).flat();
     const map = new Map(all.map((p) => [p.id, p]));
-    return { byType, all, getById: (id) => map.get(id), config, blogPosts, testimonials, source };
-  }, [byType, config, blogPosts, testimonials, source]);
+    return { byType, all, getById: (id) => map.get(id), config, blogPosts, testimonials, team, source };
+  }, [byType, config, blogPosts, testimonials, team, source]);
 
   return <PackagesContext.Provider value={value}>{children}</PackagesContext.Provider>;
 }
