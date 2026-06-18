@@ -44,6 +44,15 @@ export type Testimonial = {
   display_order?: number;
 };
 
+export type TeamMember = {
+  id: string;
+  name: string;
+  role?: string;
+  photo_url?: string;
+  active?: number;
+  display_order?: number;
+};
+
 export type Lead = {
   id: number;
   name?: string;
@@ -67,8 +76,13 @@ export type SiteConfig = {
   slogan?: string;
   logo_header_path?: string;
   logo_dark_path?: string;
+  logo_footer_path?: string;
   legal_pdf_url?: string;
   legal_text?: string;
+  service_paquetes_img?: string;
+  service_grupales_img?: string;
+  service_circuitos_img?: string;
+  historia_img?: string;
 };
 
 export type Integration = {
@@ -148,6 +162,17 @@ export const deleteTestimonial = (id: string) =>
   adminFetch(`/testimonials/${encodeURIComponent(id)}`, { method: "DELETE" });
 export const toggleTestimonial = (id: string) =>
   adminFetch(`/testimonials/${encodeURIComponent(id)}/toggle`, { method: "PUT" });
+
+// ─── Equipo ───
+export const getTeam = () => adminFetch<TeamMember[]>("/team");
+export const createTeamMember = (m: TeamMember) =>
+  adminFetch("/team", { method: "POST", body: JSON.stringify(m) });
+export const updateTeamMember = (id: string, m: TeamMember) =>
+  adminFetch(`/team/${encodeURIComponent(id)}`, { method: "PUT", body: JSON.stringify(m) });
+export const deleteTeamMember = (id: string) =>
+  adminFetch(`/team/${encodeURIComponent(id)}`, { method: "DELETE" });
+export const toggleTeamMember = (id: string) =>
+  adminFetch(`/team/${encodeURIComponent(id)}/toggle`, { method: "PUT" });
 
 // ─── Leads (mini-CRM) ───
 export const getLeads = () => adminFetch<Lead[]>("/leads");
