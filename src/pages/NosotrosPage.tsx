@@ -3,6 +3,7 @@ import { Reveal } from "../components/ui/Reveal";
 import { Icon } from "../components/ui/Icon";
 import type { IconName } from "../components/ui/Icon";
 import { useLeadModal } from "../context/LeadModalContext";
+import { usePackages } from "../data/packagesStore";
 
 function Placeholder({ label = "Foto", ratio = "4 / 3" }: { label?: string; ratio?: string }) {
   return (
@@ -21,6 +22,7 @@ const VALORES: { icon: IconName; title: string; copy: string }[] = [
 
 export function NosotrosPage() {
   const { openLead } = useLeadModal();
+  const { team, config } = usePackages();
   return (
     <main className="bg-base">
       {/* Intro */}
@@ -47,7 +49,14 @@ export function NosotrosPage() {
       {/* Historia */}
       <section className="px-5 py-12 sm:px-8 md:py-16">
         <div className="mx-auto grid max-w-[1100px] items-center gap-10 md:grid-cols-2">
-          <Reveal variant="left"><Placeholder label="Foto de la agencia / equipo" /></Reveal>
+          <Reveal variant="left">
+            {config.historia_img ? (
+              <img src={config.historia_img} alt="Equipo de Antares Viajes"
+                className="w-full rounded-2xl object-cover" style={{ aspectRatio: "4 / 3" }} />
+            ) : (
+              <Placeholder label="Foto de la agencia / equipo" />
+            )}
+          </Reveal>
           <Reveal variant="right">
             <h2 className="font-display t1 leading-[1.1]" style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)" }}>Nuestra historia</h2>
             <p className="t-mut mt-5 leading-relaxed text-pretty">
@@ -89,13 +98,26 @@ export function NosotrosPage() {
             </p>
           </Reveal>
           <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
-            {[1, 2, 3, 4].map((n) => (
-              <Reveal key={n} delay={n * 0.05}>
-                <Placeholder label="Foto" ratio="3 / 4" />
-                <p className="font-display t1 mt-3 text-[1.05rem]">Nombre Apellido</p>
-                <p className="t-faint text-[0.85rem]">Rol / especialidad</p>
-              </Reveal>
-            ))}
+            {team.length > 0
+              ? team.map((m, i) => (
+                  <Reveal key={`${m.name}-${i}`} delay={i * 0.05}>
+                    {m.photo ? (
+                      <img src={m.photo} alt={m.name}
+                        className="w-full rounded-2xl object-cover" style={{ aspectRatio: "3 / 4" }} />
+                    ) : (
+                      <Placeholder label="Foto" ratio="3 / 4" />
+                    )}
+                    <p className="font-display t1 mt-3 text-[1.05rem]">{m.name}</p>
+                    {m.role ? <p className="t-faint text-[0.85rem]">{m.role}</p> : null}
+                  </Reveal>
+                ))
+              : [1, 2, 3, 4].map((n) => (
+                  <Reveal key={n} delay={n * 0.05}>
+                    <Placeholder label="Foto" ratio="3 / 4" />
+                    <p className="font-display t1 mt-3 text-[1.05rem]">Nombre Apellido</p>
+                    <p className="t-faint text-[0.85rem]">Rol / especialidad</p>
+                  </Reveal>
+                ))}
           </div>
         </div>
       </section>
