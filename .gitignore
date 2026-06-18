@@ -14,3 +14,6 @@ server/uploads/
 
 # Videos master (crudos, solo locales - no se despliegan)
 media-originales/
+
+server/verify-*.js
+server/*-tmp.db

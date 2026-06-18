@@ -14,8 +14,13 @@ CREATE TABLE IF NOT EXISTS site_config (
   slogan TEXT,
   logo_header_path TEXT,
   logo_dark_path TEXT,
+  logo_footer_path TEXT,
   legal_pdf_url TEXT,
   legal_text TEXT,
+  service_paquetes_img TEXT,
+  service_grupales_img TEXT,
+  service_circuitos_img TEXT,
+  historia_img TEXT,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -86,6 +91,18 @@ CREATE TABLE IF NOT EXISTS testimonials (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Team Members Table (Equipo de /nosotros, editable desde el panel)
+CREATE TABLE IF NOT EXISTS team_members (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  role TEXT,
+  photo_url TEXT,
+  active INTEGER DEFAULT 1,
+  display_order INTEGER DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Leads Table (mini-CRM): consultas de los formularios del sitio.
 CREATE TABLE IF NOT EXISTS leads (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -119,5 +136,5 @@ INSERT OR IGNORE INTO admin_settings (key, value) VALUES
   ('api_initialized', 'true');
 
 -- Initialize default site config
-INSERT OR IGNORE INTO site_config (whatsapp, sales_email, slogan, logo_header_path, logo_dark_path) VALUES
-  ('5493446528749', 'ventas@antaresviajes.com.ar', 'El mejor de los viajes es el próximo', '/branding/logo-header.png', '/branding/logo-dark.png');
+INSERT OR IGNORE INTO site_config (whatsapp, sales_email, slogan) VALUES
+  ('5493446528749', 'ventas@antaresviajes.com.ar', 'El mejor de los viajes es el próximo');

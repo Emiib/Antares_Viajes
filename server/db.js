@@ -46,6 +46,11 @@ function runMigrations(database) {
     "ALTER TABLE packages ADD COLUMN display_order INTEGER DEFAULT 0",
     "ALTER TABLE site_config ADD COLUMN legal_pdf_url TEXT",
     "ALTER TABLE site_config ADD COLUMN legal_text TEXT",
+    "ALTER TABLE site_config ADD COLUMN logo_footer_path TEXT",
+    "ALTER TABLE site_config ADD COLUMN service_paquetes_img TEXT",
+    "ALTER TABLE site_config ADD COLUMN service_grupales_img TEXT",
+    "ALTER TABLE site_config ADD COLUMN service_circuitos_img TEXT",
+    "ALTER TABLE site_config ADD COLUMN historia_img TEXT",
   ];
   return Promise.all(
     statements.map(
