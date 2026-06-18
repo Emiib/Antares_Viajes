@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Icon } from "../ui/Icon";
 import { SITE_CONFIG } from "../../config/site";
+import { usePackages } from "../../data/packagesStore";
 
 const NAVEGACION = [
   { label: "Argentina", to: "/argentina" },
@@ -43,6 +44,7 @@ function LinkColumn({ title, links }: { title: string; links: { label: string; t
 }
 
 export function Footer() {
+  const { config } = usePackages();
   return (
     <footer id="contacto" style={{ background: "#090807", color: "#F4EDE2" }}>
       <div className="mx-auto max-w-[1340px] px-5 py-16 sm:px-8">
@@ -50,7 +52,7 @@ export function Footer() {
           {/* Marca */}
           <div className="md:col-span-3">
             <Link to="/" className="inline-flex">
-              <img src="/branding/Logo-footer.webp" alt="Antares Viajes y Turismo" className="h-16 w-auto" />
+              <img src={config.logo_footer_path || "/branding/logo-footer-full.png"} alt="Antares Viajes y Turismo" className="h-14 w-auto sm:h-16" />
             </Link>
             <p className="mt-5 max-w-[20rem] text-[0.9rem] leading-relaxed text-pretty" style={{ color: "rgba(244,237,226,.45)" }}>
               Más de 25 años en Gualeguaychú, Entre Ríos. Legajo EVT habilitado.

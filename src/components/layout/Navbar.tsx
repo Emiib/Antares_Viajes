@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Icon } from "../ui/Icon";
 import { useLeadModal } from "../../context/LeadModalContext";
+import { usePackages } from "../../data/packagesStore";
 
 interface NavbarProps {
   darkMode: boolean;
@@ -36,6 +37,8 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
   const [open, setOpen] = useState(false);
   const [serviciosOpen, setServiciosOpen] = useState(false);
   const { openLead } = useLeadModal();
+  const { config } = usePackages();
+  const ISOTIPO = "/branding/Logo-footer.webp";
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -51,7 +54,7 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
   const isSolid = solid || pathname !== "/";
   const onDark = !isSolid || darkMode;
   const navColor = onDark ? "#F4EDE2" : "#1B1610";
-  const logoSrc = onDark ? "/branding/logo-dark.webp" : "/branding/logo-header.webp";
+  const logoSrc = (onDark ? config.logo_dark_path : config.logo_header_path) || ISOTIPO;
 
   return (
     <>
@@ -67,7 +70,7 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
         <div className="mx-auto flex h-[76px] max-w-[1340px] items-center justify-between px-5 sm:px-8">
           {/* Isologo */}
           <Link to="/" className="flex shrink-0 items-center">
-            <img src={logoSrc} alt="Antares Viajes y Turismo" className="h-10 w-auto sm:h-12" />
+            <img src={logoSrc} alt="Antares Viajes y Turismo" className="h-12 w-auto sm:h-14" />
           </Link>
 
           {/* Desktop */}
@@ -142,7 +145,7 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
           opacity: open ? 1 : 0, visibility: open ? "visible" : "hidden", pointerEvents: open ? "auto" : "none",
         }}>
         <div className="flex h-[76px] items-center justify-between px-5">
-          <img src="/branding/logo-dark.webp" alt="Antares Viajes y Turismo" className="h-10 w-auto" />
+          <img src={config.logo_dark_path || ISOTIPO} alt="Antares Viajes y Turismo" className="h-11 w-auto" />
           <button onClick={() => setOpen(false)} aria-label="Cerrar menú" className="-mr-2 grid h-11 w-11 place-items-center text-white">
             <Icon name="close" className="h-7 w-7" />
           </button>
