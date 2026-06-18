@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Reveal } from "../ui/Reveal";
 import { Icon } from "../ui/Icon";
+import { usePackages } from "../../data/packagesStore";
 
 type Service = { key: string; num: string; name: string; line: string; tail: string; desc: string; img: string; to: string };
 
@@ -16,13 +17,13 @@ const SERVICES: Service[] = [
     img: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&q=80&w=1300" },
 ];
 
-function ServiceRow({ s, i }: { s: Service; i: number }) {
+function ServiceRow({ s, i, img }: { s: Service; i: number; img: string }) {
   const flip = i % 2 === 1;
   return (
     <article className="grid grid-cols-1 items-center gap-6 md:grid-cols-12 md:gap-10">
       <Reveal variant={flip ? "right" : "left"} className={flip ? "md:order-2 md:col-span-6" : "md:col-span-6"}>
         <Link to={s.to} className="group relative block w-full overflow-hidden rounded" style={{ aspectRatio: "16/10" }}>
-          <img src={s.img} alt={s.name} loading="lazy"
+          <img src={img} alt={s.name} loading="lazy"
             className="h-full w-full object-cover transition-transform duration-[900ms] group-hover:scale-105" style={{ transitionTimingFunction: "var(--ease)" }} />
           <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 55%, rgba(10,9,8,.5) 100%)" }} />
         </Link>
@@ -43,6 +44,15 @@ function ServiceRow({ s, i }: { s: Service; i: number }) {
 }
 
 export function ServicesEditorial() {
+  const { config } = usePackages();
+  const imgFor = (s: Service): string => {
+    const override =
+      s.key === "paquetes" ? config.service_paquetes_img
+      : s.key === "grupales" ? config.service_grupales_img
+      : s.key === "circuitos" ? config.service_circuitos_img
+      : undefined;
+    return override || s.img;
+  };
   return (
     <section id="servicios" className="bg-base relative" style={{ padding: "clamp(5.5rem,12vw,9.5rem) 0" }}>
       <div className="mx-auto max-w-[1340px] px-5 sm:px-8">
@@ -59,7 +69,7 @@ export function ServicesEditorial() {
           </p>
         </Reveal>
         <div className="flex flex-col gap-16 sm:gap-24">
-          {SERVICES.map((s, i) => <ServiceRow key={s.key} s={s} i={i} />)}
+          {SERVICES.map((s, i) => <ServiceRow key={s.key} s={s} i={i} img={imgFor(s)} />)}
         </div>
       </div>
     </section>
