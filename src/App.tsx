@@ -14,6 +14,7 @@ import { AdminPanel } from "./components/AdminPanel";
 import { HomePage } from "./pages/HomePage";
 import { PaquetesPage } from "./pages/PaquetesPage";
 import { ExperienciasPage } from "./pages/ExperienciasPage";
+import { DisneyPage } from "./pages/DisneyPage";
 import { NosotrosPage } from "./pages/NosotrosPage";
 import { BlogPage } from "./pages/BlogPage";
 import { BlogPostPage } from "./pages/BlogPostPage";
@@ -88,6 +89,7 @@ function AppShell() {
           }
         />
         <Route path="/experiencias" element={<ExperienciasPage />} />
+        <Route path="/disney" element={<DisneyPage />} />
         <Route path="/cruceros" element={<Navigate to="/paquetes?tipo=cruceros" replace />} />
         <Route
           path="/grupales"

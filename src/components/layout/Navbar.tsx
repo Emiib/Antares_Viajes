@@ -16,6 +16,7 @@ const SERVICIOS = [
   { label: "Cruceros", to: "/cruceros" },
   { label: "Grupales", to: "/grupales" },
   { label: "Quinceañeras", to: "/quinceaneras" },
+  { label: "Disney", to: "/disney" },
 ];
 
 type NavItem = { label: string; href?: string; to?: string };
