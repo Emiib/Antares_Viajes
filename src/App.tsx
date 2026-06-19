@@ -20,6 +20,7 @@ import { BlogPostPage } from "./pages/BlogPostPage";
 import { InfoUtilPage } from "./pages/InfoUtilPage";
 import { LegalesPage } from "./pages/LegalesPage";
 import { PackageDetailPage } from "./pages/PackageDetailPage";
+import { CategoryShowcase } from "./components/catalog/CategoryShowcase";
 
 import { PackagesProvider, usePackages } from "./data/packagesStore";
 import { LeadModalProvider } from "./context/LeadModalContext";
@@ -85,11 +86,14 @@ function AppShell() {
         <Route
           path="/quinceaneras"
           element={
-            <PageLayout
-              title="Quinceañeras"
-              subtitle="Programas pensados para viajes inolvidables de quince."
+            <CategoryShowcase
+              eyebrow="Quinceañeras"
+              titleLead="El viaje de quince"
+              titleAccent="que no se olvida."
+              intro="Grupos de quinceañeras con acompañamiento de principio a fin: la emoción de viajar con amigas y la tranquilidad de que un equipo se ocupa de todo lo demás."
               cards={byType.quinceaneras}
-              accent="rose"
+              tipo="quinceaneras"
+              ctaContext="quinceaneras"
               darkMode={darkMode}
             />
           }
@@ -121,11 +125,14 @@ function AppShell() {
         <Route
           path="/grupales"
           element={
-            <PageLayout
-              title="Viajes Grupales"
-              subtitle="Paquetes especiales para empresas, amigos y familias con tarifas pensadas para grupos."
+            <CategoryShowcase
+              eyebrow="Viajes grupales"
+              titleLead="Viajes en grupo,"
+              titleAccent="coordinados de punta a punta."
+              intro="Salidas acompañadas, delegaciones y contingentes con coordinación propia de Antares. Vos disfrutás del grupo; nosotros resolvemos traslados, hoteles y cada detalle en tiempo real."
               cards={byType.grupales}
-              accent="red"
+              tipo="grupales"
+              ctaContext="grupales"
               darkMode={darkMode}
             />
           }
@@ -133,11 +140,14 @@ function AppShell() {
         <Route
           path="/circuitos"
           element={
-            <PageLayout
-              title="Circuitos Internacionales"
-              subtitle="Rutas completas para descubrir grandes destinos con itinerarios armados."
+            <CategoryShowcase
+              eyebrow="Circuitos internacionales"
+              titleLead="Varios países,"
+              titleAccent="una sola logística."
+              intro="Recorridos guiados por los grandes destinos del mundo con cada traslado, hotel y excursión anticipados. Te movés liviano: la logística ya está pensada de punta a punta."
               cards={byType.circuitos}
-              accent="red"
+              tipo="circuitos"
+              ctaContext="circuitos"
               darkMode={darkMode}
             />
           }
