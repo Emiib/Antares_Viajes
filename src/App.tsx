@@ -9,11 +9,11 @@ import { Analytics } from "./components/Analytics";
 import { RouteSeo } from "./components/Seo";
 import { Navbar } from "./components/layout/Navbar";
 import { Footer } from "./components/layout/Footer";
-import { PageLayout } from "./components/layout/PageLayout";
 import { AdminPanel } from "./components/AdminPanel";
 
 import { HomePage } from "./pages/HomePage";
 import { PaquetesPage } from "./pages/PaquetesPage";
+import { ExperienciasPage } from "./pages/ExperienciasPage";
 import { NosotrosPage } from "./pages/NosotrosPage";
 import { BlogPage } from "./pages/BlogPage";
 import { BlogPostPage } from "./pages/BlogPostPage";
@@ -87,18 +87,7 @@ function AppShell() {
             />
           }
         />
-        <Route
-          path="/experiencias"
-          element={
-            <PageLayout
-              title="Experiencias de Lujo"
-              subtitle="Propuestas premium y viajes exclusivos de otra categoría."
-              cards={byType.experiencias}
-              accent="gold"
-              darkMode={darkMode}
-            />
-          }
-        />
+        <Route path="/experiencias" element={<ExperienciasPage />} />
         <Route path="/cruceros" element={<Navigate to="/paquetes?tipo=cruceros" replace />} />
         <Route
           path="/grupales"
