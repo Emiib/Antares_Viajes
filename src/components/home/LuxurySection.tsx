@@ -3,6 +3,7 @@ import type { TravelCard } from "../../types";
 import { Reveal } from "../ui/Reveal";
 import { Icon } from "../ui/Icon";
 import type { IconName } from "../ui/Icon";
+import { LuxuryCard } from "../luxury/LuxuryCard";
 
 const HALLMARKS: { icon: IconName; title: string; copy: string }[] = [
   { icon: "key", title: "Acceso, no catálogo", copy: "Suites que no se reservan online, mesas sin disponibilidad pública, guías privados que solo trabajan con nosotros." },
@@ -58,20 +59,7 @@ export function LuxurySection({ cards }: { cards: TravelCard[] }) {
           <div className="mt-16 grid gap-5 sm:mt-20 md:grid-cols-3 md:gap-6">
             {featured.map((pkg, i) => (
               <Reveal key={pkg.id} delay={i * 0.08}>
-                <Link to={`/paquete/${encodeURIComponent(pkg.id)}`} className="group relative block overflow-hidden rounded-2xl">
-                  <div className="aspect-[3/4] w-full overflow-hidden">
-                    <img src={pkg.image} alt={pkg.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                  </div>
-                  <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0.1) 100%)" }} />
-                  <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <p className="mb-2 text-[10px] font-bold uppercase tracking-[3px]" style={{ color: "var(--gold)" }}>{pkg.destination}</p>
-                    <h3 className="font-display mb-3 text-2xl leading-snug" style={{ color: "#F4EDE2" }}>{pkg.title}</h3>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm" style={{ color: "rgba(244,237,226,.7)" }}>{pkg.duration}</span>
-                      <span className="text-sm font-semibold" style={{ color: "var(--gold)" }}>{pkg.price}</span>
-                    </div>
-                  </div>
-                </Link>
+                <LuxuryCard pkg={pkg} />
               </Reveal>
             ))}
           </div>
