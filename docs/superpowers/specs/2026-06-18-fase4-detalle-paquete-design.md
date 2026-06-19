@@ -36,8 +36,9 @@ confianza junto al CTA, precio honesto, y calidad/a11y.
 ## Requisitos transversales (a11y + calidad, de ui-ux-pro-max)
 
 - **Responsive** (375/768/1024/1440); **sin scroll horizontal**.
-- **Sin emojis como íconos**: usar el componente `Icon` (SVG). Agregar un ícono `users` al set para
-  "personas".
+- **Íconos con sobriedad, nada informal**: nada de emojis; usar `Icon` (SVG) **con moderación** —
+  preferir etiquetas/tipografía editorial para la meta. Reservar íconos solo donde aportan claridad
+  sin recargar: un **check sutil** en "Incluye" y el glyph en el botón de WhatsApp. No saturar.
 - **Touch targets ≥ 44px**, `cursor-pointer`, **focus states** visibles en botones/links.
 - **Contraste** 4.5:1 en texto (ambos skins).
 - **Alt text** en la imagen (`pkg.title`); la imagen del hero carga normal (LCP, above-the-fold),
@@ -61,9 +62,11 @@ el árbol).
 1. **"← Volver"** → `/paquetes` (link real, no rompe el back del navegador).
 2. **Hero**: imagen grande (rounded, `aspect` responsivo); `badge` overlay (pill, acento del skin);
    eyebrow `destination` (uppercase ls-wide, acento); `<h1>` Playfair (`clamp`).
-3. **Meta** (solo los campos presentes): `destination` (Icon `pin`), `duration` (Icon `moon`),
-   `departure` (Icon `plane`), `people` (Icon `users`) — ícono + label chico + valor.
-4. **Incluye** (`includes`): lista con Icon `check` (acento), legible (no chips rojos).
+3. **Meta** (solo los campos presentes): `destination`, `duration`, `departure`, `people` como
+   pares **label/valor editoriales** (label chico uppercase ls-wide + valor en Playfair/UI),
+   **sin íconos** — separados por gap o finas divisorias. Look sobrio.
+4. **Incluye** (`includes`): lista con un **check sutil** (Icon `check`, chico, acento tenue, stroke
+   fino), legible (no chips rojos).
 5. **Highlights** (si hay): recorrido en línea (ej. "París · Roma · Barcelona") o lista.
 6. **Panel de precio + CTA** (en el grid; **sticky en desktop** `lg:sticky lg:top-28`; en mobile
    va in-flow):
@@ -89,7 +92,7 @@ Rediseñado en estética clara: "Paquete no encontrado" (Playfair) + texto + lin
 - `App.tsx`: el render pasa de `<PackageDetailPage darkMode={darkMode} whatsappLink={wa} />` a
   `<PackageDetailPage whatsappLink={wa} />` (la página ya no necesita `darkMode`: el skin claro usa
   tokens, el lux es siempre oscuro). Quitar la prop `darkMode` de la firma del componente.
-- `src/components/ui/Icon.tsx`: agregar el ícono `users` (al `IconName` union y al map de paths).
+  (No se agregan íconos nuevos al set: la meta es sin íconos; "Incluye" usa el `check` existente.)
 
 ## Racional de conversión (de ui-ux-pro-max, volcado al diseño)
 
@@ -99,7 +102,7 @@ Rediseñado en estética clara: "Paquete no encontrado" (Playfair) + texto + lin
 - **Señales de confianza junto al CTA** (años, legajo EVT, acompañamiento) bajan el riesgo percibido
   en el momento de decisión.
 - **Precio honesto** ("tarifa de referencia") evita la fricción de "¿este es el precio final?".
-- **Íconos SVG (no emoji)**, contraste, focus, alt — calidad percibida = confianza.
+- **Íconos sobrios (no emoji)**, contraste, focus, alt — calidad percibida = confianza.
 
 ## Data flow / arquitectura
 
@@ -109,7 +112,6 @@ mantiene un solo árbol JSX con estilos condicionales por skin.
 
 Unidades:
 - `PackageDetailPage.tsx` (reescrito): detalle con dos skins + UX de conversión.
-- `Icon.tsx` (mod): +ícono `users`.
 - `App.tsx` (mod): quitar prop `darkMode` del render del detalle.
 
 ## Testing / verificación
@@ -122,7 +124,6 @@ WhatsApp directo), y que no haya scroll horizontal.
 
 ## Orden de implementación sugerido
 
-1. Agregar el ícono `users` a `Icon.tsx`.
-2. Reescribir `PackageDetailPage.tsx` (dos skins + estructura + CTAs + barra mobile + no-encontrado).
-3. Ajustar el render en `App.tsx` (quitar `darkMode`).
-4. Verificación (tsc + build + revisión visual responsive de ambos skins).
+1. Reescribir `PackageDetailPage.tsx` (dos skins + estructura + CTAs + barra mobile + no-encontrado).
+2. Ajustar el render en `App.tsx` (quitar `darkMode`).
+3. Verificación (tsc + build + revisión visual responsive de ambos skins).
