@@ -7,7 +7,7 @@ type Service = { key: string; num: string; name: string; line: string; tail: str
 
 const SERVICES: Service[] = [
   { key: "paquetes", num: "01", name: "Paquetes Turísticos", line: "Paquetes", tail: "a tu medida.", to: "/paquetes",
-    desc: "Vuelos, hotelería y traslados resueltos en una sola conversación. Elegís el destino; nosotros armamos cada pieza alrededor de cómo querés viajar.",
+    desc: "Vuelos, cruceros, hoteles y traslados resueltos en una sola conversación. Elegís el destino; nosotros armamos cada pieza alrededor de cómo querés viajar.",
     img: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&q=80&w=1300" },
   { key: "grupales", num: "02", name: "Viajes Grupales", line: "Viajes", tail: "en grupo.", to: "/grupales",
     desc: "Salidas acompañadas, grupos y delegaciones con coordinación propia. Treinta personas, un solo equipo atrás resolviendo todo en tiempo real.",

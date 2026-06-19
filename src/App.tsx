@@ -71,18 +71,7 @@ function AppShell() {
         <Route path="/paquetes" element={<PaquetesPage darkMode={darkMode} />} />
         <Route path="/ofertas" element={<Navigate to="/paquetes?filtro=ofertas" replace />} />
         <Route path="/nosotros" element={<NosotrosPage />} />
-        <Route
-          path="/argentina"
-          element={
-            <PageLayout
-              title="Descubrí Argentina"
-              subtitle="Escapadas y viajes nacionales con los mejores destinos del país."
-              cards={byType.argentina}
-              accent="amber"
-              darkMode={darkMode}
-            />
-          }
-        />
+        <Route path="/argentina" element={<Navigate to="/paquetes?tipo=argentina" replace />} />
         <Route
           path="/quinceaneras"
           element={
@@ -110,18 +99,7 @@ function AppShell() {
             />
           }
         />
-        <Route
-          path="/cruceros"
-          element={
-            <PageLayout
-              title="Cruceros"
-              subtitle="Preparado para futuras conexiones con MSC y Organfur Central de Cruceros."
-              cards={byType.cruceros}
-              accent="amber"
-              darkMode={darkMode}
-            />
-          }
-        />
+        <Route path="/cruceros" element={<Navigate to="/paquetes?tipo=cruceros" replace />} />
         <Route
           path="/grupales"
           element={

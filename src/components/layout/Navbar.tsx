@@ -14,6 +14,7 @@ const SERVICIOS = [
   { label: "Argentina", to: "/argentina" },
   { label: "Circuitos", to: "/circuitos" },
   { label: "Cruceros", to: "/cruceros" },
+  { label: "Grupales", to: "/grupales" },
   { label: "Quinceañeras", to: "/quinceaneras" },
 ];
 
