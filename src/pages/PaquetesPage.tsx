@@ -8,6 +8,15 @@ import { PackageCard } from "../components/ui/PackageCard";
 // Catálogo general: todos los tipos menos "experiencias" (Lujo tiene su propia página).
 const CATALOG_TYPES: PackageType[] = ["ofertas", "featured", "argentina", "circuitos", "grupales", "quinceaneras", "cruceros"];
 
+const TIPO_OPTIONS: { label: string; value: PackageType }[] = [
+  { label: "Argentina", value: "argentina" },
+  { label: "Circuitos", value: "circuitos" },
+  { label: "Grupales", value: "grupales" },
+  { label: "Quinceañeras", value: "quinceaneras" },
+  { label: "Cruceros", value: "cruceros" },
+];
+const TIPO_VALUES = new Set<PackageType>(TIPO_OPTIONS.map((t) => t.value));
+
 const parsePrice = (p: string) => {
   const n = parseInt((p || "").replace(/[^\d]/g, ""), 10);
   return Number.isNaN(n) ? 0 : n;
@@ -55,15 +64,21 @@ export function PaquetesPage({ darkMode }: { darkMode: boolean }) {
   const [nightRange, setNightRange] = useState("");
   const [orden, setOrden] = useState("relevancia");
   const [soloOfertas, setSoloOfertas] = useState(params.get("filtro") === "ofertas");
+  const [tipo, setTipo] = useState<PackageType | "">(() => {
+    const t = params.get("tipo");
+    return t && TIPO_VALUES.has(t as PackageType) ? (t as PackageType) : "";
+  });
 
   // Reaccionar a cambios de query (ej. al tocar "Ofertas" en el navbar estando ya acá).
   useEffect(() => {
     setSoloOfertas(params.get("filtro") === "ofertas");
     setDestino(params.get("destino") || "");
+    const t = params.get("tipo");
+    setTipo(t && TIPO_VALUES.has(t as PackageType) ? (t as PackageType) : "");
   }, [params]);
 
   const results = useMemo(() => {
-    let r = allCards.slice();
+    let r = (tipo ? byType[tipo] ?? [] : allCards).slice();
     if (soloOfertas) r = r.filter((p) => ofertasIds.has(p.id));
     if (destino) r = r.filter((p) => p.destination.toLowerCase().includes(destino.toLowerCase()));
     const pr = PRICE_RANGES.find((x) => x.label === priceRange);
@@ -73,9 +88,9 @@ export function PaquetesPage({ darkMode }: { darkMode: boolean }) {
     if (orden === "precio-asc") r = r.slice().sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
     else if (orden === "precio-desc") r = r.slice().sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
     return r;
-  }, [allCards, ofertasIds, soloOfertas, destino, priceRange, nightRange, orden]);
+  }, [allCards, byType, tipo, ofertasIds, soloOfertas, destino, priceRange, nightRange, orden]);
 
-  const hasFilters = soloOfertas || !!destino || !!priceRange || !!nightRange || orden !== "relevancia";
+  const hasFilters = soloOfertas || !!tipo || !!destino || !!priceRange || !!nightRange || orden !== "relevancia";
   const clearAll = () => {
     setPriceRange("");
     setNightRange("");
@@ -108,6 +123,10 @@ export function PaquetesPage({ darkMode }: { darkMode: boolean }) {
                   : { border: "1px solid var(--line)", color: "var(--text)" }}>
                 🔥 Ofertas
               </button>
+              <select aria-label="Categoría" value={tipo} onChange={(e) => setTipo(e.target.value as PackageType | "")} className={fieldCls} style={fieldStyle}>
+                <option value="">Todas las categorías</option>
+                {TIPO_OPTIONS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+              </select>
               <select aria-label="Destino" value={destino} onChange={(e) => setDestino(e.target.value)} className={fieldCls} style={fieldStyle}>
                 <option value="">Todos los destinos</option>
                 {destinoOptions.map((d) => <option key={d} value={d}>{d}</option>)}
