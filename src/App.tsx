@@ -128,7 +128,7 @@ function AppShell() {
         <Route path="/legales" element={<LegalesPage darkMode={darkMode} />} />
         <Route
           path="/paquete/:id"
-          element={<PackageDetailPage darkMode={darkMode} whatsappLink={wa} />}
+          element={<PackageDetailPage whatsappLink={wa} />}
         />
 
         {/* Cualquier ruta desconocida cae en el inicio. */}
