@@ -76,13 +76,13 @@ export function Footer() {
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 md:col-span-9 lg:gap-6">
             <LinkColumn title="Navegación" links={NAVEGACION} />
 
-            <div>
+            <div className="min-w-0">
               <h4 className={headCls} style={headStyle}>Antares</h4>
               <ul className="mt-4 space-y-2.5">
                 <li><Link to="/nosotros" className={linkCls} style={linkStyle}>Quiénes Somos</Link></li>
                 <li><a href="tel:+543446429808" className={linkCls} style={linkStyle}>+54 3446 42-9808</a></li>
                 <li><a href="tel:+5493446528749" className={linkCls} style={linkStyle}>+54 9 3446 52-8749</a></li>
-                <li><a href={`mailto:${SITE_CONFIG.salesEmail}`} className={linkCls} style={linkStyle}>{SITE_CONFIG.salesEmail}</a></li>
+                <li><a href={`mailto:${SITE_CONFIG.salesEmail}`} className={`${linkCls} break-words`} style={linkStyle}>{SITE_CONFIG.salesEmail}</a></li>
               </ul>
             </div>
 

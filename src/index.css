@@ -25,6 +25,10 @@
   --nav-border: rgba(27,22,16,.08);
 }
 
+/* Guard: ningún desborde horizontal genera scroll lateral (incluye mobile).
+   `clip` no crea contexto de scroll, así que no rompe position: sticky. */
+html, body { overflow-x: clip; }
+
 /* Serif editorial: solo para la sección Antares Lujo */
 .font-serif-lux {
   font-family: "Fraunces", Georgia, "Times New Roman", serif;
