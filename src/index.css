@@ -17,7 +17,7 @@
   --bg: #F4EFE7;
   --text: #1B1610;
   --text-70: rgba(27,22,16,.72);
-  --text-55: rgba(27,22,16,.55);
+  --text-55: rgba(27,22,16,.62);
   --text-40: rgba(27,22,16,.40);
   --line: rgba(27,22,16,.13);
   --card: #ffffff;
@@ -44,6 +44,14 @@ html, body { overflow-x: clip; }
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Foco visible accesible para navegación por teclado (sitewide).
+   Aparece solo con :focus-visible (teclado), no en clicks de mouse. */
+:focus-visible {
+  outline: 2px solid var(--terra);
+  outline-offset: 2px;
+  border-radius: 3px;
 }
 
 .antares-dark .bg-white,
