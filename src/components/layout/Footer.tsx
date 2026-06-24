@@ -52,7 +52,7 @@ export function Footer() {
           {/* Marca */}
           <div className="md:col-span-3">
             <Link to="/" className="inline-flex">
-              <img src={config.logo_footer_path || "/branding/logo-footer-full.png"} alt="Antares Viajes y Turismo" className="h-14 w-auto sm:h-16" />
+              <img src={config.logo_footer_path || "/branding/Logo-footer.webp"} alt="Antares Viajes y Turismo" className="h-16 w-auto sm:h-20" />
             </Link>
             <p className="mt-5 max-w-[20rem] text-[0.9rem] leading-relaxed text-pretty" style={{ color: "rgba(244,237,226,.45)" }}>
               Más de 25 años en Gualeguaychú, Entre Ríos. Legajo EVT habilitado.

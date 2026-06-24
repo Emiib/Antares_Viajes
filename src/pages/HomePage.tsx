@@ -3,7 +3,7 @@ import { usePackages } from "../data/packagesStore";
 import { useHeroSlide } from "../hooks/useHeroSlide";
 import { useMobileViewport } from "../hooks/useMobileViewport";
 import { ServicesEditorial } from "../components/home/ServicesEditorial";
-import { DestinationsStrip } from "../components/home/DestinationsStrip";
+import { DestinationsStack } from "../components/home/DestinationsStack";
 import { WhyUs } from "../components/home/WhyUs";
 import { LuxurySection } from "../components/home/LuxurySection";
 import { Testimonials } from "../components/home/Testimonials";
@@ -53,7 +53,7 @@ export function HomePage(_props: HomePageProps) {
       </section>
 
       <ServicesEditorial />
-      <DestinationsStrip />
+      <DestinationsStack />
       <WhyUs />
       <LuxurySection cards={byType.experiencias} />
       <Testimonials />
