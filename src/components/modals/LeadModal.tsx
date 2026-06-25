@@ -9,25 +9,7 @@ interface LeadModalProps {
   wa: (text?: string) => string;
 }
 
-const BUDGETS = [
-  "Hasta USD 1.000 por persona",
-  "USD 1.000 a 2.000 por persona",
-  "USD 2.000 a 4.000 por persona",
-  "Más de USD 4.000 por persona",
-  "Prefiero que me asesoren",
-];
-
-const STYLES = [
-  "Playa y relax",
-  "Ciudades y cultura",
-  "Circuito / varios destinos",
-  "Luna de miel",
-  "Viaje familiar",
-  "Quinceañera",
-  "Otro",
-];
-
-const EMPTY = { nombre: "", contacto: "", destino: "", month: "", travelers: "2", budget: "", style: "", mensaje: "" };
+const EMPTY = { nombre: "", contacto: "", destino: "", month: "", personas: "2", mensaje: "" };
 
 /** Modal único de captura — incluye los campos de calificación del viaje. */
 export function LeadModal({ wa }: LeadModalProps) {
@@ -59,9 +41,7 @@ export function LeadModal({ wa }: LeadModalProps) {
       `Hola Antares, soy ${data.nombre || "—"}. Quiero una propuesta de viaje:`,
       data.destino && `• Destino: ${data.destino}`,
       data.month && `• Cuándo: ${data.month}`,
-      `• Viajeros: ${data.travelers}`,
-      data.budget && `• Presupuesto: ${data.budget}`,
-      data.style && `• Estilo: ${data.style}`,
+      `• Personas: ${data.personas}`,
       data.mensaje && `• ${data.mensaje}`,
     ].filter(Boolean) as string[];
 
@@ -73,7 +53,7 @@ export function LeadModal({ wa }: LeadModalProps) {
       contact: data.contacto,
       destination: data.destino,
       message: lines().slice(1).join("\n"),
-      payload: { month: data.month, travelers: data.travelers, budget: data.budget, style: data.style },
+      payload: { month: data.month, personas: data.personas },
     });
     setSent(true);
   };
@@ -118,7 +98,7 @@ export function LeadModal({ wa }: LeadModalProps) {
             </p>
             <form onSubmit={onSubmit} className="mt-6 flex flex-col gap-4">
               <input ref={firstRef} className="lead-input" placeholder="Tu nombre" required value={data.nombre} onChange={set("nombre")} />
-              <input className="lead-input" placeholder="Teléfono o email" required value={data.contacto} onChange={set("contacto")} />
+              <input className="lead-input" type="tel" placeholder="Tu WhatsApp" required value={data.contacto} onChange={set("contacto")} />
               <input className="lead-input" placeholder="¿A dónde querés ir?" value={data.destino} onChange={set("destino")} />
               <div className="grid grid-cols-2 gap-x-5 gap-y-4">
                 <div>
@@ -129,24 +109,8 @@ export function LeadModal({ wa }: LeadModalProps) {
                   </select>
                 </div>
                 <div>
-                  <label className={labelCls}>¿Cuántos viajan?</label>
-                  <select className="lead-input" value={data.travelers} onChange={set("travelers")}>
-                    {["1", "2", "3", "4", "5+", "Grupo grande"].map((n) => <option key={n} value={n}>{n}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className={labelCls}>Presupuesto</label>
-                  <select className="lead-input" value={data.budget} onChange={set("budget")}>
-                    <option value="">A definir</option>
-                    {BUDGETS.map((b) => <option key={b} value={b}>{b}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className={labelCls}>Estilo</label>
-                  <select className="lead-input" value={data.style} onChange={set("style")}>
-                    <option value="">¿Qué buscás?</option>
-                    {STYLES.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
+                  <label className={labelCls}>Cant. Personas</label>
+                  <input className="lead-input" type="number" min={1} inputMode="numeric" value={data.personas} onChange={set("personas")} />
                 </div>
               </div>
               <textarea className="lead-input" rows={2} placeholder="Contanos más (opcional)" value={data.mensaje} onChange={set("mensaje")} />
