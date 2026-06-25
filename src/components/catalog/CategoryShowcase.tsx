@@ -15,6 +15,8 @@ export type CategoryShowcaseProps = {
   tipo: PackageType;
   ctaContext: string;
   darkMode: boolean;
+  /** Color de identidad de la categoría. Por defecto el rojo de marca. */
+  accent?: string;
 };
 
 export function CategoryShowcase({
@@ -26,6 +28,7 @@ export function CategoryShowcase({
   tipo,
   ctaContext,
   darkMode,
+  accent = "var(--terra)",
 }: CategoryShowcaseProps) {
   const { openLead } = useLeadModal();
 
@@ -34,14 +37,14 @@ export function CategoryShowcase({
       {/* Header editorial */}
       <section className="px-5 pb-12 pt-28 sm:px-8 md:pt-32">
         <div className="mx-auto max-w-[1340px]">
-          <Link to="/" className="terra mb-6 inline-flex items-center gap-2 text-sm font-semibold">← Volver al inicio</Link>
+          <Link to="/" className="mb-6 inline-flex items-center gap-2 text-sm font-semibold" style={{ color: accent }}>← Volver al inicio</Link>
           <Reveal>
             <div className="mb-5 flex items-center gap-3">
-              <span className="h-px w-9" style={{ background: "var(--terra)" }} />
-              <span className="terra text-[0.7rem] font-semibold uppercase ls-wide">{eyebrow}</span>
+              <span className="h-px w-9" style={{ background: accent }} />
+              <span className="text-[0.7rem] font-semibold uppercase ls-wide" style={{ color: accent }}>{eyebrow}</span>
             </div>
             <h1 className="font-display t1 leading-[1.02] text-balance" style={{ fontSize: "clamp(2.2rem,5.5vw,3.8rem)" }}>
-              {titleLead}<br /><span className="terra italic">{titleAccent}</span>
+              {titleLead}<br /><span className="italic" style={{ color: accent }}>{titleAccent}</span>
             </h1>
             <p className="t-mut mt-6 max-w-[42rem] text-[1.02rem] leading-relaxed text-pretty">{intro}</p>
           </Reveal>
@@ -72,14 +75,14 @@ export function CategoryShowcase({
             <button
               onClick={() => openLead({ context: ctaContext })}
               className="rounded-full px-8 py-3.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5"
-              style={{ background: "var(--terra)", boxShadow: "0 16px 40px -16px rgba(217,78,63,.95)" }}
+              style={{ background: accent, boxShadow: `0 16px 40px -16px ${accent}` }}
             >
               Consultá por este viaje
             </button>
             <Link
               to={`/paquetes?tipo=${tipo}`}
-              className="terra group inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-semibold"
-              style={{ border: "1px solid var(--line)" }}
+              className="group inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-semibold"
+              style={{ border: "1px solid var(--line)", color: accent }}
             >
               Ver todo el catálogo
               <Icon name="arrowR" className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />

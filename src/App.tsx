@@ -14,6 +14,8 @@ import { AdminPanel } from "./components/AdminPanel";
 import { HomePage } from "./pages/HomePage";
 import { PaquetesPage } from "./pages/PaquetesPage";
 import { ExperienciasPage } from "./pages/ExperienciasPage";
+import { LujoPage } from "./pages/LujoPage";
+import { EventosPage } from "./pages/EventosPage";
 import { DisneyPage } from "./pages/DisneyPage";
 import { NosotrosPage } from "./pages/NosotrosPage";
 import { BlogPage } from "./pages/BlogPage";
@@ -90,13 +92,31 @@ function AppShell() {
               cards={byType.quinceaneras}
               tipo="quinceaneras"
               ctaContext="quinceaneras"
+              accent="#E867A6"
               darkMode={darkMode}
             />
           }
         />
         <Route path="/experiencias" element={<ExperienciasPage />} />
+        <Route path="/lujo" element={<LujoPage />} />
+        <Route path="/eventos" element={<EventosPage />} />
         <Route path="/disney" element={<DisneyPage />} />
-        <Route path="/cruceros" element={<Navigate to="/paquetes?tipo=cruceros" replace />} />
+        <Route
+          path="/cruceros"
+          element={
+            <CategoryShowcase
+              eyebrow="Cruceros"
+              titleLead="El mundo,"
+              titleAccent="de puerto en puerto."
+              intro="Navegá el Caribe, el Mediterráneo o los fiordos con todo incluido a bordo. Elegís el barco y la ruta; nosotros coordinamos vuelos, traslados y la previa."
+              cards={byType.cruceros}
+              tipo="cruceros"
+              ctaContext="cruceros"
+              accent="#2F8FA6"
+              darkMode={darkMode}
+            />
+          }
+        />
         <Route
           path="/grupales"
           element={
