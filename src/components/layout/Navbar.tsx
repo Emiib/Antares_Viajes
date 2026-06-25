@@ -46,9 +46,8 @@ const MENUS: Menu[] = [
   },
 ];
 
-// Logo completo "Antares Viajes y Turismo": variante para fondo claro / oscuro.
-const LOGO_LIGHT = "/branding/logo-header1.png"; // texto rojo (transparente)
-const LOGO_DARK = "/branding/logo-footer-full.png"; // texto blanco
+// Logo completo "Antares Viajes y Turismo", fondo transparente para claro y oscuro.
+const LOGO = "/branding/LogoAntares-transparente.png";
 
 export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
   const [solid, setSolid] = useState(false);
@@ -76,7 +75,7 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
   const isSolid = solid || pathname !== "/";
   const onDark = !isSolid || darkMode;
   const navColor = onDark ? "#F4EDE2" : "#1B1610";
-  const logoSrc = (onDark ? config.logo_dark_path : config.logo_header_path) || (onDark ? LOGO_DARK : LOGO_LIGHT);
+  const logoSrc = (onDark ? config.logo_dark_path : config.logo_header_path) || LOGO;
 
   return (
     <>
@@ -89,10 +88,10 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
           borderBottom: isSolid ? "1px solid var(--nav-border)" : "1px solid transparent",
         }}
       >
-        <div className="mx-auto flex h-[76px] max-w-[1340px] items-center justify-between px-5 sm:px-8">
+        <div className="mx-auto flex h-[84px] max-w-[1340px] items-center justify-between px-5 sm:px-8">
           {/* Logo completo */}
           <Link to="/" className="flex shrink-0 items-center" aria-label="Antares Viajes y Turismo — Inicio">
-            <img src={logoSrc} alt="Antares Viajes y Turismo" className="h-11 w-auto sm:h-[52px]" />
+            <img src={logoSrc} alt="Antares Viajes y Turismo" className="h-14 w-auto sm:h-[72px]" />
           </Link>
 
           {/* Desktop */}
@@ -117,11 +116,11 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
                     <Icon name="arrowDown" className={`h-3.5 w-3.5 transition-transform duration-300 ${isMenuOpen ? "rotate-180" : ""}`} />
                   </button>
                   <div
-                    className="absolute left-1/2 top-full z-50 w-60 -translate-x-1/2 pt-3 transition-all duration-300"
+                    className="absolute left-0 top-full z-50 w-60 pt-3 transition-all duration-300"
                     style={{
                       opacity: isMenuOpen ? 1 : 0,
                       visibility: isMenuOpen ? "visible" : "hidden",
-                      transform: `translateX(-50%) translateY(${isMenuOpen ? "0" : "6px"})`,
+                      transform: `translateY(${isMenuOpen ? "0" : "6px"})`,
                     }}
                   >
                     <div className="card-base overflow-hidden rounded-2xl py-1.5 shadow-xl" style={{ border: "1px solid var(--line)" }}>
@@ -129,7 +128,7 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
                         <Link
                           key={it.to}
                           to={it.to}
-                          className="t-soft block px-5 py-2.5 text-center text-sm transition-colors hover:text-[var(--terra)]"
+                          className="t-soft block px-5 py-2.5 text-left text-sm transition-colors hover:text-[var(--terra)]"
                         >
                           {it.label}
                         </Link>
@@ -182,8 +181,8 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
           pointerEvents: open ? "auto" : "none",
         }}
       >
-        <div className="flex h-[76px] shrink-0 items-center justify-between px-5">
-          <img src={config.logo_dark_path || LOGO_DARK} alt="Antares Viajes y Turismo" className="h-11 w-auto" />
+        <div className="flex h-[84px] shrink-0 items-center justify-between px-5">
+          <img src={config.logo_dark_path || LOGO} alt="Antares Viajes y Turismo" className="h-14 w-auto" />
           <button onClick={() => setOpen(false)} aria-label="Cerrar menú" className="-mr-2 grid h-11 w-11 place-items-center text-white">
             <Icon name="close" className="h-7 w-7" />
           </button>

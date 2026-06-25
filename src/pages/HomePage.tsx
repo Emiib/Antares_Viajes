@@ -1,12 +1,7 @@
 import { heroSlides } from "../config/site";
-import { usePackages } from "../data/packagesStore";
 import { useHeroSlide } from "../hooks/useHeroSlide";
 import { useMobileViewport } from "../hooks/useMobileViewport";
-import { ServicesEditorial } from "../components/home/ServicesEditorial";
 import { DestinationsStack } from "../components/home/DestinationsStack";
-import { WhyUs } from "../components/home/WhyUs";
-import { LuxurySection } from "../components/home/LuxurySection";
-import { Testimonials } from "../components/home/Testimonials";
 import { FooterCTA } from "../components/home/FooterCTA";
 
 interface HomePageProps {
@@ -14,10 +9,9 @@ interface HomePageProps {
   wa: (text?: string) => string;
 }
 
-export function HomePage(_props: HomePageProps) {
+export function HomePage({ darkMode }: HomePageProps) {
   const { currentSlide, advance } = useHeroSlide();
   const isMobileViewport = useMobileViewport();
-  const { byType } = usePackages();
 
   const slide = heroSlides[currentSlide];
   const webm = isMobileViewport ? slide.sources.mobileWebm : slide.sources.desktopWebm;
@@ -52,11 +46,7 @@ export function HomePage(_props: HomePageProps) {
         </div>
       </section>
 
-      <ServicesEditorial />
-      <DestinationsStack />
-      <WhyUs />
-      <LuxurySection cards={byType.experiencias} />
-      <Testimonials />
+      <DestinationsStack darkMode={darkMode} />
       <FooterCTA />
     </main>
   );

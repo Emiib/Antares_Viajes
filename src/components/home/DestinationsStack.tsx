@@ -20,7 +20,7 @@ import { Icon } from "../ui/Icon";
  *
  * Respeta prefers-reduced-motion: sin scale/zoom/tilt, solo el apilado por CSS.
  */
-export function DestinationsStack() {
+export function DestinationsStack({ darkMode }: { darkMode: boolean }) {
   const container = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: container,
@@ -56,6 +56,7 @@ export function DestinationsStack() {
               total={destinationsStack.length}
               progress={scrollYProgress}
               targetScale={targetScale}
+              darkMode={darkMode}
             />
           );
         })}
@@ -70,12 +71,14 @@ function StackCard({
   total,
   progress,
   targetScale,
+  darkMode,
 }: {
   dest: StackDestination;
   index: number;
   total: number;
   progress: MotionValue<number>;
   targetScale: number;
+  darkMode: boolean;
 }) {
   const reduce = useReducedMotion();
   const cardRef = useRef<HTMLDivElement>(null);
@@ -112,7 +115,9 @@ function StackCard({
             rotateX: reduce ? 0 : rotateX,
             top: `calc(-4vh + ${index * 16}px)`, // cada tarjeta asoma un poco más abajo
             transformOrigin: "top center",
-            boxShadow: `0 40px 90px -50px ${dest.color}, 0 20px 50px -40px rgba(0,0,0,.6)`,
+            boxShadow: darkMode
+              ? `0 40px 90px -50px ${dest.color}, 0 20px 50px -40px rgba(0,0,0,.6)`
+              : `0 26px 60px -32px ${dest.color}, 0 12px 30px -22px rgba(40,28,18,.16)`,
           }}
           className="relative h-[clamp(420px,72vh,600px)] w-full overflow-hidden rounded-[1.6rem]"
         >

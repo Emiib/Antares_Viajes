@@ -21,7 +21,9 @@ import { BlogPostPage } from "./pages/BlogPostPage";
 import { InfoUtilPage } from "./pages/InfoUtilPage";
 import { LegalesPage } from "./pages/LegalesPage";
 import { PackageDetailPage } from "./pages/PackageDetailPage";
+import { DestinationPage } from "./pages/DestinationPage";
 import { CategoryShowcase } from "./components/catalog/CategoryShowcase";
+import { destinationsStack } from "./data/destinationsStack";
 
 import { PackagesProvider, usePackages } from "./data/packagesStore";
 import { LeadModalProvider } from "./context/LeadModalContext";
@@ -72,7 +74,11 @@ function AppShell() {
         <Route path="/paquetes" element={<PaquetesPage darkMode={darkMode} />} />
         <Route path="/ofertas" element={<Navigate to="/paquetes?filtro=ofertas" replace />} />
         <Route path="/nosotros" element={<NosotrosPage />} />
-        <Route path="/argentina" element={<Navigate to="/paquetes?tipo=argentina" replace />} />
+
+        {/* Subpáginas de destino (menú "Destinos") */}
+        {destinationsStack.map((d) => (
+          <Route key={d.slug} path={d.to} element={<DestinationPage slug={d.slug} />} />
+        ))}
         <Route
           path="/quinceaneras"
           element={
