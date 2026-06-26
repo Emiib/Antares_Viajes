@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Icon } from "../ui/Icon";
+import type { IconName } from "../ui/Icon";
 import { useLeadModal } from "../../context/LeadModalContext";
 import { usePackages } from "../../data/packagesStore";
 
@@ -12,12 +13,13 @@ interface NavbarProps {
 }
 
 type MenuItem = { label: string; to: string };
-type Menu = { label: string; items: MenuItem[] };
+type Menu = { label: string; icon: IconName; items: MenuItem[] };
 
 /** Navegación principal: 3 grupos con desplegable. Cada item lleva a su subpágina. */
 const MENUS: Menu[] = [
   {
     label: "Destinos",
+    icon: "globe",
     items: [
       { label: "Argentina", to: "/argentina" },
       { label: "Caribe & Centroamérica", to: "/caribe-centroamerica" },
@@ -29,6 +31,7 @@ const MENUS: Menu[] = [
   },
   {
     label: "Explorar",
+    icon: "compass",
     items: [
       { label: "Cruceros", to: "/cruceros" },
       { label: "Circuitos", to: "/circuitos" },
@@ -38,6 +41,7 @@ const MENUS: Menu[] = [
   },
   {
     label: "Especiales",
+    icon: "sparkle",
     items: [
       { label: "Experiencias", to: "/experiencias" },
       { label: "Eventos", to: "/eventos" },
@@ -88,10 +92,10 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
           borderBottom: isSolid ? "1px solid var(--nav-border)" : "1px solid transparent",
         }}
       >
-        <div className="mx-auto flex h-[84px] max-w-[1340px] items-center justify-between px-5 sm:px-8">
+        <div className="mx-auto flex h-[78px] max-w-[1340px] items-center justify-between px-5 sm:h-24 sm:px-8">
           {/* Logo completo */}
           <Link to="/" className="flex shrink-0 items-center" aria-label="Antares Viajes y Turismo — Inicio">
-            <img src={logoSrc} alt="Antares Viajes y Turismo" className="h-14 w-auto sm:h-[72px]" />
+            <img src={logoSrc} alt="Antares Viajes y Turismo" className="h-14 w-auto sm:h-20" />
           </Link>
 
           {/* Desktop */}
@@ -106,12 +110,13 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
                   onMouseLeave={() => setOpenMenu((m) => (m === menu.label ? null : m))}
                 >
                   <button
-                    className="flex items-center gap-1 text-[0.82rem] font-medium tracking-wide transition-colors duration-300"
+                    className="flex items-center gap-1.5 text-[0.82rem] font-medium tracking-wide transition-colors duration-300"
                     style={{ color: navColor }}
                     aria-haspopup="true"
                     aria-expanded={isMenuOpen}
                     onClick={() => setOpenMenu(isMenuOpen ? null : menu.label)}
                   >
+                    <Icon name={menu.icon} className="h-[1.05rem] w-[1.05rem] opacity-70" />
                     {menu.label}
                     <Icon name="arrowDown" className={`h-3.5 w-3.5 transition-transform duration-300 ${isMenuOpen ? "rotate-180" : ""}`} />
                   </button>
@@ -181,7 +186,7 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
           pointerEvents: open ? "auto" : "none",
         }}
       >
-        <div className="flex h-[84px] shrink-0 items-center justify-between px-5">
+        <div className="flex h-[78px] shrink-0 items-center justify-between px-5">
           <img src={config.logo_dark_path || LOGO} alt="Antares Viajes y Turismo" className="h-14 w-auto" />
           <button onClick={() => setOpen(false)} aria-label="Cerrar menú" className="-mr-2 grid h-11 w-11 place-items-center text-white">
             <Icon name="close" className="h-7 w-7" />
@@ -198,7 +203,10 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
                   aria-expanded={isGroupOpen}
                   className="flex w-full items-center justify-between py-4 text-left"
                 >
-                  <span className="font-display text-[1.55rem] leading-none text-white">{menu.label}</span>
+                  <span className="flex items-center gap-3.5">
+                    <Icon name={menu.icon} className="h-[1.35rem] w-[1.35rem] text-white/45" />
+                    <span className="font-display text-[1.55rem] leading-none text-white">{menu.label}</span>
+                  </span>
                   <Icon name="arrowDown" className={`h-5 w-5 text-white/55 transition-transform duration-300 ${isGroupOpen ? "rotate-180" : ""}`} />
                 </button>
                 <AnimatePresence initial={false}>
