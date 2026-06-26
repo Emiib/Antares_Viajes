@@ -47,8 +47,8 @@ export function LujoPage() {
         <div className="mt-16 grid grid-cols-1 gap-4 sm:mt-20 md:grid-cols-3 md:gap-5">
           {HALLMARKS.map((h, i) => (
             <Reveal key={h.title} delay={i * 0.09}>
-              <div className="h-full rounded-xl px-7 py-10 sm:py-12" style={{ background: "rgba(10,9,8,.72)", border: "1px solid rgba(198,164,97,.18)", backdropFilter: "blur(4px)" }}>
-                <span className="mb-7 grid h-12 w-12 place-items-center rounded-full" style={{ border: "1px solid rgba(198,164,97,.5)", color: "var(--gold-soft)" }}>
+              <div className="h-full rounded-xl px-7 py-10 sm:py-12" style={{ background: "rgba(10,9,8,.72)", border: "1px solid rgba(204,175,153,.18)", backdropFilter: "blur(4px)" }}>
+                <span className="mb-7 grid h-12 w-12 place-items-center rounded-full" style={{ border: "1px solid rgba(204,175,153,.5)", color: "var(--gold-soft)" }}>
                   <Icon name={h.icon} className="h-[1.4rem] w-[1.4rem]" />
                 </span>
                 <h3 className="font-display text-[1.5rem] leading-[1.1]" style={{ color: "#F4EDE2" }}>{h.title}</h3>
@@ -72,14 +72,14 @@ export function LujoPage() {
         )}
 
         {/* CTA band */}
-        <Reveal className="mt-16 flex flex-col gap-8 border-t border-[rgba(198,164,97,0.22)] pt-12 sm:mt-20 sm:flex-row sm:items-center sm:justify-between">
+        <Reveal className="mt-16 flex flex-col gap-8 border-t border-[rgba(204,175,153,0.22)] pt-12 sm:mt-20 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-display max-w-[26rem] text-[1.6rem] italic leading-[1.15] sm:text-[2rem]" style={{ color: "rgba(244,237,226,.85)" }}>
             Contanos qué imaginás. El resto lo resolvemos nosotros.
           </p>
           <button
             onClick={() => openLead({ context: "luxury" })}
             className="group inline-flex shrink-0 items-center gap-3 rounded-full py-4 pl-8 pr-7 text-[0.94rem] font-semibold transition-all duration-300 hover:-translate-y-0.5"
-            style={{ background: "linear-gradient(100deg, var(--gold-soft), var(--gold))", color: "#2a2008", boxShadow: "0 18px 44px -18px rgba(198,164,97,.7)" }}
+            style={{ background: "linear-gradient(100deg, var(--gold-soft), var(--gold))", color: "#2a2008", boxShadow: "0 18px 44px -18px rgba(204,175,153,.7)" }}
           >
             Diseñar mi experiencia
             <Icon name="arrowR" className="h-[1.05rem] w-[1.05rem] transition-transform duration-300 group-hover:translate-x-1" />
