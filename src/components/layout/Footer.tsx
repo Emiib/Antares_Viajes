@@ -3,19 +3,8 @@ import { Icon } from "../ui/Icon";
 import { SITE_CONFIG } from "../../config/site";
 import { usePackages } from "../../data/packagesStore";
 
-const NAVEGACION = [
-  { label: "Argentina", to: "/argentina" },
-  { label: "Grupales", to: "/grupales" },
-  { label: "Circuitos", to: "/circuitos" },
-  { label: "Quinceañeras", to: "/quinceaneras" },
-  { label: "Experiencias de Lujo", to: "/experiencias" },
-  { label: "Cruceros", to: "/cruceros" },
-];
-
 const INFO_UTIL = [
   { label: "Blog de Viajes", to: "/blog" },
-  { label: "Visas", to: "/info-util" },
-  { label: "Web Check-in", to: "/info-util" },
 ];
 
 const LEGALES = [
@@ -74,8 +63,6 @@ export function Footer() {
 
           {/* Columnas */}
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 md:col-span-9 lg:gap-6">
-            <LinkColumn title="Navegación" links={NAVEGACION} />
-
             <div className="min-w-0">
               <h4 className={headCls} style={headStyle}>Antares</h4>
               <ul className="mt-4 space-y-2.5">
@@ -102,9 +89,7 @@ export function Footer() {
 
             <LinkColumn title="Info útil" links={INFO_UTIL} />
 
-            <div className="sm:col-span-2 md:col-span-1">
-              <LinkColumn title="Legales" links={LEGALES} />
-            </div>
+            <LinkColumn title="Legales" links={LEGALES} />
           </div>
         </div>
 

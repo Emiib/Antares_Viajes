@@ -50,8 +50,14 @@ const MENUS: Menu[] = [
   },
 ];
 
-// Logo completo "Antares Viajes y Turismo", fondo transparente para claro y oscuro.
+// Logo completo "Antares Viajes y Turismo": texto rojo (fondo claro) / texto blanco (fondo oscuro).
 const LOGO = "/branding/LogoAntares-transparente.png";
+const LOGO_DARK = "/branding/logo-dark-text.png";
+
+/** Lleva al footer (#contacto), presente en todas las páginas. */
+function goContacto() {
+  document.getElementById("contacto")?.scrollIntoView({ behavior: "smooth" });
+}
 
 export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
   const [solid, setSolid] = useState(false);
@@ -79,7 +85,7 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
   const isSolid = solid || pathname !== "/";
   const onDark = !isSolid || darkMode;
   const navColor = onDark ? "#F4EDE2" : "#1B1610";
-  const logoSrc = (onDark ? config.logo_dark_path : config.logo_header_path) || LOGO;
+  const logoSrc = (onDark ? config.logo_dark_path : config.logo_header_path) || (onDark ? LOGO_DARK : LOGO);
 
   return (
     <>
@@ -92,10 +98,10 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
           borderBottom: isSolid ? "1px solid var(--nav-border)" : "1px solid transparent",
         }}
       >
-        <div className="mx-auto flex h-[78px] max-w-[1340px] items-center justify-between px-5 sm:h-24 sm:px-8">
+        <div className="mx-auto flex h-[88px] max-w-[1340px] items-center justify-between px-5 sm:h-32 sm:px-8">
           {/* Logo completo */}
           <Link to="/" className="flex shrink-0 items-center" aria-label="Antares Viajes y Turismo — Inicio">
-            <img src={logoSrc} alt="Antares Viajes y Turismo" className="h-14 w-auto sm:h-20" />
+            <img src={logoSrc} alt="Antares Viajes y Turismo" className="h-16 w-auto sm:h-[108px]" />
           </Link>
 
           {/* Desktop */}
@@ -154,6 +160,15 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
             </Link>
 
             <button
+              onClick={goContacto}
+              className="group relative text-[0.82rem] font-medium tracking-wide transition-colors duration-300"
+              style={{ color: navColor }}
+            >
+              Contacto
+              <span className="absolute -bottom-1.5 left-0 h-px w-0 transition-all duration-300 group-hover:w-full" style={{ background: "var(--terra)" }} />
+            </button>
+
+            <button
               onClick={() => setDarkMode(!darkMode)}
               aria-label="Cambiar modo claro u oscuro"
               className="grid h-11 w-11 place-items-center rounded-full transition-transform hover:scale-110"
@@ -186,8 +201,8 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
           pointerEvents: open ? "auto" : "none",
         }}
       >
-        <div className="flex h-[78px] shrink-0 items-center justify-between px-5">
-          <img src={config.logo_dark_path || LOGO} alt="Antares Viajes y Turismo" className="h-14 w-auto" />
+        <div className="flex h-[88px] shrink-0 items-center justify-between px-5">
+          <img src={config.logo_dark_path || LOGO_DARK} alt="Antares Viajes y Turismo" className="h-16 w-auto" />
           <button onClick={() => setOpen(false)} aria-label="Cerrar menú" className="-mr-2 grid h-11 w-11 place-items-center text-white">
             <Icon name="close" className="h-7 w-7" />
           </button>
@@ -245,6 +260,13 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
           >
             Nosotros
           </Link>
+          <button
+            onClick={() => { setOpen(false); setTimeout(goContacto, 380); }}
+            className="flex w-full items-center py-4 text-left font-display text-[1.55rem] leading-none text-white"
+            style={{ borderBottom: "1px solid rgba(244,237,226,.1)" }}
+          >
+            Contacto
+          </button>
         </nav>
 
         <div className="shrink-0 px-7 pb-10 pt-4">
