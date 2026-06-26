@@ -50,9 +50,8 @@ const MENUS: Menu[] = [
   },
 ];
 
-// Logo completo "Antares Viajes y Turismo": texto rojo (fondo claro) / texto blanco (fondo oscuro).
+// Logo completo "Antares Viajes y Turismo", fondo transparente para claro y oscuro.
 const LOGO = "/branding/LogoAntares-transparente.png";
-const LOGO_DARK = "/branding/logo-dark-text.png";
 
 /** Lleva al footer (#contacto), presente en todas las páginas. */
 function goContacto() {
@@ -85,7 +84,7 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
   const isSolid = solid || pathname !== "/";
   const onDark = !isSolid || darkMode;
   const navColor = onDark ? "#F4EDE2" : "#1B1610";
-  const logoSrc = (onDark ? config.logo_dark_path : config.logo_header_path) || (onDark ? LOGO_DARK : LOGO);
+  const logoSrc = (onDark ? config.logo_dark_path : config.logo_header_path) || LOGO;
 
   return (
     <>
@@ -98,10 +97,10 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
           borderBottom: isSolid ? "1px solid var(--nav-border)" : "1px solid transparent",
         }}
       >
-        <div className="mx-auto flex h-[88px] max-w-[1340px] items-center justify-between px-5 sm:h-32 sm:px-8">
+        <div className="mx-auto flex h-[78px] max-w-[1340px] items-center justify-between px-5 sm:h-24 sm:px-8">
           {/* Logo completo */}
           <Link to="/" className="flex shrink-0 items-center" aria-label="Antares Viajes y Turismo — Inicio">
-            <img src={logoSrc} alt="Antares Viajes y Turismo" className="h-16 w-auto sm:h-[108px]" />
+            <img src={logoSrc} alt="Antares Viajes y Turismo" className="h-14 w-auto sm:h-20" />
           </Link>
 
           {/* Desktop */}
@@ -201,8 +200,8 @@ export function Navbar({ darkMode, setDarkMode, navbarVisible }: NavbarProps) {
           pointerEvents: open ? "auto" : "none",
         }}
       >
-        <div className="flex h-[88px] shrink-0 items-center justify-between px-5">
-          <img src={config.logo_dark_path || LOGO_DARK} alt="Antares Viajes y Turismo" className="h-16 w-auto" />
+        <div className="flex h-[78px] shrink-0 items-center justify-between px-5">
+          <img src={config.logo_dark_path || LOGO} alt="Antares Viajes y Turismo" className="h-14 w-auto" />
           <button onClick={() => setOpen(false)} aria-label="Cerrar menú" className="-mr-2 grid h-11 w-11 place-items-center text-white">
             <Icon name="close" className="h-7 w-7" />
           </button>
